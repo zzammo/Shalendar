@@ -22,9 +22,5 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this, TestActivity::class.java)
             startActivity(intent)
         }
-        binding.btnWeek.setOnClickListener {
-            val intent = Intent(this, WeeklyCalendarActivity::class.java)
-            startActivity(intent)
-        }
     }
 }

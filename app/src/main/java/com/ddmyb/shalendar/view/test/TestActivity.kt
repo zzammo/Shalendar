@@ -7,6 +7,7 @@ import androidx.databinding.DataBindingUtil
 import com.ddmyb.shalendar.R
 import com.ddmyb.shalendar.databinding.ActivityTestBinding
 import com.ddmyb.shalendar.view.month.MonthActivity
+import com.ddmyb.shalendar.view.weekly.WeeklyCalendarActivity
 
 class TestActivity : AppCompatActivity() {
 
@@ -25,6 +26,10 @@ class TestActivity : AppCompatActivity() {
         binding.dataBindingTestButton.setOnClickListener {
             val text = binding.dataBindingEditText.text.toString()
             binding.dataBindingTest = text
+        }
+        binding.btnWeek.setOnClickListener {
+            val intent = Intent(this, WeeklyCalendarActivity::class.java)
+            startActivity(intent)
         }
     }
 }
