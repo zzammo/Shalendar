@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">Shalendar</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="weekly_dayofweek_textsize">25sp</string>
     <string name="weekly_day_textsize">15sp</string>
 </resources>
