@@ -33,6 +33,9 @@ class MonthCalendarFragment(private val refList: List<Long>) : Fragment() {
             adapter = CalendarAdapter(refList, requireActivity())
         }
 
+        binding.pager.setCurrentItem(refList.size/2, false)
+        binding.pager.offscreenPageLimit = 2
+
         return binding.root
     }
 
