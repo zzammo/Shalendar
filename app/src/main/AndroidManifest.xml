@@ -24,6 +24,9 @@
         <activity
             android:name=".view.month.MonthActivity"
             android:exported="false" />
+        <activity
+            android:name=".view.weekly.WeeklyCalendarActivity"
+            android:exported="false" />
     </application>
 
 </manifest>

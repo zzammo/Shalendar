@@ -1,15 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable
+            name="data"
+            type="com.ddmyb.shalendar.data.WeeklyDates" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
     <TextView
         android:id="@+id/tv_month_number"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="9"
+        android:text="@{data.month}"
         android:textSize="35sp"
         android:layout_marginTop="20dp"
         app:layout_constraintTop_toTopOf="parent" />
@@ -103,7 +112,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:textSize="@string/weekly_day_textsize"
-            android:text="1"
+            android:text="@{data.sunday}"
             android:gravity="center"
             android:textColor="@color/red"/>
 
@@ -113,7 +122,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:textSize="@string/weekly_day_textsize"
-            android:text="2"
+            android:text="@{data.monday}"
             android:gravity="center"
             android:textColor="@color/black"/>
 
@@ -123,7 +132,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:textSize="@string/weekly_day_textsize"
-            android:text="3"
+            android:text="@{data.tuesday}"
             android:gravity="center"
             android:textColor="@color/black"/>
 
@@ -133,7 +142,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:textSize="@string/weekly_day_textsize"
-            android:text="4"
+            android:text="@{data.wednesday}"
             android:gravity="center"
             android:textColor="@color/black"/>
 
@@ -143,7 +152,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:textSize="@string/weekly_day_textsize"
-            android:text="5"
+            android:text="@{data.thursday}"
             android:gravity="center"
             android:textColor="@color/black"/>
 
@@ -153,7 +162,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:textSize="@string/weekly_day_textsize"
-            android:text="6"
+            android:text="@{data.friday}"
             android:gravity="center"
             android:textColor="@color/black"/>
 
@@ -163,7 +172,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:textSize="@string/weekly_day_textsize"
-            android:text="7"
+            android:text="@{data.saturday}"
             android:gravity="center"
             android:textColor="@color/blue"/>
 
@@ -566,3 +575,5 @@
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>
