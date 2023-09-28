@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+
+    <data>
+        <variable
+            name="dataBindingTest"
+            type="String" />
+    </data>
+
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical"
+        tools:context=".view.test.TestActivity">
+
+        <EditText
+            android:id="@+id/data_binding_edit_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+        <Button
+            android:id="@+id/data_binding_test_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="data binding test"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{dataBindingTest}"/>
+
+        <Button
+            android:id="@+id/month_calendar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="month calendar"/>
+
+    </LinearLayout>
+</layout>

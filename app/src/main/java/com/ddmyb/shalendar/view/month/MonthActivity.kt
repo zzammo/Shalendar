@@ -1,7 +1,6 @@
 package com.ddmyb.shalendar.view.month
 
 import android.os.Bundle
-import android.text.TextUtils.replace
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.commit
@@ -24,7 +23,7 @@ class MonthActivity : AppCompatActivity() {
         calendar = MonthCalendarFragment(refList)
 
         supportFragmentManager.commit {
-            add(calendar, "calendar")
+            add(R.id.calendar, calendar)
             setReorderingAllowed(true)
         }
     }
