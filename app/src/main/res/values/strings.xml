@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Shalendar</string>
+    <string name="weekly_dayofweek_textsize">25sp</string>
+    <string name="weekly_day_textsize">15sp</string>
 </resources>
