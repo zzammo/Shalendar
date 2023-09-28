@@ -6,8 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.ddmyb.shalendar.R
 import com.ddmyb.shalendar.databinding.ActivityMainBinding
-import com.ddmyb.shalendar.databinding.ActivityMonthBinding
-import com.ddmyb.shalendar.view.month.MonthActivity
+import com.ddmyb.shalendar.view.test.TestActivity
 
 class MainActivity : AppCompatActivity() {
 
@@ -17,7 +16,7 @@ class MainActivity : AppCompatActivity() {
         binding = DataBindingUtil.setContentView(this@MainActivity, R.layout.activity_main)
 
         binding.testButton.setOnClickListener {
-            val intent = Intent(this, MonthActivity::class.java)
+            val intent = Intent(this, TestActivity::class.java)
             startActivity(intent)
         }
     }

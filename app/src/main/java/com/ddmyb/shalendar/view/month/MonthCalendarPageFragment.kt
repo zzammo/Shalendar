@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.get
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import com.ddmyb.shalendar.R
@@ -78,19 +79,17 @@ class MonthCalendarPageFragment(private val now: Long) : Fragment() {
 
         binding.fragment = this
 
-        for (date in calendarDateList) {
+        for (i in 0 until calendarDateList.size) {
             val itemBinding: ItemMonthDateBinding =
                 DataBindingUtil.inflate(
                     inflater,
                     R.layout.item_month_date,
-                    binding.dateLayout,
+                    binding.dateLayout[i] as ViewGroup,
                     false)
-            itemBinding.data = date
+            itemBinding.data = calendarDateList[i]
             //TODO: load schedules
 
-            binding.dateLayout.addView(
-                itemBinding.root
-            )
+            (binding.dateLayout[i] as ViewGroup).addView(itemBinding.root)
         }
 
         return binding.root
