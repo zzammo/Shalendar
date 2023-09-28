@@ -1,18 +1,20 @@
-//package com.ddmyb.shalendar.view.month.adapter
-//
-//import androidx.fragment.app.FragmentActivity
-//import androidx.viewpager2.adapter.FragmentStateAdapter
-//
-//class CalendarAdapter(fragmentActivity: FragmentActivity) :
-//    FragmentStateAdapter(fragmentActivity) {
-//    private lateinit var viewPagerAdapter: ViewPagerAdapter
-//    val fragments = listOf<Fragment>(HomeFragment(), EditFragment(), LikeFragment(), UserFragment())
-//
-//    override fun getItemCount(): Int {
-//        return fragments.size
-//    }
-//
-//    override fun createFragment(position: Int): Fragment {
-//        return fragments[position]
-//    }
-//}
+package com.ddmyb.shalendar.view.month.adapter
+
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
+import androidx.viewpager2.adapter.FragmentStateAdapter
+import com.ddmyb.shalendar.view.month.MonthCalendarPageFragment
+
+class CalendarAdapter(
+    private val refList: List<Long>,
+    fragmentActivity: FragmentActivity
+): FragmentStateAdapter(fragmentActivity) {
+
+    override fun createFragment(position: Int): Fragment {
+        return MonthCalendarPageFragment(refList[position])
+    }
+
+    override fun getItemCount(): Int {
+        return refList.size
+    }
+}

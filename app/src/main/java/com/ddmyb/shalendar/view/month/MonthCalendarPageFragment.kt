@@ -1,18 +1,16 @@
 package com.ddmyb.shalendar.view.month
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.get
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.Fragment
 import com.ddmyb.shalendar.R
 import com.ddmyb.shalendar.data.CalendarDate
 import com.ddmyb.shalendar.databinding.FragmentMonthCalendarPageBinding
 import com.ddmyb.shalendar.databinding.ItemMonthDateBinding
 import java.util.Calendar
-import kotlin.properties.Delegates
 
 class MonthCalendarPageFragment(private val now: Long) : Fragment() {
 
