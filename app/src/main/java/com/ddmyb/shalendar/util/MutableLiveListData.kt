@@ -1,4 +1,5 @@
 package com.ddmyb.shalendar.util
+
 import androidx.lifecycle.MutableLiveData
 
 class MutableLiveListData<T> : MutableLiveData<MutableList<T>>() {
@@ -126,7 +127,7 @@ class MutableLiveListData<T> : MutableLiveData<MutableList<T>>() {
     }
 
     fun observeInsert(insertedAt: (Int) -> Unit) {
-        insertObserver = insertedAt //callback 함수 등록
+        insertObserver = insertedAt
     }
     fun observeRemove(removedAt: (Int) -> Unit) {
         removeObserver = removedAt
