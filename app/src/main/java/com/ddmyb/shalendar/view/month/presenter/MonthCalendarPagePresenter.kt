@@ -1,6 +1,5 @@
 package com.ddmyb.shalendar.view.month.presenter
 
-import androidx.lifecycle.MutableLiveData
 import com.ddmyb.shalendar.util.MutableLiveListData
 import com.ddmyb.shalendar.view.month.data.MonthCalendarDate
 import java.util.Calendar
@@ -11,7 +10,7 @@ class MonthCalendarPagePresenter(
     val monthCalendarDateList: MutableList<MonthCalendarDate>
 ) {
 
-    private var selected: MonthCalendarDate
+    private var selected: Int
 
     init {
         val cal = Calendar.getInstance()
@@ -56,19 +55,17 @@ class MonthCalendarPagePresenter(
             cal.add(Calendar.DATE, 1)
         }
 
-        selected = MonthCalendarDate(0, 0, 0, MutableLiveListData())
+        selected = -1
     }
 
     fun loadSchedule(idx: Int) {
-
+        //TODO: load schedules
     }
 
-    fun selectDate(date: MonthCalendarDate): Boolean {
-        if (selected == date)
-            return false
-
-        selected = date
-        return true
+    fun selectDate(idx: Int): Int {
+        val preIdx = selected
+        selected = idx
+        return preIdx
     }
 
     fun isSaturday(date: MonthCalendarDate): Boolean {

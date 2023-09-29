@@ -1,10 +1,16 @@
 package com.ddmyb.shalendar.view.month
 
+import android.app.Dialog
 import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.Window
+import android.widget.TextView
+import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.content.ContextCompat.getColor
 import androidx.core.view.get
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -12,7 +18,9 @@ import com.ddmyb.shalendar.R
 import com.ddmyb.shalendar.databinding.FragmentMonthCalendarPageBinding
 import com.ddmyb.shalendar.databinding.ItemMonthDateBinding
 import com.ddmyb.shalendar.databinding.ItemMonthScheduleBinding
+import com.ddmyb.shalendar.util.CalendarFunc
 import com.ddmyb.shalendar.util.Logger
+import com.ddmyb.shalendar.view.month.data.MonthCalendarDate
 import com.ddmyb.shalendar.view.month.presenter.MonthCalendarPagePresenter
 import java.util.Calendar
 
@@ -89,15 +97,17 @@ class MonthCalendarPageFragment(private val now: Long) : Fragment() {
                 }
             }
             presenter.loadSchedule(i)
-            //TODO: load schedules
 
             itemBinding.root.setOnClickListener {
-                if (!presenter.selectDate(calendarDate)) {
-                    //TODO: pop up
-                }
-                else {
-                    //TODO: draw selected line
-                }
+                val selectedIdx = presenter.selectDate(i)
+
+                logger.logD("$selectedIdx, $i")
+                if (selectedIdx != -1)
+                    binding.dateLayout[selectedIdx].background = null
+
+                binding.dateLayout[i].background = AppCompatResources.getDrawable(requireContext(), R.drawable.month_date_selected)
+
+                showScheduleDialog(calendarDate)
             }
 
             itemBinding.data = calendarDate
@@ -117,6 +127,20 @@ class MonthCalendarPageFragment(private val now: Long) : Fragment() {
         }
 
         return binding.root
+    }
+
+    private fun showScheduleDialog(date: MonthCalendarDate) {
+        val dialog = Dialog(requireContext())
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.window?.setBackgroundDrawable(ColorDrawable(getColor(requireContext(), R.color.transparent)))
+        dialog.setContentView(R.layout.dialog_month_date_detail)
+
+        dialog.findViewById<TextView>(R.id.date).text = date.date.toString()
+
+        dialog.findViewById<TextView>(R.id.day_of_week).text =
+            CalendarFunc.dayOfWeekOfDate(date.year, date.month, date.date)
+
+        dialog.show()
     }
 
 }
