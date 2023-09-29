@@ -1,3 +1,14 @@
 <resources>
     <string name="app_name">Shalendar</string>
+
+
+    <!--navi_header-->
+    <string name="nd_exname">김민식</string>
+    <string name="nd_exemail">blabal@samsung.com</string>
+    <string name="nd_mycalendar">개인 캘린더</string>
+    <string name="nd_teamcalendar">팀 캘린더</string>
+
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

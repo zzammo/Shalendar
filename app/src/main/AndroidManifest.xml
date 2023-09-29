@@ -13,6 +13,9 @@
         android:theme="@style/Theme.Shalendar"
         tools:targetApi="31">
         <activity
+            android:name=".view.test.TestActivity"
+            android:exported="false" />
+        <activity
             android:name=".view.home.MainActivity"
             android:exported="true">
             <intent-filter>
@@ -21,6 +24,15 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".view.month.MonthActivity"
+            android:exported="false" />
+        <activity
+            android:name=".view.weekly.WeeklyCalendarActivity"
+            android:exported="false" />
+        <activity
+            android:name=".view.home.NaviDrawerActivity"
+            android:exported="false" />
     </application>
 
 </manifest>
