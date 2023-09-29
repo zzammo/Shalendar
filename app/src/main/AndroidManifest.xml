@@ -30,6 +30,9 @@
         <activity
             android:name=".view.weekly.WeeklyCalendarActivity"
             android:exported="false" />
+        <activity
+            android:name=".view.home.NaviDrawerActivity"
+            android:exported="false" />
     </application>
 
 </manifest>

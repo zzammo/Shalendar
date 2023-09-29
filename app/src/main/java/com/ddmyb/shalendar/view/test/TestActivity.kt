@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.ddmyb.shalendar.R
 import com.ddmyb.shalendar.databinding.ActivityTestBinding
+import com.ddmyb.shalendar.view.home.NaviDrawerActivity
 import com.ddmyb.shalendar.view.month.MonthActivity
 import com.ddmyb.shalendar.view.weekly.WeeklyCalendarActivity
 
@@ -29,6 +30,11 @@ class TestActivity : AppCompatActivity() {
         }
         binding.btnWeek.setOnClickListener {
             val intent = Intent(this, WeeklyCalendarActivity::class.java)
+            startActivity(intent)
+        }
+
+        binding.btnTestPage.setOnClickListener{
+            val intent = Intent(this, NaviDrawerActivity::class.java)
             startActivity(intent)
         }
     }
