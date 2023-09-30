@@ -5,8 +5,8 @@
 
     <data>
         <variable
-            name="presenter"
-            type="com.ddmyb.shalendar.view.month.presenter.MonthCalendarPagePresenter" />
+            name="data"
+            type="com.ddmyb.shalendar.view.month.data.MonthPageData" />
     </data>
 
     <FrameLayout
@@ -22,7 +22,7 @@
                 android:id="@+id/month"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@{String.valueOf(presenter.month)}"
+                android:text="@{String.valueOf(data.month)}"
                 android:textSize="25sp"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -32,7 +32,7 @@
                 android:id="@+id/year"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@{String.valueOf(presenter.year)}"
+                android:text="@{String.valueOf(data.year)}"
                 android:layout_marginStart="10dp"
                 app:layout_constraintBottom_toBottomOf="@id/month"
                 app:layout_constraintStart_toEndOf="@id/month"
@@ -48,212 +48,212 @@
                 app:layout_constraintTop_toBottomOf="@id/month"
                 app:layout_constraintBottom_toBottomOf="parent">
 
-                <LinearLayout
+                <include layout="@layout/item_month_date"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:layout_columnWeight="1"
                     android:layout_rowWeight="1"/>
-                <LinearLayout
+                <include layout="@layout/item_month_date"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:layout_columnWeight="1"
                     android:layout_rowWeight="1"/>
-                <LinearLayout
+                <include layout="@layout/item_month_date"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:layout_columnWeight="1"
                     android:layout_rowWeight="1"/>
-                <LinearLayout
+                <include layout="@layout/item_month_date"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:layout_columnWeight="1"
                     android:layout_rowWeight="1"/>
-                <LinearLayout
+                <include layout="@layout/item_month_date"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:layout_columnWeight="1"
                     android:layout_rowWeight="1"/>
-                <LinearLayout
+                <include layout="@layout/item_month_date"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:layout_columnWeight="1"
                     android:layout_rowWeight="1"/>
-                <LinearLayout
+                <include layout="@layout/item_month_date"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:layout_columnWeight="1"
                     android:layout_rowWeight="1"/>
-                <LinearLayout
+                <include layout="@layout/item_month_date"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:layout_columnWeight="1"
                     android:layout_rowWeight="1"/>
-                <LinearLayout
+                <include layout="@layout/item_month_date"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:layout_columnWeight="1"
                     android:layout_rowWeight="1"/>
-                <LinearLayout
+                <include layout="@layout/item_month_date"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:layout_columnWeight="1"
                     android:layout_rowWeight="1"/>
-                <LinearLayout
+                <include layout="@layout/item_month_date"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:layout_columnWeight="1"
                     android:layout_rowWeight="1"/>
-                <LinearLayout
+                <include layout="@layout/item_month_date"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:layout_columnWeight="1"
                     android:layout_rowWeight="1"/>
-                <LinearLayout
+                <include layout="@layout/item_month_date"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:layout_columnWeight="1"
                     android:layout_rowWeight="1"/>
-                <LinearLayout
+                <include layout="@layout/item_month_date"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:layout_columnWeight="1"
                     android:layout_rowWeight="1"/>
-                <LinearLayout
+                <include layout="@layout/item_month_date"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:layout_columnWeight="1"
                     android:layout_rowWeight="1"/>
-                <LinearLayout
+                <include layout="@layout/item_month_date"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:layout_columnWeight="1"
                     android:layout_rowWeight="1"/>
-                <LinearLayout
+                <include layout="@layout/item_month_date"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:layout_columnWeight="1"
                     android:layout_rowWeight="1"/>
-                <LinearLayout
+                <include layout="@layout/item_month_date"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:layout_columnWeight="1"
                     android:layout_rowWeight="1"/>
-                <LinearLayout
+                <include layout="@layout/item_month_date"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:layout_columnWeight="1"
                     android:layout_rowWeight="1"/>
-                <LinearLayout
+                <include layout="@layout/item_month_date"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:layout_columnWeight="1"
                     android:layout_rowWeight="1"/>
-                <LinearLayout
+                <include layout="@layout/item_month_date"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:layout_columnWeight="1"
                     android:layout_rowWeight="1"/>
-                <LinearLayout
+                <include layout="@layout/item_month_date"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:layout_columnWeight="1"
                     android:layout_rowWeight="1"/>
-                <LinearLayout
+                <include layout="@layout/item_month_date"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:layout_columnWeight="1"
                     android:layout_rowWeight="1"/>
-                <LinearLayout
+                <include layout="@layout/item_month_date"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:layout_columnWeight="1"
                     android:layout_rowWeight="1"/>
-                <LinearLayout
+                <include layout="@layout/item_month_date"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:layout_columnWeight="1"
                     android:layout_rowWeight="1"/>
-                <LinearLayout
+                <include layout="@layout/item_month_date"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:layout_columnWeight="1"
                     android:layout_rowWeight="1"/>
-                <LinearLayout
+                <include layout="@layout/item_month_date"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:layout_columnWeight="1"
                     android:layout_rowWeight="1"/>
-                <LinearLayout
+                <include layout="@layout/item_month_date"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:layout_columnWeight="1"
                     android:layout_rowWeight="1"/>
-                <LinearLayout
+                <include layout="@layout/item_month_date"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:layout_columnWeight="1"
                     android:layout_rowWeight="1"/>
-                <LinearLayout
+                <include layout="@layout/item_month_date"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:layout_columnWeight="1"
                     android:layout_rowWeight="1"/>
-                <LinearLayout
+                <include layout="@layout/item_month_date"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:layout_columnWeight="1"
                     android:layout_rowWeight="1"/>
-                <LinearLayout
+                <include layout="@layout/item_month_date"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:layout_columnWeight="1"
                     android:layout_rowWeight="1"/>
-                <LinearLayout
+                <include layout="@layout/item_month_date"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:layout_columnWeight="1"
                     android:layout_rowWeight="1"/>
-                <LinearLayout
+                <include layout="@layout/item_month_date"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:layout_columnWeight="1"
                     android:layout_rowWeight="1"/>
-                <LinearLayout
+                <include layout="@layout/item_month_date"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:layout_columnWeight="1"
                     android:layout_rowWeight="1"/>
-                <LinearLayout
+                <include layout="@layout/item_month_date"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:layout_columnWeight="1"
                     android:layout_rowWeight="1"/>
-                <LinearLayout
+                <include layout="@layout/item_month_date"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:layout_columnWeight="1"
                     android:layout_rowWeight="1"/>
-                <LinearLayout
+                <include layout="@layout/item_month_date"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:layout_columnWeight="1"
                     android:layout_rowWeight="1"/>
-                <LinearLayout
+                <include layout="@layout/item_month_date"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:layout_columnWeight="1"
                     android:layout_rowWeight="1"/>
-                <LinearLayout
+                <include layout="@layout/item_month_date"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:layout_columnWeight="1"
                     android:layout_rowWeight="1"/>
-                <LinearLayout
+                <include layout="@layout/item_month_date"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:layout_columnWeight="1"
                     android:layout_rowWeight="1"/>
-                <LinearLayout
+                <include layout="@layout/item_month_date"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:layout_columnWeight="1"

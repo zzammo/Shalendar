@@ -9,7 +9,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="500dp"
         android:background="@drawable/month_dialog_background">
 
         <TextView
@@ -29,12 +29,21 @@
             app:layout_constraintStart_toEndOf="@id/date"
             tools:text="Mon"/>
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/time_table"
+        <ScrollView
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:orientation="vertical"
             app:layout_constraintTop_toBottomOf="@id/date"
-            app:layout_constraintBottom_toBottomOf="parent"/>
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <com.islandparadise14.mintable.MinTimeTableView
+                android:id="@+id/timetable"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:isFullWidth="true"
+                app:isTwentyFourHourClock="true" />
+        </ScrollView>
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
