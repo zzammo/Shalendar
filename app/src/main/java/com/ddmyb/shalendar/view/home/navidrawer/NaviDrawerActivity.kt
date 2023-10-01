@@ -1,6 +1,7 @@
 package com.ddmyb.shalendar.view.home.navidrawer
 
 import ToggleAnimation
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -59,6 +60,7 @@ class NaviDrawerActivity :AppCompatActivity() {
         }
 
         binding.btnLogin.setOnClickListener{
+            Log.d("minseok","loginbtn")
             //로그인하기
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
@@ -69,7 +71,7 @@ class NaviDrawerActivity :AppCompatActivity() {
             //로그아웃하기
             mFirebaseAuth!!.signOut()
             updateUI(currentUser)
-            val intent = getIntent()
+            val intent = intent
             startActivity(intent)
             finish()
         }
@@ -86,18 +88,19 @@ class NaviDrawerActivity :AppCompatActivity() {
     }
 
 
+    @SuppressLint("SetTextI18n")
     private fun updateUI(user: FirebaseUser?) {
         Log.i("액티비티 테스트", "updateUI")
         if (user != null) {
             // 사용자가 로그인한 경우
-            binding.tvName!!.text = "Hello " + user.email + "!"
-            binding.btnLogin.setVisibility(View.GONE)
-            binding.btnLogout.setVisibility(View.VISIBLE)
+            binding.tvName.text = "Hello ${user.email}!"
+            binding.btnLogin.visibility = View.GONE
+            binding.btnLogout.visibility = View.VISIBLE
         } else {
             // 사용자가 로그아웃한 경우 또는 로그인하지 않은 경우
-            binding.tvName!!.text = "로그인이 필요합니다."
-            binding.btnLogin.setVisibility(View.VISIBLE)
-            binding.btnLogout.setVisibility(View.GONE)
+            binding.tvName.text = "로그인이 필요합니다."
+            binding.btnLogin.visibility = View.VISIBLE
+            binding.btnLogout.visibility = View.GONE
             //binding.tvInfo.visibility = View.GONE
         }
     }
