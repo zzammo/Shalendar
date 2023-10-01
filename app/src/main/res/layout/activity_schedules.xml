@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:map="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
@@ -305,7 +306,7 @@
                             android:padding="5sp"
                             android:textAlignment="center"/>
                         <TextView
-                            android:id="@+id/src_address"
+                            android:id="@+id/src_address_text"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:background="@drawable/ed_text"
@@ -342,7 +343,7 @@
                             android:textSize="18sp"
                             android:padding="5sp"/>
                         <TextView
-                            android:id="@+id/dst_address"
+                            android:id="@+id/dst_address_text"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:textAlignment="center"
@@ -458,6 +459,7 @@
                     android:layout_marginVertical="5sp"
                     android:orientation="vertical"
                     android:clickable="false">
+
                     <fragment
                         android:layout_width="300dp"
                         android:layout_height="300dp"
@@ -651,7 +653,7 @@
                 </LinearLayout>
 
                 <RadioGroup
-                    android:id="@+id/iterator_radiogroup"
+                    android:id="@+id/iterator_radio_group"
                     android:visibility="gone"
                     android:layout_marginHorizontal="10sp"
                     android:layout_marginVertical="5sp"

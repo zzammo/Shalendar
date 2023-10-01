@@ -1,21 +1,31 @@
 package com.ddmyb.shalendar.view.schedules
 
+import android.content.Context
+import android.location.Location
+import com.google.android.gms.location.LocationCallback
 import org.json.JSONObject
+import java.time.Month
 
 interface SchedulesContract {
     interface View{
-        fun showInfo(info : JSONObject)
+        fun showEndTimeText(endHour: Int, endMinute: Int)
+
+        fun showStartTimeText(startHour: Int, startMinute: Int)
+        fun showStartDateText(startMonth: Int, startDay: Int, startWeek: Int)
+        fun showEndDateText(endMonth: Int, endDay: Int, endWeek: Int)
+
+//        fun setSrcLocation(location: Location, markerTitle: String, markerSnippet: String?)
+//        fun setDstLocation(location: Location, markerTitle: String, markerSnippet: String?)
+
     }
     interface Presenter {
-        // onCreate 화면 초기화시에
-        // 저장된 데이터가 있는지 Model 에서 확인하고
-        // 확인한 결과에 따라 View 에 어떤 내용을 보일지 지시한다
-        fun initInfo()
-
-        // TextView 에 info 데이터를 보여주라고 View 에게 지시한다
-        fun setInfo(info: JSONObject)
-
-        // EditText 에 입력된 info 데이터를 저장하라고 Model 에게 지시한다
-        fun saveInfo(info: JSONObject)
+        fun setStartTime(startHour: Int, startMinute: Int)
+        fun setEndTime(endHour: Int, endMinute: Int)
+        fun setStartDate(startYear: Int, startMonth: Int, startDay: Int)
+        fun setEndDate(endYear: Int, endMonth: Int, endDay: Int)
+        fun saveSchedule()
+        fun getSchedule(): Schedule
+        fun getLocationCallback(context: Context): LocationCallback
+        fun getMarkerTitle(context: Context): String?
     }
 }
