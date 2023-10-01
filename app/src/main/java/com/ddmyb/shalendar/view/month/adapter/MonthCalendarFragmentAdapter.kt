@@ -5,10 +5,10 @@ import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.ddmyb.shalendar.view.month.MonthCalendarPageFragment
 
-class CalendarAdapter(
+class MonthCalendarFragmentAdapter(
     private val refList: List<Long>,
     fragmentActivity: FragmentActivity
-): FragmentStateAdapter(fragmentActivity) {
+): FragmentStateAdapter(fragmentActivity), MonthCalendarAdapter {
 
     override fun createFragment(position: Int): Fragment {
         return MonthCalendarPageFragment(refList[position])
