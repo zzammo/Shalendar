@@ -70,7 +70,7 @@
         android:layout_height="40dp"
         android:layout_gravity="center"
         android:background="@color/bg_white"
-        android:text="로그인"
+        android:text="로그아웃"
         tools:visibility="gone" />
 
 
@@ -81,7 +81,8 @@
         android:layout_gravity="center"
         android:layout_marginBottom="20sp"
         android:text="@string/nd_exemail"
-        android:textSize="14sp"/>
+        android:textSize="14sp"
+        android:visibility="gone" />
 
     <View
         android:layout_width="wrap_content"

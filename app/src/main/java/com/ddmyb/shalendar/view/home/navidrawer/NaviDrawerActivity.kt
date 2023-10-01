@@ -58,16 +58,20 @@ class NaviDrawerActivity :AppCompatActivity() {
             }
         }
 
-        val mBtnLogin = binding.btnLogin
-        mBtnLogin.setOnClickListener {
+        binding.btnLogin.setOnClickListener{
+            //로그인하기
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
+            finish()
         }
 
         binding.btnLogout.setOnClickListener {
             //로그아웃하기
             mFirebaseAuth!!.signOut()
             updateUI(currentUser)
+            val intent = getIntent()
+            startActivity(intent)
+            finish()
         }
 
     }
@@ -86,15 +90,15 @@ class NaviDrawerActivity :AppCompatActivity() {
         Log.i("액티비티 테스트", "updateUI")
         if (user != null) {
             // 사용자가 로그인한 경우
-            binding.tvName!!.text = "환영합니다, " + user.email + "님!"
-            binding.btnLogin.visibility = View.GONE
-            binding.btnLogout.visibility = View.VISIBLE
+            binding.tvName!!.text = "Hello " + user.email + "!"
+            binding.btnLogin.setVisibility(View.GONE)
+            binding.btnLogout.setVisibility(View.VISIBLE)
         } else {
             // 사용자가 로그아웃한 경우 또는 로그인하지 않은 경우
             binding.tvName!!.text = "로그인이 필요합니다."
-            binding.btnLogin.isVisible= true
-            binding.btnLogout.visibility = View.GONE
-            binding.tvInfo.isVisible = false
+            binding.btnLogin.setVisibility(View.VISIBLE)
+            binding.btnLogout.setVisibility(View.GONE)
+            //binding.tvInfo.visibility = View.GONE
         }
     }
 
