@@ -7,9 +7,11 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.ddmyb.shalendar.R
-import com.ddmyb.shalendar.data.WeeklyDates
+import com.ddmyb.shalendar.view.weekly.data.WeeklyDates
 import com.ddmyb.shalendar.databinding.ActivityWeeklyCalendarBinding
+import com.ddmyb.shalendar.view.weekly.adapter.WeeklyCalendarAdapter
 import java.time.LocalDate
+import java.util.Calendar
 
 class WeeklyCalendarActivity : AppCompatActivity() {
 
@@ -19,32 +21,26 @@ class WeeklyCalendarActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.d(TAG, "WeeklyCalendar binding start")
         binding = DataBindingUtil.setContentView(this, R.layout.activity_weekly_calendar)
-        Log.d(TAG, "WeeklyCalendar binding end")
 
-        val today = LocalDate.now()
-        val dayofweek = today.dayOfWeek.value % 7
-        val days = Array<LocalDate?>(7, {null})
-        var curr = today
-        for (i in dayofweek downTo 0) {
-            days[i] = curr
-            curr = curr.minusDays(1)
+        binding.pager.adapter = WeeklyCalendarAdapter(getFirstDays(10),this)
+        binding.pager.setCurrentItem(10, false)
+    }
+
+    fun getFirstDays(radius: Int): MutableList<Long> {
+        val cal = Calendar.getInstance()
+        cal.set(Calendar.HOUR_OF_DAY, 0)
+        cal.set(Calendar.MINUTE, 0)
+        cal.set(Calendar.SECOND, 0)
+        cal.set(Calendar.MILLISECOND, 0)
+
+        val result = mutableListOf<Long>()
+        cal.add(Calendar.DAY_OF_MONTH, -7*radius)
+        for (i in 0..2*radius) {
+            result.add(cal.timeInMillis)
+            cal.add(Calendar.DAY_OF_MONTH, 7)
         }
-        curr = today.plusDays(1)
-        for (i in dayofweek + 1..6) {
-            days[i] = curr
-            curr = curr.plusDays(1)
-        }
 
-        for (i in 0..6)
-            Log.d(TAG, "" + days[i]!!.dayOfMonth)
-        Log.d(TAG, "Month " + today.monthValue)
-
-        val thisWeek = WeeklyDates(today.monthValue, days[0]!!.dayOfMonth, days[1]!!.dayOfMonth, days[2]!!.dayOfMonth,
-            days[3]!!.dayOfMonth, days[4]!!.dayOfMonth, days[5]!!.dayOfMonth, days[6]!!.dayOfMonth)
-
-        binding.data = thisWeek
-
+        return result
     }
 }
