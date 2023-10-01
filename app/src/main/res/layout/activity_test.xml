@@ -55,5 +55,11 @@
             android:layout_height="wrap_content"
             android:text="test_navi_drawer"/>
 
+        <Button
+            android:id="@+id/timetable_test"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="timetable_test"/>
+
     </LinearLayout>
 </layout>

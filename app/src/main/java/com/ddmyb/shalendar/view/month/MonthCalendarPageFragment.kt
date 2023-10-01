@@ -129,7 +129,7 @@ class MonthCalendarPageFragment(private val now: Long) : Fragment() {
         dialog.findViewById<TextView>(R.id.date).text = date.date.toString()
 
         dialog.findViewById<TextView>(R.id.day_of_week).text = presenter.getWeekOfDay(date)
-        val timetable = dialog.findViewById<MinTimeTableView>(R.id.timetable)
+        val timetable = dialog.findViewById<TimeTableCustomView>(R.id.timetable)
         timetable.initTable(arrayOf(""))
         val scheduleList: ArrayList<ScheduleEntity> = ArrayList()
         val schedule = ScheduleEntity(
@@ -137,8 +137,8 @@ class MonthCalendarPageFragment(private val now: Long) : Fragment() {
             "Database", //scheduleName
             "IT Building 301", //roomInfo
             ScheduleDay.MONDAY, //ScheduleDay object (MONDAY ~ SUNDAY)
-            "8:20", //startTime format: "HH:mm"
-            "10:30", //endTime  format: "HH:mm"
+            "00:20", //startTime format: "HH:mm"
+            "23:30", //endTime  format: "HH:mm"
             "#73fcae68", //backgroundColor (optional)
             "#000000" //textcolor (optional)
         )

@@ -23,7 +23,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@{String.valueOf(data.month)}"
-                android:textSize="25sp"
+                android:textSize="@dimen/D_primary_text"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 tools:text="00"/>
@@ -34,6 +34,7 @@
                 android:layout_height="wrap_content"
                 android:text="@{String.valueOf(data.year)}"
                 android:layout_marginStart="10dp"
+                android:textSize="@dimen/D_secondary_text"
                 app:layout_constraintBottom_toBottomOf="@id/month"
                 app:layout_constraintStart_toEndOf="@id/month"
                 tools:text="0000"/>
