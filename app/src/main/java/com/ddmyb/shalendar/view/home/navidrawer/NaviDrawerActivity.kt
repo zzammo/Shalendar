@@ -1,15 +1,16 @@
 package com.ddmyb.shalendar.view.home.navidrawer
 
 import ToggleAnimation
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.view.View.GONE
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.ddmyb.shalendar.LoginActivity
 import com.ddmyb.shalendar.databinding.NaviDrawerBinding
 import com.ddmyb.shalendar.view.home.navidrawer.adapter.OwnedCalendarAdapter
 import com.google.firebase.auth.FirebaseAuth
@@ -56,6 +57,19 @@ class NaviDrawerActivity :AppCompatActivity() {
                 }
             }
         }
+
+        val mBtnLogin = binding.btnLogin
+        mBtnLogin.setOnClickListener {
+            val intent = Intent(this, LoginActivity::class.java)
+            startActivity(intent)
+        }
+
+        binding.btnLogout.setOnClickListener {
+            //로그아웃하기
+            mFirebaseAuth!!.signOut()
+            updateUI(currentUser)
+        }
+
     }
 
     override fun onStart() {
@@ -67,18 +81,22 @@ class NaviDrawerActivity :AppCompatActivity() {
         updateUI(currentUser) // UI 업데이트
     }
 
+
     private fun updateUI(user: FirebaseUser?) {
+        Log.i("액티비티 테스트", "updateUI")
         if (user != null) {
             // 사용자가 로그인한 경우
             binding.tvName!!.text = "환영합니다, " + user.email + "님!"
+            binding.btnLogin.visibility = View.GONE
+            binding.btnLogout.visibility = View.VISIBLE
         } else {
             // 사용자가 로그아웃한 경우 또는 로그인하지 않은 경우
             binding.tvName!!.text = "로그인이 필요합니다."
-            binding.button.isVisible= true
+            binding.btnLogin.isVisible= true
+            binding.btnLogout.visibility = View.GONE
             binding.tvInfo.isVisible = false
         }
     }
-
 
     fun onClick(view: View) {
         var expandView: View? = null

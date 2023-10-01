@@ -1,13 +1,13 @@
-package com.ddmyb.shalendar.view.home.navidrawer;
+package com.ddmyb.shalendar;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -41,7 +41,7 @@ public class RegisterActivity extends AppCompatActivity {
                 //회원가입 처리 시작
                 String strEmail = mEtEmail.getText().toString();
                 String strPwd = mEtPwd.getText().toString();
-                Toast.makeText(RegisterActivity.this, "진행중3", Toast.LENGTH_SHORT).show();
+                Toast.makeText(RegisterActivity.this, "진행중", Toast.LENGTH_SHORT).show();
                 //Firebase Auth 진행
                 mFirebaseAuth.createUserWithEmailAndPassword(strEmail,strPwd).addOnCompleteListener(RegisterActivity.this, new OnCompleteListener<AuthResult>() {
                     @Override

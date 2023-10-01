@@ -1,4 +1,7 @@
-package com.ddmyb.shalendar.view.home.navidrawer;
+package com.ddmyb.shalendar;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -6,9 +9,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -46,7 +46,7 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if(task.isSuccessful()){
-                            Intent intent = new Intent(LoginActivity.this,MainActivity.class);
+                            Intent intent = new Intent(LoginActivity.this,com.ddmyb.shalendar.view.home.navidrawer.NaviDrawerActivity.class);
                             startActivity(intent);
                             finish();
                         } else {
@@ -54,7 +54,7 @@ public class LoginActivity extends AppCompatActivity {
                         }
                     }
                 });
-           }
+            }
         });
 
         Button mBtnRegister= findViewById(R.id.btn_register);
