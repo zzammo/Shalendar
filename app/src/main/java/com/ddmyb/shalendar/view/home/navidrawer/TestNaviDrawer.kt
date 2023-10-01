@@ -1,50 +1,62 @@
 package com.ddmyb.shalendar.view.home.navidrawer
 
-import ToggleAnimation
 import android.annotation.SuppressLint
 import android.content.Intent
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.isVisible
+import android.widget.Toast
+import androidx.appcompat.widget.Toolbar
+import androidx.core.view.GravityCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.ddmyb.shalendar.LoginActivity
+import com.ddmyb.shalendar.R
 import com.ddmyb.shalendar.databinding.NaviDrawerBinding
+import com.ddmyb.shalendar.databinding.NaviDrawerTestPageBinding
 import com.ddmyb.shalendar.view.home.navidrawer.adapter.OwnedCalendarAdapter
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 
-class NaviDrawerActivity :AppCompatActivity() {
-
+class TestNaviDrawer : AppCompatActivity() {
     private var mFirebaseAuth: FirebaseAuth? = null
     private var mtvName: TextView? = null
 
-
     private val binding by lazy {
-        NaviDrawerBinding.inflate(layoutInflater)
+        NaviDrawerTestPageBinding.inflate(layoutInflater)
     }
 
+    private lateinit var naviBinding: NaviDrawerBinding
     private val viewModel by lazy {
         ViewModelProvider(this)[NaviViewModel::class.java]
     }
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
-        mtvName = binding.tvName
+        val toolbar: Toolbar = findViewById(R.id.nvt_toolbar)
+        setSupportActionBar(toolbar) // 툴바를 액티비티의 앱바로 지정
+        supportActionBar?.setDisplayHomeAsUpEnabled(true) // 드로어를 꺼낼 홈 버튼 활성화
+        supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_menu) // 홈버튼 이미지 변경
+        supportActionBar?.setDisplayShowTitleEnabled(false) // 툴바에 타이틀 안보이게
+
+
+        naviBinding = NaviDrawerBinding.bind(binding.ndtpNavView.getHeaderView(0))
+
+        mtvName = naviBinding.tvName
         mFirebaseAuth = FirebaseAuth.getInstance()
         val currentUser = mFirebaseAuth!!.currentUser
 
         viewModel.loadAllCalendar{
-            binding.ndTeamcalendarRv.apply{
+            naviBinding.ndTeamcalendarRv.apply{
                 adapter = OwnedCalendarAdapter(viewModel.getList())
                 layoutManager = LinearLayoutManager(
-                    this@NaviDrawerActivity, LinearLayoutManager.VERTICAL, false)
+                    this@TestNaviDrawer, LinearLayoutManager.VERTICAL, false)
                 adapter!!.also{that ->
                     viewModel.ownedCalendarList.observeInsert {
                         that.notifyItemInserted(it)
@@ -59,7 +71,7 @@ class NaviDrawerActivity :AppCompatActivity() {
             }
         }
 
-        binding.btnLogin.setOnClickListener{
+        naviBinding.btnLogin.setOnClickListener{
             Log.d("minseok","loginbtn")
             //로그인하기
             val intent = Intent(this, LoginActivity::class.java)
@@ -67,7 +79,7 @@ class NaviDrawerActivity :AppCompatActivity() {
             finish()
         }
 
-        binding.btnLogout.setOnClickListener {
+        naviBinding.btnLogout.setOnClickListener {
             //로그아웃하기
             mFirebaseAuth!!.signOut()
             updateUI(currentUser)
@@ -75,9 +87,7 @@ class NaviDrawerActivity :AppCompatActivity() {
             startActivity(intent)
             finish()
         }
-
     }
-
     override fun onStart() {
         super.onStart()
         Log.i("액티비티 테스트", "onStart()")
@@ -93,26 +103,25 @@ class NaviDrawerActivity :AppCompatActivity() {
         Log.i("액티비티 테스트", "updateUI")
         if (user != null) {
             // 사용자가 로그인한 경우
-            binding.tvName.text = "Hello ${user.email}!"
-            binding.btnLogin.visibility = View.GONE
-            binding.btnLogout.visibility = View.VISIBLE
+            naviBinding.tvName.text = "Hello ${user.email}!"
+            naviBinding.btnLogin.visibility = View.GONE
+            naviBinding.btnLogout.visibility = View.VISIBLE
         } else {
             // 사용자가 로그아웃한 경우 또는 로그인하지 않은 경우
-            binding.tvName.text = "로그인이 필요합니다."
-            binding.btnLogin.visibility = View.VISIBLE
-            binding.btnLogout.visibility = View.GONE
+            naviBinding.tvName.text = "로그인이 필요합니다."
+            naviBinding.btnLogin.visibility = View.VISIBLE
+            naviBinding.btnLogout.visibility = View.GONE
             //binding.tvInfo.visibility = View.GONE
         }
     }
-
     fun onClick(view: View) {
         var expandView: View? = null
         when (view) {
-            binding.ndUpDownIv -> {
-                expandView = binding.ndMycalendarLayout
+            naviBinding.ndUpDownIv -> {
+                expandView = naviBinding.ndMycalendarLayout
             }
-            binding.ndUpDown2Iv -> {
-                expandView = binding.ndTeamcalendarRv
+            naviBinding.ndUpDown2Iv -> {
+                expandView = naviBinding.ndTeamcalendarRv
             }
         }
         if(expandView!!.visibility == View.VISIBLE) {
@@ -123,5 +132,28 @@ class NaviDrawerActivity :AppCompatActivity() {
             ToggleAnimation.expand(expandView)
         }
     }
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_open_drawer, menu)
+        return true
+    }
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            android.R.id.home -> {
+                binding.ndtpDrawerLayout.openDrawer(GravityCompat.START)
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
 
+    @Deprecated("Deprecated in Java")
+    override fun onBackPressed() { //뒤로가기 처리
+        if(binding.ndtpDrawerLayout.isDrawerOpen(GravityCompat.START)){
+            binding.ndtpDrawerLayout.closeDrawers()
+            // 테스트를 위해 뒤로가기 버튼시 Toast 메시지
+            Toast.makeText(this,"back btn clicked",Toast.LENGTH_SHORT).show()
+        } else{
+            super.onBackPressed()
+        }
+    }
 }

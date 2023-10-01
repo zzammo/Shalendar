@@ -9,7 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.viewpager2.widget.ViewPager2
 import com.ddmyb.shalendar.R
 import com.ddmyb.shalendar.databinding.FragmentMonthCalendarBinding
-import com.ddmyb.shalendar.view.month.adapter.MonthCalendarAdapter
+import com.ddmyb.shalendar.view.month.adapter.MonthCalendarFragmentAdapter
 
 class MonthCalendarFragment(private val refList: List<Long>) : Fragment() {
 
@@ -22,20 +22,14 @@ class MonthCalendarFragment(private val refList: List<Long>) : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         val binding: FragmentMonthCalendarBinding =
-            DataBindingUtil.inflate(
-                inflater,
-                R.layout.fragment_month_calendar,
-                container,
-                false
-            )
+            FragmentMonthCalendarBinding.inflate(inflater)
 
         binding.pager.apply {
             orientation = ViewPager2.ORIENTATION_HORIZONTAL
-            adapter = MonthCalendarAdapter(refList, requireActivity())
+            adapter = MonthCalendarFragmentAdapter(refList, requireActivity())
+            setCurrentItem(refList.size/2, false)
+            offscreenPageLimit = 1
         }
-
-        binding.pager.setCurrentItem(refList.size/2, false)
-        binding.pager.offscreenPageLimit = 1
 
         return binding.root
     }

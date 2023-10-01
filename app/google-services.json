@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1094103918592",
+    "project_id": "shalendar-9636a",
+    "storage_bucket": "shalendar-9636a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1094103918592:android:dd06cb174fd9db44b7d0e5",
+        "android_client_info": {
+          "package_name": "com.ddmyb.shalendar"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAapGurH_hnji7wHts4j4Aj985zFRVrNbM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

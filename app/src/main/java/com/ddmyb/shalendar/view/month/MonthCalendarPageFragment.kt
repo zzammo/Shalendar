@@ -5,6 +5,7 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
@@ -14,14 +15,20 @@ import androidx.core.content.ContextCompat.getColor
 import androidx.core.view.get
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.ddmyb.shalendar.R
 import com.ddmyb.shalendar.databinding.FragmentMonthCalendarPageBinding
 import com.ddmyb.shalendar.databinding.ItemMonthDateBinding
 import com.ddmyb.shalendar.databinding.ItemMonthScheduleBinding
 import com.ddmyb.shalendar.util.CalendarFunc
 import com.ddmyb.shalendar.util.Logger
-import com.ddmyb.shalendar.view.month.data.MonthCalendarDate
+import com.ddmyb.shalendar.view.month.adapter.MonthCalendarDateScheduleRVAdapter
+import com.ddmyb.shalendar.view.month.data.MonthCalendarDateData
+import com.ddmyb.shalendar.view.month.data.MonthPageData
 import com.ddmyb.shalendar.view.month.presenter.MonthCalendarPagePresenter
+import com.islandparadise14.mintable.MinTimeTableView
+import com.islandparadise14.mintable.model.ScheduleDay
+import com.islandparadise14.mintable.model.ScheduleEntity
 import java.util.Calendar
 
 class MonthCalendarPageFragment(private val now: Long) : Fragment() {
@@ -39,9 +46,11 @@ class MonthCalendarPageFragment(private val now: Long) : Fragment() {
         logger.logD("${cal.get(Calendar.YEAR)}, ${cal.get(Calendar.MONTH)+1}")
 
         presenter = MonthCalendarPagePresenter(
-            cal.get(Calendar.YEAR),
-            cal.get(Calendar.MONTH)+1,
-            mutableListOf()
+            MonthPageData(
+                cal.get(Calendar.YEAR),
+                cal.get(Calendar.MONTH)+1,
+                mutableListOf()
+            )
         )
     }
 
@@ -50,50 +59,34 @@ class MonthCalendarPageFragment(private val now: Long) : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         val binding: FragmentMonthCalendarPageBinding =
-            DataBindingUtil.inflate(
-                inflater,
-                R.layout.fragment_month_calendar_page,
-                container,
-                false)
+            FragmentMonthCalendarPageBinding.inflate(inflater)
 
-        binding.presenter = presenter
+        binding.data = presenter.pageData
 
-        for (i in 0 until presenter.monthCalendarDateList.size) {
-            val itemBinding: ItemMonthDateBinding =
-                DataBindingUtil.inflate(
-                    inflater,
-                    R.layout.item_month_date,
-                    binding.dateLayout[i] as ViewGroup,
-                    false)
+        for (i in 0 until presenter.pageData.calendarDateList.size) {
+            val itemBinding: ItemMonthDateBinding = DataBindingUtil.bind(binding.dateLayout[i])!!
 
-            val calendarDate = presenter.monthCalendarDateList[i]
+            val calendarDate = presenter.pageData.calendarDateList[i]
+
+            itemBinding.schedules.apply {
+                layoutManager = object: LinearLayoutManager(requireContext()) {
+                    override fun canScrollVertically(): Boolean {
+                        return false
+                    }
+                }
+                adapter = MonthCalendarDateScheduleRVAdapter(calendarDate.scheduleList)
+
+            }
 
             calendarDate.scheduleList.apply {
                 this.observeChange {
-                    itemBinding.schedules.removeViewAt(it)
-                    itemBinding.schedules.addView(
-                        DataBindingUtil.inflate<ItemMonthScheduleBinding>(
-                            inflater,
-                            R.layout.item_month_schedule,
-                            itemBinding.schedules,
-                            false
-                        ).root,
-                        it
-                    )
+                    itemBinding.schedules.adapter!!.notifyItemChanged(it)
                 }
                 this.observeInsert {
-                    itemBinding.schedules.addView(
-                        DataBindingUtil.inflate<ItemMonthScheduleBinding>(
-                            inflater,
-                            R.layout.item_month_schedule,
-                            itemBinding.schedules,
-                            false
-                        ).root,
-                        it
-                    )
+                    itemBinding.schedules.adapter!!.notifyItemInserted(it)
                 }
                 this.observeRemove {
-                    itemBinding.schedules.removeViewAt(it)
+                    itemBinding.schedules.adapter!!.notifyItemRemoved(it)
                 }
             }
             presenter.loadSchedule(i)
@@ -120,16 +113,14 @@ class MonthCalendarPageFragment(private val now: Long) : Fragment() {
             }
 
             if (!presenter.isThisMonth(calendarDate)) {
-                itemBinding.root.alpha = 0.7F
+                itemBinding.root.alpha = 0.3F
             }
-
-            (binding.dateLayout[i] as ViewGroup).addView(itemBinding.root)
         }
 
         return binding.root
     }
 
-    private fun showScheduleDialog(date: MonthCalendarDate) {
+    private fun showScheduleDialog(date: MonthCalendarDateData) {
         val dialog = Dialog(requireContext())
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
         dialog.window?.setBackgroundDrawable(ColorDrawable(getColor(requireContext(), R.color.transparent)))
@@ -137,9 +128,22 @@ class MonthCalendarPageFragment(private val now: Long) : Fragment() {
 
         dialog.findViewById<TextView>(R.id.date).text = date.date.toString()
 
-        dialog.findViewById<TextView>(R.id.day_of_week).text =
-            CalendarFunc.dayOfWeekOfDate(date.year, date.month, date.date)
-
+        dialog.findViewById<TextView>(R.id.day_of_week).text = presenter.getWeekOfDay(date)
+        val timetable = dialog.findViewById<MinTimeTableView>(R.id.timetable)
+        timetable.initTable(arrayOf(""))
+        val scheduleList: ArrayList<ScheduleEntity> = ArrayList()
+        val schedule = ScheduleEntity(
+            32, //originId
+            "Database", //scheduleName
+            "IT Building 301", //roomInfo
+            ScheduleDay.MONDAY, //ScheduleDay object (MONDAY ~ SUNDAY)
+            "8:20", //startTime format: "HH:mm"
+            "10:30", //endTime  format: "HH:mm"
+            "#73fcae68", //backgroundColor (optional)
+            "#000000" //textcolor (optional)
+        )
+        scheduleList.add(schedule)
+        timetable.updateSchedules(scheduleList)
         dialog.show()
     }
 

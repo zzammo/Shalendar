@@ -1,20 +1,21 @@
 package com.ddmyb.shalendar.view.month.presenter
 
+import com.ddmyb.shalendar.util.CalendarFunc
 import com.ddmyb.shalendar.util.MutableLiveListData
-import com.ddmyb.shalendar.view.month.data.MonthCalendarDate
+import com.ddmyb.shalendar.view.month.data.MonthCalendarDateData
+import com.ddmyb.shalendar.view.month.data.MonthPageData
+import com.ddmyb.shalendar.view.month.data.MonthScheduleData
 import java.util.Calendar
 
 class MonthCalendarPagePresenter(
-    val year: Int,
-    val month: Int,
-    val monthCalendarDateList: MutableList<MonthCalendarDate>
+    val pageData: MonthPageData
 ) {
 
     private var selected: Int
 
     init {
         val cal = Calendar.getInstance()
-        cal.set(year, month-1, 1)
+        cal.set(pageData.year, pageData.month-1, 1)
 
         val dayOfWeek: Int =
             cal.get(Calendar.DAY_OF_WEEK) - 1 //해당 월에 시작하는 요일 -1 을 하면 빈칸을 구할 수 있겠죠 ?
@@ -22,9 +23,9 @@ class MonthCalendarPagePresenter(
         cal.add(Calendar.DATE, -dayOfWeek)
 
         for (j in 0 until dayOfWeek) {
-            monthCalendarDateList.add(
-                MonthCalendarDate(
-                    year,
+            pageData.calendarDateList.add(
+                MonthCalendarDateData(
+                    pageData.year,
                     cal.get(Calendar.MONTH)+1,
                     cal.get(Calendar.DATE),
                     MutableLiveListData()
@@ -33,9 +34,9 @@ class MonthCalendarPagePresenter(
             cal.add(Calendar.DATE, 1)
         }
         for (j in 1..max) {
-            monthCalendarDateList.add(
-                MonthCalendarDate(
-                    year,
+            pageData.calendarDateList.add(
+                MonthCalendarDateData(
+                    pageData.year,
                     cal.get(Calendar.MONTH)+1,
                     cal.get(Calendar.DATE),
                     MutableLiveListData()
@@ -43,10 +44,10 @@ class MonthCalendarPagePresenter(
             )
             cal.add(Calendar.DATE, 1)
         }
-        while (monthCalendarDateList.size < 6*7) {
-            monthCalendarDateList.add(
-                MonthCalendarDate(
-                    year,
+        while (pageData.calendarDateList.size < 6*7) {
+            pageData.calendarDateList.add(
+                MonthCalendarDateData(
+                    pageData.year,
                     cal.get(Calendar.MONTH)+1,
                     cal.get(Calendar.DATE),
                     MutableLiveListData()
@@ -60,6 +61,41 @@ class MonthCalendarPagePresenter(
 
     fun loadSchedule(idx: Int) {
         //TODO: load schedules
+        pageData.calendarDateList[idx].scheduleList.add(
+            MonthScheduleData(
+                "name",
+                0L,
+                1000L
+            )
+        )
+        pageData.calendarDateList[idx].scheduleList.add(
+            MonthScheduleData(
+                "name",
+                0L,
+                1000L
+            )
+        )
+        pageData.calendarDateList[idx].scheduleList.add(
+            MonthScheduleData(
+                "name",
+                0L,
+                1000L
+            )
+        )
+        pageData.calendarDateList[idx].scheduleList.add(
+            MonthScheduleData(
+                "name",
+                0L,
+                1000L
+            )
+        )
+        pageData.calendarDateList[idx].scheduleList.add(
+            MonthScheduleData(
+                "name",
+                0L,
+                1000L
+            )
+        )
     }
 
     fun selectDate(idx: Int): Int {
@@ -68,22 +104,26 @@ class MonthCalendarPagePresenter(
         return preIdx
     }
 
-    fun isSaturday(date: MonthCalendarDate): Boolean {
+    fun getWeekOfDay(date: MonthCalendarDateData): String {
+        return CalendarFunc.dayOfWeekOfDate(date.year, date.month, date.date)
+    }
+
+    fun isSaturday(date: MonthCalendarDateData): Boolean {
         val cal = Calendar.getInstance()
         cal.set(date.year, date.month-1, date.date)
         return cal.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY
     }
-    fun isSunday(date: MonthCalendarDate): Boolean {
+    fun isSunday(date: MonthCalendarDateData): Boolean {
         val cal = Calendar.getInstance()
         cal.set(date.year, date.month-1, date.date)
         return cal.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY
     }
-    fun isHoliday(date: MonthCalendarDate): Boolean {
+    fun isHoliday(date: MonthCalendarDateData): Boolean {
         return false
     }
 
-    fun isThisMonth(date: MonthCalendarDate): Boolean {
-        return date.month == month
+    fun isThisMonth(date: MonthCalendarDateData): Boolean {
+        return date.month == pageData.month
     }
 
 }

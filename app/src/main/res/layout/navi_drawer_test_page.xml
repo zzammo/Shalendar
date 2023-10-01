@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.drawerlayout.widget.DrawerLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/ndtp_drawerLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
+
+    <!--메인 레이아웃-->
+    <LinearLayout
+        android:id="@+id/ndtp_linear"
+        android:layout_width="match_parent"
+        android:layout_height = "match_parent"
+        android:orientation="vertical">
+
+        <!-- 툴바 -->
+        <include layout="@layout/navi_drawer_toolbar"/>
+
+        <!-- 메인 view -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:background="@color/black"/>
+    </LinearLayout>
+
+    <!--자식 레이아웃. Navigation Drawer-->
+    <com.google.android.material.navigation.NavigationView
+        android:id="@+id/ndtp_navView"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="left"
+        tools:ignore="RtlHardcoded"
+        app:headerLayout="@layout/navi_drawer" />
+</androidx.drawerlayout.widget.DrawerLayout>
