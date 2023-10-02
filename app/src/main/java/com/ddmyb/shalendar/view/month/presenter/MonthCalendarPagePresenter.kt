@@ -105,7 +105,16 @@ class MonthCalendarPagePresenter(
     }
 
     fun getWeekOfDay(date: MonthCalendarDateData): String {
-        return CalendarFunc.dayOfWeekOfDate(date.year, date.month, date.date)
+        val cal = Calendar.getInstance()
+        cal.set(date.year, date.month, date.date)
+        return CalendarFunc.dayOfWeekOfDate(cal.timeInMillis)
+    }
+
+    fun getHMs(schedule: MonthScheduleData): Pair<String, String> {
+        return Pair(
+            CalendarFunc.extractHM(schedule.startTime),
+            CalendarFunc.extractHM(schedule.endTime)
+        )
     }
 
     fun isSaturday(date: MonthCalendarDateData): Boolean {

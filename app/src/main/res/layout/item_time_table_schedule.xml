@@ -1,25 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
         <variable
-            name="schedule"
-            type="com.ddmyb.shalendar.view.month.data.MonthScheduleData" />
+            name="data"
+            type="com.ddmyb.shalendar.view.month.data.TimeTableScheduleData" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent"
+        android:padding="3dp" >
 
         <TextView
-            android:id="@+id/schedule_name"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:breakStrategy="high_quality"
-            android:textSize="@dimen/D_third_text"
+            android:textSize="@dimen/D_secondary_text"
+            android:text="@{data.name}"
             app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             tools:text="test"/>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
+
 </layout>

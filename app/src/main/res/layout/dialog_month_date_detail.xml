@@ -10,13 +10,14 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="500dp"
-        android:background="@drawable/month_dialog_background">
+        android:background="@drawable/month_dialog_background"
+        android:padding="10dp">
 
         <TextView
             android:id="@+id/date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="20sp"
+            android:textSize="@dimen/D_primary_text"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             tools:text="00"/>
@@ -25,25 +26,34 @@
             android:id="@+id/day_of_week"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="parent"
+            android:textSize="@dimen/D_secondary_text"
+            android:layout_marginStart="10dp"
+            app:layout_constraintBottom_toBottomOf="@id/date"
             app:layout_constraintStart_toEndOf="@id/date"
             tools:text="Mon"/>
 
         <ScrollView
+            android:id="@+id/timetable_layout"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:orientation="vertical"
             app:layout_constraintTop_toBottomOf="@id/date"
             app:layout_constraintBottom_toBottomOf="parent">
 
-            <com.islandparadise14.mintable.MinTimeTableView
+            <com.ddmyb.shalendar.view.month.TimeTableCustomView
                 android:id="@+id/timetable"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:isFullWidth="true"
-                app:isTwentyFourHourClock="true" />
+                app:isFullWidth="true" />
         </ScrollView>
 
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:src="@drawable/baseline_add_24"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/timetable_layout"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

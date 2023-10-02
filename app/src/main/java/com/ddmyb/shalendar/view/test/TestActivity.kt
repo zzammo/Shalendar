@@ -43,5 +43,10 @@ class TestActivity : AppCompatActivity() {
             val intent = Intent(this, TestNaviDrawer::class.java)
             startActivity(intent)
         }
+
+        binding.timetableTest.setOnClickListener {
+            val intent = Intent(this, TimeTableTestActivity::class.java)
+            startActivity(intent)
+        }
     }
 }
