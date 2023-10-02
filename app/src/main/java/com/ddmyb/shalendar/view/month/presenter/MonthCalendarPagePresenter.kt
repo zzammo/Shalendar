@@ -1,10 +1,11 @@
 package com.ddmyb.shalendar.view.month.presenter
 
+import android.graphics.Color
 import com.ddmyb.shalendar.util.CalendarFunc
 import com.ddmyb.shalendar.util.MutableLiveListData
 import com.ddmyb.shalendar.view.month.data.MonthCalendarDateData
 import com.ddmyb.shalendar.view.month.data.MonthPageData
-import com.ddmyb.shalendar.view.month.data.MonthScheduleData
+import com.ddmyb.shalendar.view.month.data.ScheduleData
 import java.util.Calendar
 
 class MonthCalendarPagePresenter(
@@ -62,38 +63,43 @@ class MonthCalendarPagePresenter(
     fun loadSchedule(idx: Int) {
         //TODO: load schedules
         pageData.calendarDateList[idx].scheduleList.add(
-            MonthScheduleData(
-                "name",
-                0L,
-                1000L
+            ScheduleData(
+                "n1",
+                (1000 * 60 * 60) * 3L,
+                (1000 * 60 * 60) * 4L,
+                Color.BLUE
             )
         )
         pageData.calendarDateList[idx].scheduleList.add(
-            MonthScheduleData(
-                "name",
-                0L,
-                1000L
+            ScheduleData(
+                "n2",
+                (1000 * 60 * 60) * 5L,
+                (1000 * 60 * 60) * 10L,
+                Color.RED
             )
         )
         pageData.calendarDateList[idx].scheduleList.add(
-            MonthScheduleData(
-                "name",
-                0L,
-                1000L
+            ScheduleData(
+                "n3",
+                (1000 * 60 * 60) * 12L,
+                (1000 * 60 * 60) * 14L,
+                Color.CYAN
             )
         )
         pageData.calendarDateList[idx].scheduleList.add(
-            MonthScheduleData(
-                "name",
-                0L,
-                1000L
+            ScheduleData(
+                "n4",
+                (1000 * 60 * 60) * 15L,
+                (1000 * 60 * 60) * 19L,
+                Color.GRAY
             )
         )
         pageData.calendarDateList[idx].scheduleList.add(
-            MonthScheduleData(
-                "name",
-                0L,
-                1000L
+            ScheduleData(
+                "n5",
+                (1000 * 60 * 60) * 20L,
+                ((1000 * 60 * 60) * 20.5).toLong(),
+                Color.YELLOW
             )
         )
     }
@@ -110,7 +116,7 @@ class MonthCalendarPagePresenter(
         return CalendarFunc.dayOfWeekOfDate(cal.timeInMillis)
     }
 
-    fun getHMs(schedule: MonthScheduleData): Pair<String, String> {
+    fun getHMs(schedule: ScheduleData): Pair<String, String> {
         return Pair(
             CalendarFunc.extractHM(schedule.startTime),
             CalendarFunc.extractHM(schedule.endTime)

@@ -6,12 +6,13 @@
     <data>
         <variable
             name="schedule"
-            type="com.ddmyb.shalendar.view.month.data.MonthScheduleData" />
+            type="com.ddmyb.shalendar.view.month.data.ScheduleData" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="@{schedule.color}">
 
         <TextView
             android:id="@+id/schedule_name"

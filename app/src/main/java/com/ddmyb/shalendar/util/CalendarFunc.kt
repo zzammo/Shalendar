@@ -4,6 +4,8 @@ import java.util.Calendar
 
 object CalendarFunc {
 
+    val ONE_DAY =  1000 * 60 * 60 * 24f
+
     fun dayOfWeekOfDate(timeInMills: Long): String {
         val cal = Calendar.getInstance()
         cal.timeInMillis = timeInMills

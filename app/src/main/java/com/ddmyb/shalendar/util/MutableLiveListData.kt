@@ -3,7 +3,7 @@ package com.ddmyb.shalendar.util
 import androidx.lifecycle.MutableLiveData
 
 class MutableLiveListData<T> : MutableLiveData<MutableList<T>>() {
-    private val list = mutableListOf<T>()
+    val list = mutableListOf<T>()
 
     private var insertObserver: (Int) -> Unit = {}
     private var removeObserver: (Int) -> Unit = {}

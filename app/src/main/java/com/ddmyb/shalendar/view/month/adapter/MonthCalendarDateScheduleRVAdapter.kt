@@ -5,13 +5,12 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.ddmyb.shalendar.R
-import com.ddmyb.shalendar.databinding.ItemMonthScheduleBinding
 import com.ddmyb.shalendar.util.MutableLiveListData
 import com.ddmyb.shalendar.view.month.adapter.viewHolder.MonthCalendarDateScheduleViewHolder
-import com.ddmyb.shalendar.view.month.data.MonthScheduleData
+import com.ddmyb.shalendar.view.month.data.ScheduleData
 
 class MonthCalendarDateScheduleRVAdapter(
-    val scheduleList: MutableLiveListData<MonthScheduleData>
+    val scheduleList: MutableLiveListData<ScheduleData>
 ): RecyclerView.Adapter<MonthCalendarDateScheduleViewHolder>() {
 
     override fun onCreateViewHolder(

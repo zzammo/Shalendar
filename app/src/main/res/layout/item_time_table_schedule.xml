@@ -7,13 +7,14 @@
     <data>
         <variable
             name="data"
-            type="com.ddmyb.shalendar.view.month.data.TimeTableScheduleData" />
+            type="com.ddmyb.shalendar.view.month.data.ScheduleData" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="3dp" >
+        android:padding="3dp"
+        android:background="@{data.color}">
 
         <TextView
             android:layout_width="wrap_content"
