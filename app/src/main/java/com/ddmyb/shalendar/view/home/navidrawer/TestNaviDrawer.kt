@@ -24,7 +24,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 
 class TestNaviDrawer : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
-    private var mFirebaseAuth: FirebaseAuth? = null
+    /*private var mFirebaseAuth: FirebaseAuth? = null*/
     private var mtvName: TextView? = null
 
     private val binding by lazy {

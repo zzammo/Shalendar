@@ -47,6 +47,9 @@
             android:name=".view.maptest.MapActivity"
             android:exported="false"/>
         <activity
+            android:name=".view.dialog.TestDialog"
+            android:exported="false"/>
+        <activity
             android:name=".view.home.MainActivity"
             android:exported="true">
             <intent-filter>
