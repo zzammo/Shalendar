@@ -61,6 +61,7 @@ class SchedulePresenter(
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun setStartDate(startYear: Int, startMonth: Int, startDay: Int) {
+        Log.d("startMonth", startMonth.toString())
         val startDate = LocalDate.of(startYear, startMonth, startDay)
         val startWeek = startDate.dayOfWeek.value
         view.showStartDateText(startMonth, startDay, startWeek)

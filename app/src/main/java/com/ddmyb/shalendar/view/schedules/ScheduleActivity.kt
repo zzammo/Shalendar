@@ -1,6 +1,7 @@
 package com.ddmyb.shalendar.view.schedules
 
 import android.Manifest
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
@@ -9,6 +10,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Looper
 import android.provider.Settings
+import android.util.AttributeSet
 import android.util.Log
 import android.view.View
 import android.widget.CompoundButton
@@ -62,9 +64,17 @@ class ScheduleActivity(
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContentView(R.layout.activity_schedules)
         binding = ActivitySchedulesBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        val mapFragment = supportFragmentManager
+            .findFragmentById(R.id.google_map_fragment) as SupportMapFragment
+        Log.d("mapFragment", mapFragment.toString())
+        val callBack = mapFragment.getMapAsync(this)
+        Log.d("mapFragment", callBack.toString())
+
 
         initTimeSelectionListener()
         initDateTimePicker()
@@ -73,10 +83,6 @@ class ScheduleActivity(
         initIteratorListener()
         initExpectedTimeListener()
         initSaveCancelListener()
-
-        val mapFragment = supportFragmentManager
-            .findFragmentById(R.id.map) as SupportMapFragment
-        mapFragment.getMapAsync(this)
 
 //        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 //        locationRequest = LocationRequest.create()
@@ -685,6 +691,8 @@ class ScheduleActivity(
 //        dstMarker?.remove()
 //        addLocationMarker(location, markerTitle, markerSnippet, isSource = false)
 //    }
+
+
 
     // googleMap 관련 함수
     override fun onMapReady(googleMap: GoogleMap) {

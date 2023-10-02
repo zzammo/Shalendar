@@ -16,7 +16,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         setContentView(R.layout.activity_map)
 
         val mapFragment = supportFragmentManager
-            .findFragmentById(R.id.map) as SupportMapFragment
+            .findFragmentById(R.id.google_map_fragment_test) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
     }

@@ -9,10 +9,6 @@ import com.ddmyb.shalendar.databinding.ActivityMainBinding
 import com.ddmyb.shalendar.view.maptest.MapActivity
 import com.ddmyb.shalendar.view.test.TestActivity
 import com.ddmyb.shalendar.view.schedules.ScheduleActivity
-    import com.ddmyb.shalendar.view.test.TestActivity
-    import com.ddmyb.shalendar.databinding.ActivityMonthBinding
-    import com.ddmyb.shalendar.view.month.MonthActivity
-    import com.ddmyb.shalendar.view.weekly.WeeklyCalendarActivity
 
     class MainActivity : AppCompatActivity() {
 
@@ -32,5 +28,9 @@ import com.ddmyb.shalendar.view.schedules.ScheduleActivity
             startActivity(intent)
         }
 
+        binding.mapTestButton.setOnClickListener {
+            val intent = Intent(this, MapActivity::class.java)
+            startActivity(intent)
+        }
     }
 }

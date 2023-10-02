@@ -9,17 +9,17 @@ class Schedule {
     // 일정 시작 정보
     var startHour = 8
     var startMinute = 0
-    var startMonth = 0
-    var startDay = 0
-    var startYear = 0
+    var startMonth = 1
+    var startDay = 1
+    var startYear = 2023
     var startWeek = 0
 
     // 일정이 끝나는 정보
     var endHour = 9
     var endMinute = 0
-    var endMonth = 0
-    var endDay = 0
-    var endYear = 0
+    var endMonth = 1
+    var endDay = 1
+    var endYear = 2023
     var endWeek = 0
 
     // 소요 시간
