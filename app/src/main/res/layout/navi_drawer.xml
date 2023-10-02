@@ -102,7 +102,7 @@
             android:layout_height="match_parent"
             android:layout_gravity="center_vertical"
             android:text="@string/nd_mycalendar"
-            android:textSize="15sp"
+            android:textSize="20sp"
             android:layout_marginStart="10dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -171,7 +171,7 @@
             android:layout_height="match_parent"
             android:layout_gravity="center_vertical"
             android:text="@string/nd_teamcalendar"
-            android:textSize="15sp"
+            android:textSize="20sp"
             android:layout_marginStart="10dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -179,7 +179,7 @@
 
         <ImageView
             android:id="@+id/nd_up_down2_iv"
-            android:layout_width="wrap_content"
+            android:layout_width="30dp"
             android:layout_height="30dp"
             android:src="@drawable/ic_down"
             android:layout_marginEnd="10dp"
