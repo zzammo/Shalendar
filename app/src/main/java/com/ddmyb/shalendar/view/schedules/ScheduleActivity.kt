@@ -61,7 +61,7 @@ class ScheduleActivity(
     private lateinit var resultLocation: Location
     private var isSrcCallBack = true
 
-    private val presenter: SchedulesContract.Presenter = SchedulePresenter(this, StartDateTimeDto(null, LocalDateTime.now()))
+    private val presenter: SchedulesContract.Presenter = SchedulePresenter(this, StartDateTimeDto(null, LocalDateTime.now().plusHours(3)))
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
