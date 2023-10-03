@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:map="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/layout_schedule"
     android:background="@color/bg_white"
-    android:animateLayoutChanges="true"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:animateLayoutChanges="true">
+
 
     <ScrollView
         android:id="@+id/scrollView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
         
         <LinearLayout
             android:layout_width="match_parent"
@@ -453,10 +453,11 @@
                 </LinearLayout>
 
                 <androidx.fragment.app.FragmentContainerView
-                    android:id="@+id/google_map_fragment"
+                    android:id="@+id/map"
                     android:name="com.google.android.gms.maps.SupportMapFragment"
                     android:layout_width="match_parent"
-                    android:layout_height="300dp" />
+                    android:layout_height="0dp"
+                    tools:context=".MapsActivity"/>
 
             </LinearLayout>
 
@@ -600,7 +601,6 @@
                             android:text="직접 설정" />
                     </LinearLayout>
                 </LinearLayout>
-
             </LinearLayout>
 
             <LinearLayout

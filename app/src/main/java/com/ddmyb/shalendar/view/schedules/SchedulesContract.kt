@@ -2,9 +2,8 @@ package com.ddmyb.shalendar.view.schedules
 
 import android.content.Context
 import android.location.Location
+import com.ddmyb.shalendar.domain.Schedule
 import com.google.android.gms.location.LocationCallback
-import org.json.JSONObject
-import java.time.Month
 
 interface SchedulesContract {
     interface View{
@@ -14,8 +13,8 @@ interface SchedulesContract {
         fun showStartDateText(startMonth: Int, startDay: Int, startWeek: Int)
         fun showEndDateText(endMonth: Int, endDay: Int, endWeek: Int)
 
-//        fun setSrcLocation(location: Location, markerTitle: String, markerSnippet: String?)
-//        fun setDstLocation(location: Location, markerTitle: String, markerSnippet: String?)
+        fun setSrcLocation(location: Location, markerTitle: String)
+        fun setDstLocation(location: Location, markerTitle: String)
 
     }
     interface Presenter {

@@ -4,8 +4,11 @@ import android.content.Context
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
+import com.ddmyb.shalendar.domain.Schedule
 import com.ddmyb.shalendar.view.schedules.adapter.GeoCodingService
 import com.ddmyb.shalendar.view.schedules.adapter.ScheduleService
+import com.ddmyb.shalendar.view.schedules.distance.adapter.RetrofitImpl
+import com.ddmyb.shalendar.view.schedules.utils.MeansType
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.maps.model.LatLng
@@ -17,6 +20,7 @@ class SchedulePresenter(
 
     val scheduleService: ScheduleService = ScheduleService(this)
     val geoCodingService: GeoCodingService = GeoCodingService()
+    val distanceService: RetrofitImpl = RetrofitImpl
 
     private val schedule: Schedule
     init {
@@ -30,7 +34,7 @@ class SchedulePresenter(
             }
     }
 
-    override fun getSchedule(): Schedule{
+    override fun getSchedule(): Schedule {
         return schedule
     }
 
@@ -123,7 +127,8 @@ class SchedulePresenter(
                 if (locationList.isNotEmpty()) {
                     val location = locationList.last()
                     schedule.srcPosition = schedule.srcPosition ?: LatLng(location.latitude, location.longitude)
-                    schedule.srcAddress = schedule.srcAddress ?: geoCodingService.getCurrentAddress(schedule.srcPosition!!, context)
+                    schedule.srcAddress =
+                        geoCodingService.getAddress(schedule.srcPosition!!, context).toString()
 
                     val markerSnippet = "위도:${location.latitude.toString()} 경도:${location.longitude.toString()}"
                     Log.d("googleMap example", "onLocationResult : $markerSnippet")
@@ -132,26 +137,34 @@ class SchedulePresenter(
                         schedule.srcLocation = location
                     }
 
-                    schedule.dstLocation?.let { dstLocation ->
-//                        view.setDstLocation(
-//                            dstLocation,
-//                            schedule.dstAddress!!,
-//                            "위도:${dstLocation.latitude.toString()} 경도:${dstLocation.longitude.toString()}"
-//                        )
-                    }
-
-//                    view.setSrcLocation(
-//                        schedule.srcLocation!!,
-//                        schedule.srcAddress!!,
-//                        "위도:${schedule.srcLocation!!.latitude.toString()} 경도:${schedule.srcLocation!!.longitude.toString()}"
-//                    )
+                    view.setSrcLocation(
+                        schedule.srcLocation!!,
+                        schedule.srcAddress!!
+                    )
                 }
             }
         }
     }
 
     override fun getMarkerTitle(context: Context): String? {
-        return geoCodingService.getCurrentAddress(schedule.srcPosition!!, context)
+        val currentAddress = geoCodingService.getAddress(schedule.srcPosition!!, context)
+        Log.d("currentAddress", currentAddress.toString())
+        return currentAddress
+    }
+
+    fun calExpectedTime(){
+        var timeRequired: Int? = null
+        distanceService.execute {
+            timeRequired = distanceService.getTimeRequired(
+                schedule.srcPosition!!,
+                schedule.dstPosition!!,
+                schedule.startLocalDateTime!!,
+                schedule.meansType
+            )
+            schedule.expectedStartMinute = timeRequired!!
+        }
+
+
     }
 
 }
