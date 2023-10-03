@@ -18,6 +18,7 @@ import com.ddmyb.shalendar.LoginActivity
 import com.ddmyb.shalendar.R
 import com.ddmyb.shalendar.databinding.NaviDrawerBinding
 import com.ddmyb.shalendar.databinding.NaviDrawerTestPageBinding
+import com.ddmyb.shalendar.view.dialog.CustomNewCalendarDialog
 import com.ddmyb.shalendar.view.home.navidrawer.adapter.OwnedCalendarAdapter
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
@@ -118,16 +119,8 @@ class TestNaviDrawer : AppCompatActivity(), NavigationView.OnNavigationItemSelec
         }
     }*/
     fun onClick(view: View) {
-        var expandView: View? = null
-        when (view) {
-            naviBinding.ndUpDownIv -> {
-                expandView = naviBinding.ndMycalendarLayout
-            }
-            naviBinding.ndUpDown2Iv -> {
-                expandView = naviBinding.ndTeamcalendarRv
-            }
-        }
-        if(expandView!!.visibility == View.VISIBLE) {
+        val expandView: View = naviBinding.ndTeamcalendarRv
+        if(expandView.visibility == View.VISIBLE) {
             ToggleAnimation.toggleArrow(view, true)
             ToggleAnimation.collapse(expandView)
         } else {
@@ -151,7 +144,11 @@ class TestNaviDrawer : AppCompatActivity(), NavigationView.OnNavigationItemSelec
     }
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
-            R.id.menu_add_calendar-> Toast.makeText(this,"add clicked",Toast.LENGTH_SHORT).show()
+            R.id.menu_add_calendar->{
+                Toast.makeText(this,"add clicked",Toast.LENGTH_SHORT).show()
+                CustomNewCalendarDialog().show(supportFragmentManager, "")
+                binding.ndtpDrawerLayout.closeDrawers()
+            }
         }
         return false
     }

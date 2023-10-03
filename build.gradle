@@ -2,13 +2,12 @@ buildscript {
     repositories {
         google()
         mavenCentral()
+        maven { url 'https://devrepo.kakao.com/nexus/content/groups/public/' }
     }
 
     dependencies {
         classpath "com.google.android.libraries.mapsplatform.secrets-gradle-plugin:secrets-gradle-plugin:2.0.0"
     }
-
-
 }
 
 // plugins 블록은 buildscript 블록 다음에 위치해야 합니다.
