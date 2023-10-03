@@ -5,9 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools">
     
     <data>
-        <variable
-            name="schedule"
-            type="com.ddmyb.shalendar.data.Schedule" />
+
     </data>
     
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -24,7 +22,6 @@
             android:id="@+id/schedule_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@{schedule.name}"
             android:textSize="15sp"
             android:gravity="center_vertical"
             tools:text="일정"
