@@ -3,6 +3,7 @@ package com.ddmyb.shalendar.domain
 import android.location.Location
 import android.os.Build
 import androidx.annotation.RequiresApi
+import com.ddmyb.shalendar.view.schedules.distance.model.TextValueObject
 import com.ddmyb.shalendar.view.schedules.utils.MeansType
 import com.google.android.gms.maps.model.LatLng
 import java.time.LocalDateTime
@@ -16,8 +17,7 @@ data class Schedule (
 
     // 소요 시간
     var meansType: MeansType = MeansType.NULL,
-    var costMinute: Int = 0,
-    var costText: String? = null,
+    var cost: TextValueObject? = null,
 
     // 출발 위치 + 도착 위치
     var srcLocation: Location? = null,

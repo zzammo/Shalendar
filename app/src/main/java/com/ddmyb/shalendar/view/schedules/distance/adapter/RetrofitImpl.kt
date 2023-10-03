@@ -2,6 +2,7 @@ package com.ddmyb.shalendar.view.schedules.distance.adapter
 
 import android.util.Log
 import com.ddmyb.shalendar.BuildConfig
+import com.ddmyb.shalendar.view.schedules.distance.model.TextValueObject
 import com.ddmyb.shalendar.view.schedules.distance.model.TimeRequiredResponse
 import com.ddmyb.shalendar.view.schedules.utils.MeansType
 import com.google.android.gms.maps.model.LatLng
@@ -16,7 +17,7 @@ import java.time.LocalDateTime
 
 object RetrofitImpl {
 
-    private const val URL = "https://maps.googleapis.com/maps/api/distancematrix/json"
+    private const val URL = "https://maps.googleapis.com/maps/api/distancematrix/"
     private const val API_KEY = BuildConfig.MAPS_API_KEY
 
     private val retrofit = Retrofit.Builder()
@@ -29,13 +30,16 @@ object RetrofitImpl {
     suspend fun getTimeRequired(dstLatLng: LatLng,
                         srcLatLng: LatLng,
                         dstTime: LocalDateTime,
-                        meansType: MeansType): Int{
+                        meansType: MeansType): TextValueObject{
         val dst = dstLatLng.latitude.toString() + "%2C" + dstLatLng.longitude.toString()
         val src = srcLatLng.latitude.toString() + "%2C" + srcLatLng.longitude.toString()
-        val timeRequiredResponse =
+        Log.d("meansType", meansType.toString())
+        val response =
             service.getTimeRequired(dst, src, API_KEY, dstTime.toString(), meansType.toString())
-                .execute().body()
-        return timeRequiredResponse?.rows!![0].elements[0].duration.value
+                .execute()
+        val timeRequiredResponse = response.body()
+        Log.d("response Code", response.code().toString())
+        return timeRequiredResponse?.rows!![0].elements[0].duration
     }
 
     /**
@@ -56,7 +60,7 @@ object RetrofitImpl {
                 block()
                 Log.d(TAG, "execute block end")
             } catch (e : Exception) {
-                Log.d(TAG, "execute exception\n${e.message}")
+                Log.e(TAG, "execute exception\n${e.message}")
                 ifFail()
             }
         }

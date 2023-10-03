@@ -6,7 +6,7 @@ import retrofit2.http.GET
 import retrofit2.http.Query
 
 interface RetrofitService {
-    @GET
+    @GET("json")
     fun getTimeRequired(@Query("destinations") destinations: String,
                         @Query("origins") origins: String,
                         @Query("key") key: String,

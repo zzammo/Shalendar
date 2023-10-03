@@ -4,6 +4,7 @@ import android.content.Context
 import android.location.Location
 import com.ddmyb.shalendar.domain.Schedule
 import com.google.android.gms.location.LocationCallback
+import java.time.LocalDateTime
 
 interface SchedulesContract {
     interface View{
@@ -12,9 +13,9 @@ interface SchedulesContract {
         fun showStartTimeText(startHour: Int, startMinute: Int)
         fun showStartDateText(startMonth: Int, startDay: Int, startWeek: Int)
         fun showEndDateText(endMonth: Int, endDay: Int, endWeek: Int)
-
         fun setSrcLocation(location: Location, markerTitle: String)
         fun setDstLocation(location: Location, markerTitle: String)
+        fun showTimeRequired(timeRequired: String, departureTime: LocalDateTime)
 
     }
     interface Presenter {
@@ -26,5 +27,6 @@ interface SchedulesContract {
         fun getSchedule(): Schedule
         fun getLocationCallback(context: Context): LocationCallback
         fun getMarkerTitle(context: Context): String?
+        fun calExpectedTime()
     }
 }

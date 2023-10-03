@@ -27,6 +27,7 @@ import com.ddmyb.shalendar.view.schedules.adapter.NetworkStatusService
 import com.ddmyb.shalendar.view.schedules.utils.MeansType
 import com.ddmyb.shalendar.view.schedules.utils.Permission
 import com.ddmyb.shalendar.view.schedules.utils.Permission.Companion.REQUIRED_PERMISSIONS
+import com.ddmyb.shalendar.view.schedules.utils.StartDateTimeDto
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
@@ -41,9 +42,12 @@ import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.snackbar.Snackbar
+import java.time.LocalDateTime
 
 private lateinit var binding: ActivityScheduleBinding
 private lateinit var getResult: ActivityResultLauncher<Intent>
+
+@RequiresApi(Build.VERSION_CODES.O)
 class ScheduleActivity(
     ) : AppCompatActivity(), SchedulesContract.View, OnMapReadyCallback{
 
@@ -57,9 +61,8 @@ class ScheduleActivity(
     private lateinit var resultLocation: Location
     private var isSrcCallBack = true
 
-    private val presenter: SchedulesContract.Presenter = SchedulePresenter(this, "scheduleId")
+    private val presenter: SchedulesContract.Presenter = SchedulePresenter(this, StartDateTimeDto(null, LocalDateTime.now()))
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -301,7 +304,7 @@ class ScheduleActivity(
         binding.endDateTextview.text = getDateText(endMonth, endDay, endWeek)
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
+
     fun initDateTimePicker(){
         binding.timeStartTimepicker.setOnTimeChangedListener{ _, startHour, startMinute ->
             presenter.setStartTime(startHour, startMinute)
@@ -531,12 +534,15 @@ class ScheduleActivity(
         }
     }
 
-    private var means: MeansType = MeansType.NULL
+    override fun showTimeRequired(timeRequired: String, departureTime: LocalDateTime){
+        binding.timeRequieredTextview.text = timeRequired
+        binding.preSrcTimeTextview.text = getTimeText(departureTime.hour, departureTime.minute)
+    }
 
     private fun initExpectedTimeListener(){
         binding.timeRequieredClick.setOnClickListener{
-            if (means != MeansType.NULL) {
-                // 소요 시간 계산
+            if (presenter.getSchedule().meansType != MeansType.NULL) {
+                presenter.calExpectedTime()
             } else {
                 Toast.makeText(applicationContext, "출발지 도착지 이동 수단을 모두 입력 하세요", Toast.LENGTH_SHORT)
                     .show()
@@ -546,13 +552,13 @@ class ScheduleActivity(
         binding.meansRadiogroup.setOnCheckedChangeListener{ _, button ->
             when (button) {
                 R.id.radiobutton_walk -> {
-                    means = MeansType.WALK
+                    presenter.getSchedule().meansType = MeansType.WALK
                 }
                 R.id.radiobutton_public -> {
-                    means = MeansType.PUBLIC
+                    presenter.getSchedule().meansType = MeansType.PUBLIC
                 }
                 R.id.radiobutton_car -> {
-                    means = MeansType.CAR
+                    presenter.getSchedule().meansType = MeansType.CAR
                 }
             }
         }
