@@ -6,21 +6,22 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import com.ddmyb.shalendar.domain.Schedule
 import com.ddmyb.shalendar.view.schedules.adapter.GeoCodingService
-import com.ddmyb.shalendar.view.schedules.adapter.ScheduleService
 import com.ddmyb.shalendar.view.schedules.distance.adapter.RetrofitImpl
 import com.ddmyb.shalendar.view.schedules.distance.model.TextValueObject
+import com.ddmyb.shalendar.view.schedules.utils.AlarmInfo
+import com.ddmyb.shalendar.view.schedules.utils.IterationType
 import com.ddmyb.shalendar.view.schedules.utils.StartDateTimeDto
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.maps.model.LatLng
 import java.time.LocalDate
 
+
 @RequiresApi(Build.VERSION_CODES.O)
 class SchedulePresenter(
-    val view: SchedulesContract.View,
-    private val startDateTimeDto: StartDateTimeDto) : SchedulesContract.Presenter {
+    val view: ScheduleActivity,
+    private val startDateTimeDto: StartDateTimeDto) {
 
-    private val scheduleService: ScheduleService = ScheduleService(this)
     private val geoCodingService: GeoCodingService = GeoCodingService()
 
     private val schedule: Schedule = if (startDateTimeDto.scheduleId.isNullOrEmpty()){
@@ -28,17 +29,43 @@ class SchedulePresenter(
         s.startLocalDateTime = startDateTimeDto.dateTime
         s.endLocalDateTime = s.startLocalDateTime!!.plusHours(1)
         s
-    }
-    else{
-    // repository find schedule
-    Schedule()
-    }
+    } else{
+        // repository find schedule
+        Schedule() }
+    private val alarmInfo: AlarmInfo = AlarmInfo()
+    private var iterationType: IterationType = IterationType.NO_REPEAT
 
-    override fun getSchedule(): Schedule {
+    fun getSchedule(): Schedule {
         return schedule
     }
 
-    override fun setStartTime(startHour: Int, startMinute: Int) {
+    fun getIterationType(): IterationType{
+        return iterationType
+    }
+    fun setIterationType(type: IterationType){
+        iterationType = type
+    }
+
+    fun getAlarmInfo(): AlarmInfo{
+        return alarmInfo
+    }
+    fun setAlarmInfo(){
+        alarmInfo.alarmTypes.apply {
+            replace(AlarmInfo.AlarmType.START_TIME, false)
+            replace(AlarmInfo.AlarmType.TEN_MIN_AGO, false)
+            replace(AlarmInfo.AlarmType.HOUR_AGO, false)
+            replace(AlarmInfo.AlarmType.DAY_AGO, false)
+            replace(AlarmInfo.AlarmType.CUSTOM, false)
+        }
+    }
+    fun setAlarmInfo(type: AlarmInfo.AlarmType, isChecked: Boolean){
+        alarmInfo.alarmTypes[type] = isChecked
+    }
+    fun setAlarmInfo(value: Int, index: Int){
+        alarmInfo.updateCustomTime(value, index)
+    }
+
+    fun setStartTime(startHour: Int, startMinute: Int) {
         schedule.startLocalDateTime = schedule.startLocalDateTime?.withHour(startHour)?.withMinute(startMinute)
         view.showStartTimeText(startHour, startMinute)
 
@@ -52,7 +79,7 @@ class SchedulePresenter(
             }
         }
     }
-    override fun setEndTime(endHour: Int, endMinute: Int) {
+    fun setEndTime(endHour: Int, endMinute: Int) {
         schedule.endLocalDateTime = schedule.endLocalDateTime?.withHour(endHour)?.withMinute(endMinute)
         view.showEndTimeText(endHour, endMinute)
 
@@ -69,7 +96,7 @@ class SchedulePresenter(
 
 
     @RequiresApi(Build.VERSION_CODES.O)
-    override fun setStartDate(startYear: Int, startMonth: Int, startDay: Int) {
+    fun setStartDate(startYear: Int, startMonth: Int, startDay: Int) {
         val newStartDate = schedule.startLocalDateTime?.withYear(startYear)?.withMonth(startMonth)?.withDayOfMonth(startDay)
 
         if (newStartDate != null) {
@@ -81,7 +108,7 @@ class SchedulePresenter(
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    override fun setEndDate(endYear: Int, endMonth: Int, endDay: Int) {
+    fun setEndDate(endYear: Int, endMonth: Int, endDay: Int) {
         val newEndDate = schedule.endLocalDateTime?.withYear(endYear)?.withMonth(endMonth)?.withDayOfMonth(endDay)
 
         if (newEndDate != null) {
@@ -93,7 +120,7 @@ class SchedulePresenter(
     }
 
 
-    override fun saveSchedule() {
+    fun saveSchedule() {
         TODO("Not yet implemented")
     }
 
@@ -111,7 +138,7 @@ class SchedulePresenter(
     }
 
 
-    override fun getLocationCallback(context: Context): LocationCallback {
+    fun getLocationCallback(context: Context): LocationCallback {
         return object : LocationCallback() {
             override fun onLocationResult(locationResult: LocationResult) {
                 super.onLocationResult(locationResult)
@@ -138,13 +165,13 @@ class SchedulePresenter(
         }
     }
 
-    override fun getMarkerTitle(context: Context): String? {
+    fun getMarkerTitle(context: Context): String? {
         val currentAddress = geoCodingService.getAddress(schedule.srcPosition!!, context)
         Log.d("currentAddress", currentAddress.toString())
         return currentAddress
     }
 
-    override fun calExpectedTime(){
+    fun calExpectedTime(){
         var costRequired: TextValueObject? = null
         RetrofitImpl.execute {
             costRequired = getTimeRequired(
@@ -154,7 +181,7 @@ class SchedulePresenter(
                 schedule.meansType
             )
             schedule.cost = costRequired!!
-            schedule.departureLocalDateTime = schedule.startLocalDateTime!!.minusMinutes(costRequired!!.value.toLong())
+            schedule.departureLocalDateTime = schedule.startLocalDateTime!!.minusSeconds(costRequired!!.value.toLong())
             view.showTimeRequired(costRequired!!.text, schedule.departureLocalDateTime!!)
         }
     }

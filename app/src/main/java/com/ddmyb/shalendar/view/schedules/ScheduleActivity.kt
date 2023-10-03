@@ -24,6 +24,8 @@ import com.ddmyb.shalendar.R
 import com.ddmyb.shalendar.databinding.ActivityScheduleBinding
 import com.ddmyb.shalendar.view.programmatic_autocomplete.ProgrammaticAutocompleteGeocodingActivity
 import com.ddmyb.shalendar.view.schedules.adapter.NetworkStatusService
+import com.ddmyb.shalendar.view.schedules.utils.AlarmInfo.AlarmType.*
+import com.ddmyb.shalendar.view.schedules.utils.IterationType.*
 import com.ddmyb.shalendar.view.schedules.utils.MeansType
 import com.ddmyb.shalendar.view.schedules.utils.Permission
 import com.ddmyb.shalendar.view.schedules.utils.Permission.Companion.REQUIRED_PERMISSIONS
@@ -49,7 +51,7 @@ private lateinit var getResult: ActivityResultLauncher<Intent>
 
 @RequiresApi(Build.VERSION_CODES.O)
 class ScheduleActivity(
-    ) : AppCompatActivity(), SchedulesContract.View, OnMapReadyCallback{
+    ) : AppCompatActivity(), OnMapReadyCallback{
 
 //    private val scheduleId: String = intent.getStringExtra("id")!!
 
@@ -61,7 +63,7 @@ class ScheduleActivity(
     private lateinit var resultLocation: Location
     private var isSrcCallBack = true
 
-    private val presenter: SchedulesContract.Presenter = SchedulePresenter(this, StartDateTimeDto(null, LocalDateTime.now().plusHours(3)))
+    private val presenter: SchedulePresenter = SchedulePresenter(this, StartDateTimeDto(null, LocalDateTime.now().plusHours(14)))
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,6 +72,10 @@ class ScheduleActivity(
         setContentView(binding.root)
 
         binding.map.layoutParams.height = resources.displayMetrics.widthPixels - 20
+        binding.startDateTextview.text = getDateText(presenter.getSchedule().startLocalDateTime!!.monthValue, presenter.getSchedule().startLocalDateTime!!.dayOfMonth, presenter.getSchedule().startLocalDateTime!!.dayOfWeek.value)
+        binding.startTimeTextview.text = getTimeText(presenter.getSchedule().startLocalDateTime!!.hour, presenter.getSchedule().startLocalDateTime!!.minute)
+        binding.endDateTextview.text = getDateText(presenter.getSchedule().endLocalDateTime!!.monthValue, presenter.getSchedule().endLocalDateTime!!.dayOfMonth, presenter.getSchedule().endLocalDateTime!!.dayOfWeek.value)
+        binding.endTimeTextview.text = getTimeText(presenter.getSchedule().endLocalDateTime!!.hour, presenter.getSchedule().endLocalDateTime!!.minute)
 
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
@@ -291,16 +297,16 @@ class ScheduleActivity(
         }
     }
 
-    override fun showEndTimeText(endHour: Int, endMinute: Int) {
+    fun showEndTimeText(endHour: Int, endMinute: Int) {
         binding.endTimeTextview.text = getTimeText(endHour, endMinute)
     }
-    override fun showStartTimeText(startHour: Int, startMinute: Int) {
+    fun showStartTimeText(startHour: Int, startMinute: Int) {
         binding.startTimeTextview.text = getTimeText(startHour, startMinute)
     }
-    override fun showStartDateText(startMonth: Int, startDay: Int, startWeek: Int) {
+    fun showStartDateText(startMonth: Int, startDay: Int, startWeek: Int) {
        binding.startDateTextview.text = getDateText(startMonth, startDay, startWeek)
     }
-    override fun showEndDateText(endMonth: Int, endDay: Int, endWeek: Int) {
+    fun showEndDateText(endMonth: Int, endDay: Int, endWeek: Int) {
         binding.endDateTextview.text = getDateText(endMonth, endDay, endWeek)
     }
 
@@ -321,41 +327,27 @@ class ScheduleActivity(
     }
     private fun getDateText(month: Int, day: Int, dayOfWeek: Int): String {
         val week = when (dayOfWeek) {
-            1 -> "일"
-            2 -> "월"
-            3 -> "화"
-            4 -> "수"
-            5 -> "목"
-            6 -> "금"
-            7 -> "토"
+            0 -> "일"
+            1 -> "월"
+            2 -> "화"
+            3 -> "수"
+            4 -> "목"
+            5 -> "금"
+            6 -> "토"
             else -> ""
         }
-        return "($month)월 ($day)일 ($week)"
+        return "$month 월 $day 일 ($week)"
     }
-    private fun getTimeText(hour: Int, minute: Int): String? {
-        var ret = ""
-        ret += if (hour < 12) {
-            "오전 $hour:"
+    private fun getTimeText(hour: Int, minute: Int): String {
+        val period = if (hour < 12) {
+            if (hour == 0) "오전 12:" else "오전 $hour:"
         } else {
-            "오후 " + (hour - 12).toString() + ":"
+            if (hour == 12) "오후 12:" else "오후 ${hour - 12}:"
         }
-        ret += if (minute < 10) {
-            "0$minute"
-        } else {
-            minute.toString()
-        }
-        return ret
-    }
-    private fun getCustomText(`val`: Int, index: Int): String? {
-        var ret = ""
-        ret += `val`.toString()
-        when (index) {
-            0 -> ret += "분"
-            1 -> ret += "시간"
-            2 -> ret += "일"
-            3 -> ret += "주"
-        }
-        return ret
+
+        val minuteText = if (minute < 10) "0$minute" else minute.toString()
+
+        return "$period$minuteText"
     }
 
     private val maxValues = intArrayOf(360, 99, 365, 52)
@@ -386,72 +378,43 @@ class ScheduleActivity(
         /**
          * 알람을 할지 안할지 여부를 선택
          */
-        binding.alarmSwitch.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { compoundButton, b ->
-            if (b) {
+        binding.alarmSwitch.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { _, isClicked ->
+            if (isClicked) {
                 binding.pathPanel.visibility = View.VISIBLE
             } else {
                 binding.pathPanel.visibility = View.GONE
+                presenter.setAlarmInfo()
             }
         })
     }
 
-    private var alarmTimeChecked = false
-    private val agoCheckboxes = booleanArrayOf(false, true, false, false)
-    private var customChecked = false
     private var customVal = 5
-    private var customIndex = 0 //0 분 1 시간 2 일 3 주
-    private var alarm: String? = null
+    private var customIndex = 0 //0 -> 분 1 -> 시간 -> 2 -> 일 3 -> 주
     private fun initAlarmTimeListener(){
 
         binding.alarmTimeLayout.setOnClickListener {
-            if (alarmTimeChecked) {
-                binding.alarmTimeCheckboxLayout.visibility = View.VISIBLE
-                binding.alarmTimeTextview.background = ContextCompat.getDrawable(
-                    this,
-                    R.drawable.ed_text
-                )
+
+            val isVisible = binding.alarmTimeCheckboxLayout.visibility == View.VISIBLE
+            if (isVisible) {
+                binding.alarmTimeTextview.background = ContextCompat.getDrawable(this, R.color.bg_white)
+                showAlarmTimeText()
             } else {
-                binding.alarmTimeCheckboxLayout.visibility = View.GONE
-                binding.alarmTimeTextview.setBackgroundColor(
-                    ContextCompat.getColor(
-                        this,
-                        R.color.bg_white
-                    )
-                )
-                var text = ""
-                val temp = arrayOf("일정 시작시간", "10분", "1시간", "1일")
-                for (i in 0..3) {
-                    if (agoCheckboxes[i]) {
-                        text += temp[i]
-                        text += ", "
-                    }
-                }
-                if (customChecked) {
-                    text += getCustomText(customVal, customIndex)
-                    text += ", "
-                }
-                if (text === "") {
-                    binding.alarmTimeTextview.text = "알람 설정 없음"
-                } else {
-                    text = text.substring(0, text.length - 2) + " 전"
-                    binding.alarmTimeTextview.text = text
-                }
-                alarm = text
+                binding.alarmTimeTextview.background = ContextCompat.getDrawable(this, R.drawable.ed_text)
             }
-            alarmTimeChecked = !alarmTimeChecked
+            binding.alarmTimeCheckboxLayout.visibility = if (!isVisible) View.VISIBLE else View.GONE
         }
 
         binding.checkboxOntime.setOnCheckedChangeListener{ _, isChecked ->
-            agoCheckboxes[0] = isChecked
+            presenter.setAlarmInfo(START_TIME, isChecked)
         }
         binding.checkbox10MinAgo.setOnCheckedChangeListener{ _, isChecked ->
-            agoCheckboxes[1] = isChecked
+            presenter.setAlarmInfo(TEN_MIN_AGO, isChecked)
         }
         binding.checkboxHourago.setOnCheckedChangeListener { _, isChecked ->
-            agoCheckboxes[2] = isChecked
+            presenter.setAlarmInfo(HOUR_AGO, isChecked)
         }
         binding.checkboxDayago.setOnCheckedChangeListener { _, isChecked ->
-            agoCheckboxes[3] = isChecked
+            presenter.setAlarmInfo(DAY_AGO, isChecked)
         }
 
         binding.charpicker.maxValue = 3
@@ -466,10 +429,12 @@ class ScheduleActivity(
             setNumPicker(customIndex)
             binding.numpicker.value = customVal
             binding.charpicker.value = customIndex
-            binding.checkboxCustom.text = getCustomText(customVal, customIndex)
+
+            showCustomCheckBox()
+
             binding.numpickerLayout.visibility = View.VISIBLE
-            binding.customAlramBtn.isClickable = false
-            customChecked = true
+            binding.customAlramBtn.isClickable = true
+            presenter.setAlarmInfo(CUSTOM, true)
         }
 
         binding.checkboxCustom.setOnCheckedChangeListener{ _, isChecked ->
@@ -478,25 +443,34 @@ class ScheduleActivity(
                 binding.numpicker.value = customVal
                 binding.charpicker.value = customIndex
                 binding.numpickerLayout.visibility = View.VISIBLE
-                customChecked = true
+                presenter.setAlarmInfo(customVal, customIndex)
             } else {
                 binding.numpickerLayout.visibility = View.GONE
-                customChecked = false
             }
+            presenter.setAlarmInfo(CUSTOM, isChecked)
         }
 
         binding.numpicker.setOnValueChangedListener{ _, _, value ->
             customVal = value
-            binding.checkboxCustom.text = getCustomText(customVal, customIndex)
+            showCustomCheckBox()
         }
 
         binding.charpicker.setOnValueChangedListener{ _, _, index ->
             customIndex = index
-            setNumPicker(customIndex)
-            binding.checkboxCustom.text = getCustomText(customVal, customIndex)
+            showCustomCheckBox()
         }
     }
-    private var iteratorFlag = 0
+
+    private fun showCustomCheckBox() {
+        var str = presenter.getAlarmInfo().getCustomText(customVal, customIndex)
+        str = str.substring(0, str.length - 2) + " 전"
+        binding.checkboxCustom.text = str
+    }
+
+    private fun showAlarmTimeText() {
+        binding.alarmTimeTextview.text = presenter.getAlarmInfo().toString(customVal, customIndex)
+    }
+
     private fun initIteratorListener() {
         val iteratorTextview = binding.iteratorTextview
         val iteratorRadioGroup = binding.iteratorRadioGroup
@@ -511,32 +485,30 @@ class ScheduleActivity(
             }
         }
 
-        val radioIdToOperatorFlag = mapOf(
-            R.id.radiobutton_norepeat to 0,
-            R.id.radiobutton_everyday to 1,
-            R.id.radiobutton_everyweek to 2,
-            R.id.radiobutton_everymonth to 3,
-            R.id.radiobutton_everyyear to 4
+        val iterationTypeMap = mapOf(
+            R.id.radiobutton_norepeat to NO_REPEAT,
+            R.id.radiobutton_everyday to EVERY_DAY,
+            R.id.radiobutton_everyweek to EVERY_WEEK,
+            R.id.radiobutton_everymonth to EVERY_MONTH,
+            R.id.radiobutton_everyyear to EVERY_YEAR
         )
 
-        iteratorRadioGroup.setOnCheckedChangeListener { _, checkedId ->
-            iteratorFlag = radioIdToOperatorFlag[checkedId] ?: 0
+        iteratorRadioGroup.setOnCheckedChangeListener { _, id ->
             iteratorRadioGroup.visibility = View.GONE
-            iteratorTextview.text = when (iteratorFlag) {
-                0 -> "반복 안 함"
-                1 -> "매일"
-                2 -> "매주"
-                3 -> "매월"
-                4 -> "매년"
-                else -> ""
-            }
+            iteratorTextview.text = iterationTypeMap[id].toString()
             iteratorTextview.setBackgroundColor(ContextCompat.getColor(this, R.color.bg_white))
+
+            presenter.setIterationType(iterationTypeMap[id]!!)
         }
     }
 
-    override fun showTimeRequired(timeRequired: String, departureTime: LocalDateTime){
-        binding.timeRequieredTextview.text = timeRequired
-        binding.preSrcTimeTextview.text = getTimeText(departureTime.hour, departureTime.minute)
+    fun showTimeRequired(timeRequired: String, departureTime: LocalDateTime){
+        binding.timeRequieredTextview.post {
+            binding.timeRequieredTextview.text = timeRequired
+        }
+        binding.preSrcTimeTextview.post {
+            binding.preSrcTimeTextview.text = getTimeText(departureTime.hour, departureTime.minute)
+        }
     }
 
     private fun initExpectedTimeListener(){
@@ -655,7 +627,6 @@ class ScheduleActivity(
                 Log.d("cameraUpdate", "newLatLngBounds")
                 val zoomToFitBound = zoomToFitBuilder.build()
                 val width = resources.displayMetrics.widthPixels
-                Log.d("width", width.toString())
                 CameraUpdateFactory.newLatLngBounds(zoomToFitBound, width, width, width/4)
             }
         mMap.animateCamera(cameraUpdate)
@@ -666,11 +637,11 @@ class ScheduleActivity(
             dstMarker = marker!!
         }
     }
-    override fun setSrcLocation(location: Location, markerTitle: String) {
+    fun setSrcLocation(location: Location, markerTitle: String) {
         srcMarker?.remove()
         addLocationMarker(location, markerTitle, isSource = true)
     }
-    override fun setDstLocation(location: Location, markerTitle: String) {
+    fun setDstLocation(location: Location, markerTitle: String) {
         dstMarker?.remove()
         addLocationMarker(location, markerTitle, isSource = false)
     }

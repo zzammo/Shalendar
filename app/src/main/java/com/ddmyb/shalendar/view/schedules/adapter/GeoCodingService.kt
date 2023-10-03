@@ -3,6 +3,7 @@ package com.ddmyb.shalendar.view.schedules.adapter
 import android.content.Context
 import android.location.Address
 import android.location.Geocoder
+import android.util.Log
 import android.widget.Toast
 import com.google.android.gms.maps.model.LatLng
 import java.io.IOException
@@ -18,6 +19,7 @@ class GeoCodingService {
                 1
             )
         } catch (ioException: IOException) {
+            Log.e("geoCoder", ioException.message!!)
             Toast.makeText(context, "지오코더 서비스 사용불가", Toast.LENGTH_LONG).show()
             return null
         } catch (illegalArgumentException: IllegalArgumentException) {

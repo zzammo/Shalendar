@@ -36,6 +36,7 @@ class KakaoInvite(private val context: Context) {
             context.let {
                 LinkClient.instance.defaultTemplate(context, defaultFeed) { linkResult, error ->
                     if (error != null) {
+                        //https://itstudy-mary.tistory.com/376
                         Log.e("TAG", "카카오링크 보내기 실패", error)
                     } else if (linkResult != null) {
                         Log.e("TAG", "카카오링크 보내기 성공 ${linkResult.intent}")

@@ -1,6 +1,7 @@
 package com.ddmyb.shalendar.view.schedules.distance.adapter
 
 import com.ddmyb.shalendar.view.schedules.distance.model.TimeRequiredResponse
+import org.intellij.lang.annotations.Language
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -11,5 +12,6 @@ interface RetrofitService {
                         @Query("origins") origins: String,
                         @Query("key") key: String,
                         @Query("arrival_time") arrivalTime: String,
-                        @Query("mode") mode: String): Call<TimeRequiredResponse>
+                        @Query("mode") mode: String,
+                        @Query("language") language: String = "ko"): Call<TimeRequiredResponse>
 }
