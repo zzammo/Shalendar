@@ -2,6 +2,7 @@ package com.ddmyb.shalendar.domain
 
 import android.location.Location
 import android.os.Build
+import android.provider.AlarmClock
 import androidx.annotation.RequiresApi
 import com.ddmyb.shalendar.view.schedules.distance.model.TextValueObject
 import com.ddmyb.shalendar.view.schedules.utils.MeansType
@@ -27,9 +28,15 @@ data class Schedule (
     var srcAddress: String? = null,
     var dstAddress: String? = null,
 
-    // 출발 예정 시간
+    // 출발 예정 시각
     var departureLocalDateTime: LocalDateTime? = null,
 
-    var alarm: String? = null,
+    // 알람 에정 시각
+    var alarmLocalDateTime: LocalDateTime? = null,
+
+    // 제목
+    var title: String? = null,
+
+    // 메모
     var memo: String? = null
 )
