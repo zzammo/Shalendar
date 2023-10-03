@@ -57,9 +57,11 @@
         <activity
             android:name=".view.test.TimeTableTestActivity"
             android:exported="false" />
+
         <activity
             android:name=".view.home.navidrawer.TestNaviDrawer"
             android:exported="false" />
+
         <activity
             android:name=".RegisterActivity"
             android:exported="false" />
