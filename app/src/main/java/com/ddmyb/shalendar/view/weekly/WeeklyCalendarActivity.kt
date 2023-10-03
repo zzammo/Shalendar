@@ -34,6 +34,10 @@ class WeeklyCalendarActivity : AppCompatActivity() {
         cal.set(Calendar.SECOND, 0)
         cal.set(Calendar.MILLISECOND, 0)
 
+        while (cal.get(Calendar.DAY_OF_WEEK) != 1) {
+            cal.add(Calendar.DAY_OF_MONTH, -1)
+        }
+
         val result = mutableListOf<Long>()
         cal.add(Calendar.DAY_OF_MONTH, -7*radius)
         for (i in 0..2*radius) {
