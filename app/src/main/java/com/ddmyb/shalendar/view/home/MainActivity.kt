@@ -7,6 +7,7 @@ import androidx.databinding.DataBindingUtil
 import com.ddmyb.shalendar.R
 import com.ddmyb.shalendar.databinding.ActivityMainBinding
 import com.ddmyb.shalendar.view.dialog.TestDialog
+import com.ddmyb.shalendar.util.KakaoInvite
 import com.ddmyb.shalendar.view.maptest.MapActivity
 import com.ddmyb.shalendar.view.test.TestActivity
 import com.ddmyb.shalendar.view.schedules.ScheduleActivity
