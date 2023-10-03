@@ -19,8 +19,7 @@ import java.time.LocalDateTime
 import java.time.ZoneOffset
 
 object RetrofitImpl {
-
-    private const val URL = "https://maps.googleapis.com/maps/api/distancematrix/"
+    private const val URL = "https://maps.googleapis.com/maps/api/distancematrix/json"
     private const val API_KEY = BuildConfig.MAPS_API_KEY
 
     private val retrofit = Retrofit.Builder()

@@ -1,26 +1,34 @@
 package com.ddmyb.shalendar.view.weekly
 
+import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.annotation.RequiresApi
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.ViewCompat
+import androidx.core.view.get
 import androidx.fragment.app.Fragment
 import com.ddmyb.shalendar.R
 import com.ddmyb.shalendar.data.Schedule
 import com.ddmyb.shalendar.databinding.FragmentWeeklyCalendarPageBinding
+import com.ddmyb.shalendar.view.schedules.ScheduleActivity
+import com.ddmyb.shalendar.view.schedules.utils.StartDateTimeDto
 import com.ddmyb.shalendar.view.weekly.data.WeeklyDates
+import java.time.LocalDateTime
 import java.util.Calendar
 
+@RequiresApi(Build.VERSION_CODES.O)
 class WeeklyCalendarPageFragment(private val now: Long): Fragment() {
 
     val TAG = "WeGlonD"
     private lateinit var binding: FragmentWeeklyCalendarPageBinding
     val scheduleContainers = arrayListOf<ConstraintLayout>()
-    val hoursId = arrayListOf<ArrayList<Int>>()
+    val hours = arrayListOf<ArrayList<TextView>>()
     val viewToScheduleMap = HashMap<Int, Schedule>()
     companion object {
         var pixel_1minute = 0f
@@ -43,6 +51,8 @@ class WeeklyCalendarPageFragment(private val now: Long): Fragment() {
         weeklyDates = WeeklyDates(cal.get(Calendar.MONTH)+1, getWeekNums(cal))
         binding.data = weeklyDates
 
+        createViewMap()
+
         binding.root.viewTreeObserver.addOnWindowFocusChangeListener { hasFocus ->
             pixel_1minute = binding.clPlanSunday.height / 1440f
             Log.d(TAG, "ConstlaintLayout height: " + binding.clPlanSunday.height)
@@ -55,7 +65,6 @@ class WeeklyCalendarPageFragment(private val now: Long): Fragment() {
 
     override fun onResume() {
         super.onResume()
-        createViewMap()
 
         clearScheduleViews()
 
@@ -135,13 +144,13 @@ class WeeklyCalendarPageFragment(private val now: Long): Fragment() {
         scheduleView.id = ViewCompat.generateViewId()
         viewToScheduleMap.put(scheduleView.id, schedule)
 
-        scheduleView.findViewById<TextView>(R.id.schedule_name).text = schedule.name
+//        scheduleView.findViewById<TextView>(R.id.schedule_name).text = schedule.name
 
         scheduleContainers[dayOfWeek].addView(scheduleView)
 
         val layoutParams = ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT, ConstraintLayout.LayoutParams.MATCH_CONSTRAINT)
-        layoutParams.topToTop = hoursId[dayOfWeek][startCal.get(Calendar.HOUR_OF_DAY)]
-        layoutParams.bottomToBottom = hoursId[dayOfWeek][endCal.get(Calendar.HOUR_OF_DAY)]
+        layoutParams.topToTop = hours[dayOfWeek][startCal.get(Calendar.HOUR_OF_DAY)].id
+        layoutParams.bottomToBottom = hours[dayOfWeek][endCal.get(Calendar.HOUR_OF_DAY)].id
         layoutParams.topMargin = (pixel_1minute * startCal.get(Calendar.MINUTE)).toInt()
         layoutParams.bottomMargin = (pixel_1minute * (60 - endCal.get(Calendar.MINUTE))).toInt()
 
@@ -149,7 +158,8 @@ class WeeklyCalendarPageFragment(private val now: Long): Fragment() {
 
         scheduleContainers[dayOfWeek].invalidate()
 
-        Log.d(TAG, "after y: "+ scheduleView.y)
+        Log.d(TAG, "schedule x: "+ scheduleView.x)
+        Log.d(TAG, "schedule y: "+ scheduleView.y)
 
         if (flag) {
             startCal.add(Calendar.DATE, 1)
@@ -160,51 +170,102 @@ class WeeklyCalendarPageFragment(private val now: Long): Fragment() {
             displaySchedule(schedule, startCal.timeInMillis)
         }
     }
+
+    fun blankOnLongClick(dayOfWeek: Int, hour: Int) {
+        val intent = Intent(this.requireContext(), ScheduleActivity::class.java)
+        val cal = Calendar.getInstance()
+        cal.timeInMillis = now
+        cal.add(Calendar.DATE, dayOfWeek)
+
+        val startLocalDateTime = LocalDateTime.of(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH)+1, cal.get(Calendar.DATE), hour, 0, 0)
+        intent.putExtra("StartDateTimeDto", StartDateTimeDto(null, startLocalDateTime))
+        startActivity(intent)
+    }
+
+    fun blankOnClick(dayOfWeek: Int, hour: Int) {
+        val listOfSchedule = arrayListOf<Schedule>()
+        val blankStartCal = Calendar.getInstance()
+        blankStartCal.timeInMillis = now
+        blankStartCal.add(Calendar.DAY_OF_MONTH, dayOfWeek)
+        blankStartCal.set(Calendar.HOUR_OF_DAY, hour)
+        blankStartCal.set(Calendar.MINUTE, 0)
+        val blankEndCal = Calendar.getInstance()
+        blankEndCal.timeInMillis = now
+        blankEndCal.add(Calendar.DAY_OF_MONTH, dayOfWeek)
+        blankEndCal.set(Calendar.HOUR_OF_DAY, hour)
+        blankEndCal.set(Calendar.MINUTE, 59)
+
+        for (i in 24 until scheduleContainers[dayOfWeek].childCount) {
+            val schedule = viewToScheduleMap.get(scheduleContainers[dayOfWeek].get(i).id) as Schedule
+
+            if ((blankStartCal.timeInMillis <= schedule.endTime && schedule.startTime < blankEndCal.timeInMillis)
+                || (blankStartCal.timeInMillis <= schedule.startTime && schedule.endTime <= blankEndCal.timeInMillis)) {
+                listOfSchedule.add(schedule)
+            }
+        }
+
+        for (s in listOfSchedule) {
+            Log.d(TAG,"schedule: "+s.name)
+        }
+    }
+
     private fun createViewMap() {
         scheduleContainers.clear()
         scheduleContainers.add(binding.clPlanSunday);scheduleContainers.add(binding.clPlanMonday)
         scheduleContainers.add(binding.clPlanTuesday);scheduleContainers.add(binding.clPlanWednesday)
         scheduleContainers.add(binding.clPlanThursday);scheduleContainers.add(binding.clPlanFriday);scheduleContainers.add(binding.clPlanSaturday)
 
-        hoursId.clear()
+        hours.clear()
         for (i in 1..7)
-            hoursId.add(arrayListOf())
+            hours.add(arrayListOf())
 
-        hoursId[0].add(binding.blank000.id);hoursId[0].add(binding.blank001.id);hoursId[0].add(binding.blank002.id);hoursId[0].add(binding.blank003.id);hoursId[0].add(binding.blank004.id)
-        hoursId[0].add(binding.blank005.id);hoursId[0].add(binding.blank006.id);hoursId[0].add(binding.blank007.id);hoursId[0].add(binding.blank008.id);hoursId[0].add(binding.blank009.id)
-        hoursId[0].add(binding.blank010.id);hoursId[0].add(binding.blank011.id);hoursId[0].add(binding.blank012.id);hoursId[0].add(binding.blank013.id);hoursId[0].add(binding.blank014.id)
-        hoursId[0].add(binding.blank015.id);hoursId[0].add(binding.blank016.id);hoursId[0].add(binding.blank017.id);hoursId[0].add(binding.blank018.id);hoursId[0].add(binding.blank019.id)
-        hoursId[0].add(binding.blank020.id);hoursId[0].add(binding.blank021.id);hoursId[0].add(binding.blank022.id);hoursId[0].add(binding.blank023.id)
-        hoursId[1].add(binding.blank100.id);hoursId[1].add(binding.blank101.id);hoursId[1].add(binding.blank102.id);hoursId[1].add(binding.blank103.id);hoursId[1].add(binding.blank104.id)
-        hoursId[1].add(binding.blank105.id);hoursId[1].add(binding.blank106.id);hoursId[1].add(binding.blank107.id);hoursId[1].add(binding.blank108.id);hoursId[1].add(binding.blank109.id)
-        hoursId[1].add(binding.blank110.id);hoursId[1].add(binding.blank111.id);hoursId[1].add(binding.blank112.id);hoursId[1].add(binding.blank113.id);hoursId[1].add(binding.blank114.id)
-        hoursId[1].add(binding.blank115.id);hoursId[1].add(binding.blank116.id);hoursId[1].add(binding.blank117.id);hoursId[1].add(binding.blank118.id);hoursId[1].add(binding.blank119.id)
-        hoursId[1].add(binding.blank120.id);hoursId[1].add(binding.blank121.id);hoursId[1].add(binding.blank122.id);hoursId[1].add(binding.blank123.id)
-        hoursId[2].add(binding.blank200.id);hoursId[2].add(binding.blank201.id);hoursId[2].add(binding.blank202.id);hoursId[2].add(binding.blank203.id);hoursId[2].add(binding.blank204.id)
-        hoursId[2].add(binding.blank205.id);hoursId[2].add(binding.blank206.id);hoursId[2].add(binding.blank207.id);hoursId[2].add(binding.blank208.id);hoursId[2].add(binding.blank209.id)
-        hoursId[2].add(binding.blank210.id);hoursId[2].add(binding.blank211.id);hoursId[2].add(binding.blank212.id);hoursId[2].add(binding.blank213.id);hoursId[2].add(binding.blank214.id)
-        hoursId[2].add(binding.blank215.id);hoursId[2].add(binding.blank216.id);hoursId[2].add(binding.blank217.id);hoursId[2].add(binding.blank218.id);hoursId[2].add(binding.blank219.id)
-        hoursId[2].add(binding.blank220.id);hoursId[2].add(binding.blank221.id);hoursId[2].add(binding.blank222.id);hoursId[2].add(binding.blank223.id)
-        hoursId[3].add(binding.blank300.id);hoursId[3].add(binding.blank301.id);hoursId[3].add(binding.blank302.id);hoursId[3].add(binding.blank303.id);hoursId[3].add(binding.blank304.id)
-        hoursId[3].add(binding.blank305.id);hoursId[3].add(binding.blank306.id);hoursId[3].add(binding.blank307.id);hoursId[3].add(binding.blank308.id);hoursId[3].add(binding.blank309.id)
-        hoursId[3].add(binding.blank310.id);hoursId[3].add(binding.blank311.id);hoursId[3].add(binding.blank312.id);hoursId[3].add(binding.blank313.id);hoursId[3].add(binding.blank314.id)
-        hoursId[3].add(binding.blank315.id);hoursId[3].add(binding.blank316.id);hoursId[3].add(binding.blank317.id);hoursId[3].add(binding.blank318.id);hoursId[3].add(binding.blank319.id)
-        hoursId[3].add(binding.blank320.id);hoursId[3].add(binding.blank321.id);hoursId[3].add(binding.blank322.id);hoursId[3].add(binding.blank323.id)
-        hoursId[4].add(binding.blank400.id);hoursId[4].add(binding.blank401.id);hoursId[4].add(binding.blank402.id);hoursId[4].add(binding.blank403.id);hoursId[4].add(binding.blank404.id)
-        hoursId[4].add(binding.blank405.id);hoursId[4].add(binding.blank406.id);hoursId[4].add(binding.blank407.id);hoursId[4].add(binding.blank408.id);hoursId[4].add(binding.blank409.id)
-        hoursId[4].add(binding.blank410.id);hoursId[4].add(binding.blank411.id);hoursId[4].add(binding.blank412.id);hoursId[4].add(binding.blank413.id);hoursId[4].add(binding.blank414.id)
-        hoursId[4].add(binding.blank415.id);hoursId[4].add(binding.blank416.id);hoursId[4].add(binding.blank417.id);hoursId[4].add(binding.blank418.id);hoursId[4].add(binding.blank419.id)
-        hoursId[4].add(binding.blank420.id);hoursId[4].add(binding.blank421.id);hoursId[4].add(binding.blank422.id);hoursId[4].add(binding.blank423.id)
-        hoursId[5].add(binding.blank500.id);hoursId[5].add(binding.blank501.id);hoursId[5].add(binding.blank502.id);hoursId[5].add(binding.blank503.id);hoursId[5].add(binding.blank504.id)
-        hoursId[5].add(binding.blank505.id);hoursId[5].add(binding.blank506.id);hoursId[5].add(binding.blank507.id);hoursId[5].add(binding.blank508.id);hoursId[5].add(binding.blank509.id)
-        hoursId[5].add(binding.blank510.id);hoursId[5].add(binding.blank511.id);hoursId[5].add(binding.blank512.id);hoursId[5].add(binding.blank513.id);hoursId[5].add(binding.blank514.id)
-        hoursId[5].add(binding.blank515.id);hoursId[5].add(binding.blank516.id);hoursId[5].add(binding.blank517.id);hoursId[5].add(binding.blank518.id);hoursId[5].add(binding.blank519.id)
-        hoursId[5].add(binding.blank520.id);hoursId[5].add(binding.blank521.id);hoursId[5].add(binding.blank522.id);hoursId[5].add(binding.blank523.id)
-        hoursId[6].add(binding.blank600.id);hoursId[6].add(binding.blank601.id);hoursId[6].add(binding.blank602.id);hoursId[6].add(binding.blank603.id);hoursId[6].add(binding.blank604.id)
-        hoursId[6].add(binding.blank605.id);hoursId[6].add(binding.blank606.id);hoursId[6].add(binding.blank607.id);hoursId[6].add(binding.blank608.id);hoursId[6].add(binding.blank609.id)
-        hoursId[6].add(binding.blank610.id);hoursId[6].add(binding.blank611.id);hoursId[6].add(binding.blank612.id);hoursId[6].add(binding.blank613.id);hoursId[6].add(binding.blank614.id)
-        hoursId[6].add(binding.blank615.id);hoursId[6].add(binding.blank616.id);hoursId[6].add(binding.blank617.id);hoursId[6].add(binding.blank618.id);hoursId[6].add(binding.blank619.id)
-        hoursId[6].add(binding.blank620.id);hoursId[6].add(binding.blank621.id);hoursId[6].add(binding.blank622.id);hoursId[6].add(binding.blank623.id)
+        hours[0].add(binding.blank000);hours[0].add(binding.blank001);hours[0].add(binding.blank002);hours[0].add(binding.blank003);hours[0].add(binding.blank004)
+        hours[0].add(binding.blank005);hours[0].add(binding.blank006);hours[0].add(binding.blank007);hours[0].add(binding.blank008);hours[0].add(binding.blank009)
+        hours[0].add(binding.blank010);hours[0].add(binding.blank011);hours[0].add(binding.blank012);hours[0].add(binding.blank013);hours[0].add(binding.blank014)
+        hours[0].add(binding.blank015);hours[0].add(binding.blank016);hours[0].add(binding.blank017);hours[0].add(binding.blank018);hours[0].add(binding.blank019)
+        hours[0].add(binding.blank020);hours[0].add(binding.blank021);hours[0].add(binding.blank022);hours[0].add(binding.blank023)
+        hours[1].add(binding.blank100);hours[1].add(binding.blank101);hours[1].add(binding.blank102);hours[1].add(binding.blank103);hours[1].add(binding.blank104)
+        hours[1].add(binding.blank105);hours[1].add(binding.blank106);hours[1].add(binding.blank107);hours[1].add(binding.blank108);hours[1].add(binding.blank109)
+        hours[1].add(binding.blank110);hours[1].add(binding.blank111);hours[1].add(binding.blank112);hours[1].add(binding.blank113);hours[1].add(binding.blank114)
+        hours[1].add(binding.blank115);hours[1].add(binding.blank116);hours[1].add(binding.blank117);hours[1].add(binding.blank118);hours[1].add(binding.blank119)
+        hours[1].add(binding.blank120);hours[1].add(binding.blank121);hours[1].add(binding.blank122);hours[1].add(binding.blank123)
+        hours[2].add(binding.blank200);hours[2].add(binding.blank201);hours[2].add(binding.blank202);hours[2].add(binding.blank203);hours[2].add(binding.blank204)
+        hours[2].add(binding.blank205);hours[2].add(binding.blank206);hours[2].add(binding.blank207);hours[2].add(binding.blank208);hours[2].add(binding.blank209)
+        hours[2].add(binding.blank210);hours[2].add(binding.blank211);hours[2].add(binding.blank212);hours[2].add(binding.blank213);hours[2].add(binding.blank214)
+        hours[2].add(binding.blank215);hours[2].add(binding.blank216);hours[2].add(binding.blank217);hours[2].add(binding.blank218);hours[2].add(binding.blank219)
+        hours[2].add(binding.blank220);hours[2].add(binding.blank221);hours[2].add(binding.blank222);hours[2].add(binding.blank223)
+        hours[3].add(binding.blank300);hours[3].add(binding.blank301);hours[3].add(binding.blank302);hours[3].add(binding.blank303);hours[3].add(binding.blank304)
+        hours[3].add(binding.blank305);hours[3].add(binding.blank306);hours[3].add(binding.blank307);hours[3].add(binding.blank308);hours[3].add(binding.blank309)
+        hours[3].add(binding.blank310);hours[3].add(binding.blank311);hours[3].add(binding.blank312);hours[3].add(binding.blank313);hours[3].add(binding.blank314)
+        hours[3].add(binding.blank315);hours[3].add(binding.blank316);hours[3].add(binding.blank317);hours[3].add(binding.blank318);hours[3].add(binding.blank319)
+        hours[3].add(binding.blank320);hours[3].add(binding.blank321);hours[3].add(binding.blank322);hours[3].add(binding.blank323)
+        hours[4].add(binding.blank400);hours[4].add(binding.blank401);hours[4].add(binding.blank402);hours[4].add(binding.blank403);hours[4].add(binding.blank404)
+        hours[4].add(binding.blank405);hours[4].add(binding.blank406);hours[4].add(binding.blank407);hours[4].add(binding.blank408);hours[4].add(binding.blank409)
+        hours[4].add(binding.blank410);hours[4].add(binding.blank411);hours[4].add(binding.blank412);hours[4].add(binding.blank413);hours[4].add(binding.blank414)
+        hours[4].add(binding.blank415);hours[4].add(binding.blank416);hours[4].add(binding.blank417);hours[4].add(binding.blank418);hours[4].add(binding.blank419)
+        hours[4].add(binding.blank420);hours[4].add(binding.blank421);hours[4].add(binding.blank422);hours[4].add(binding.blank423)
+        hours[5].add(binding.blank500);hours[5].add(binding.blank501);hours[5].add(binding.blank502);hours[5].add(binding.blank503);hours[5].add(binding.blank504)
+        hours[5].add(binding.blank505);hours[5].add(binding.blank506);hours[5].add(binding.blank507);hours[5].add(binding.blank508);hours[5].add(binding.blank509)
+        hours[5].add(binding.blank510);hours[5].add(binding.blank511);hours[5].add(binding.blank512);hours[5].add(binding.blank513);hours[5].add(binding.blank514)
+        hours[5].add(binding.blank515);hours[5].add(binding.blank516);hours[5].add(binding.blank517);hours[5].add(binding.blank518);hours[5].add(binding.blank519)
+        hours[5].add(binding.blank520);hours[5].add(binding.blank521);hours[5].add(binding.blank522);hours[5].add(binding.blank523)
+        hours[6].add(binding.blank600);hours[6].add(binding.blank601);hours[6].add(binding.blank602);hours[6].add(binding.blank603);hours[6].add(binding.blank604)
+        hours[6].add(binding.blank605);hours[6].add(binding.blank606);hours[6].add(binding.blank607);hours[6].add(binding.blank608);hours[6].add(binding.blank609)
+        hours[6].add(binding.blank610);hours[6].add(binding.blank611);hours[6].add(binding.blank612);hours[6].add(binding.blank613);hours[6].add(binding.blank614)
+        hours[6].add(binding.blank615);hours[6].add(binding.blank616);hours[6].add(binding.blank617);hours[6].add(binding.blank618);hours[6].add(binding.blank619)
+        hours[6].add(binding.blank620);hours[6].add(binding.blank621);hours[6].add(binding.blank622);hours[6].add(binding.blank623)
+
+        for (i in 0..6) {
+            for (j in 0..23) {
+                hours[i][j].setOnLongClickListener {
+                    blankOnLongClick(i, j)
+                    true
+                }
+                hours[i][j].setOnClickListener {
+                    blankOnClick(i, j)
+                }
+            }
+        }
 
     }
 }
