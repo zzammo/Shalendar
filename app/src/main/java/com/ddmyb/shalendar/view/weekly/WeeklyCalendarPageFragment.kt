@@ -63,6 +63,7 @@ class WeeklyCalendarPageFragment(private val now: Long): Fragment() {
     }
 
     private fun clearScheduleViews() {
+        viewToScheduleMap.clear()
         for (i in 0..6) {
             while(scheduleContainers[i].childCount > 24)
                 scheduleContainers[i].removeViewAt(24)
