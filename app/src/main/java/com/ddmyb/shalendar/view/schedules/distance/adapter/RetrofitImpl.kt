@@ -16,8 +16,7 @@ import retrofit2.http.Query
 import java.time.LocalDateTime
 
 object RetrofitImpl {
-
-    private const val URL = "https://maps.googleapis.com/maps/api/distancematrix/"
+    private const val URL = "https://maps.googleapis.com/maps/api/distancematrix/json"
     private const val API_KEY = BuildConfig.MAPS_API_KEY
 
     private val retrofit = Retrofit.Builder()
