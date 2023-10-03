@@ -22,6 +22,7 @@
     <string name="invalid_username">Not a valid username</string>
     <string name="invalid_password">Password must be >5 characters</string>
     <string name="login_failed">"Login failed"</string>
+    <string name="add_team_calendar">팀 캘린더 추가하기</string>
     <string name="title_activity_place">PlaceActivity</string>
 
     <!-- title for error alerts. -->

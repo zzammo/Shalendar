@@ -38,5 +38,15 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"/>
 
+        <Button
+            android:id="@+id/dialog_test_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="dialogTest"
+
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

@@ -106,16 +106,8 @@ class NaviDrawerActivity :AppCompatActivity() {
     }
 
     fun onClick(view: View) {
-        var expandView: View? = null
-        when (view) {
-            binding.ndUpDownIv -> {
-                expandView = binding.ndMycalendarLayout
-            }
-            binding.ndUpDown2Iv -> {
-                expandView = binding.ndTeamcalendarRv
-            }
-        }
-        if(expandView!!.visibility == View.VISIBLE) {
+        val expandView: View = binding.ndTeamcalendarRv
+        if(expandView.visibility == View.VISIBLE) {
             ToggleAnimation.toggleArrow(view, true)
             ToggleAnimation.collapse(expandView)
         } else {

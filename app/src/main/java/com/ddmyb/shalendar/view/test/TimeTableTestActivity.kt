@@ -6,8 +6,9 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.commit
 import com.ddmyb.shalendar.R
 import com.ddmyb.shalendar.databinding.ActivityTimeTableTestBinding
+import com.ddmyb.shalendar.util.MutableLiveListData
 import com.ddmyb.shalendar.view.month.TimeTableFragment
-import com.ddmyb.shalendar.view.month.data.TimeTableScheduleData
+import com.ddmyb.shalendar.view.month.data.ScheduleData
 import com.ddmyb.shalendar.view.month.data.TimeTableScheduleList
 
 class TimeTableTestActivity : AppCompatActivity() {
@@ -21,38 +22,40 @@ class TimeTableTestActivity : AppCompatActivity() {
         val timetable = TimeTableFragment(
             listOf(TimeTableScheduleList(
                 "name1",
-                mutableListOf(
-                    TimeTableScheduleData(
-                        "test1",
-                        (1000 * 60 * 60) * 7L,
-                        (1000 * 60 * 60) * 10L
-                    ),
-                    TimeTableScheduleData(
-                        "test2",
-                        (1000 * 60 * 60) * 15L,
-                        (1000 * 60 * 60) * 16L
-                    ),
-                    TimeTableScheduleData(
-                        "test3",
-                        (1000 * 60 * 60) * 18L,
-                        (1000 * 60 * 60) * 19L
-                    ),
-                )
-            ),
-                TimeTableScheduleList(
-                    "name2",
+
                     mutableListOf(
-                        TimeTableScheduleData(
+                        ScheduleData(
                             "test1",
                             (1000 * 60 * 60) * 7L,
                             (1000 * 60 * 60) * 10L
                         ),
-                        TimeTableScheduleData(
+                        ScheduleData(
+                            "test2",
+                            (1000 * 60 * 60) * 15L,
+                            (1000 * 60 * 60) * 16L
+                        ),
+                        ScheduleData(
+                            "test3",
+                            (1000 * 60 * 60) * 18L,
+                            (1000 * 60 * 60) * 19L
+                        ),
+                    )
+
+                ),
+                TimeTableScheduleList(
+                    "name2",
+                    mutableListOf(
+                        ScheduleData(
+                            "test1",
+                            (1000 * 60 * 60) * 7L,
+                            (1000 * 60 * 60) * 10L
+                        ),
+                        ScheduleData(
                             "test2",
                             (1000 * 60 * 60) * 13L,
                             (1000 * 60 * 60) * 16L
                         ),
-                        TimeTableScheduleData(
+                        ScheduleData(
                             "test3",
                             (1000 * 60 * 60) * 18L,
                             (1000 * 60 * 60) * 23L

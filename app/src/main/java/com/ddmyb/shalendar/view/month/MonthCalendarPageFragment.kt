@@ -1,5 +1,6 @@
 package com.ddmyb.shalendar.view.month
 
+import android.app.Activity
 import android.app.Dialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -9,13 +10,16 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
+import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat.getColor
 import androidx.core.view.get
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.commit
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.viewpager2.widget.ViewPager2
 import com.ddmyb.shalendar.R
 import com.ddmyb.shalendar.databinding.FragmentMonthCalendarPageBinding
 import com.ddmyb.shalendar.databinding.ItemMonthDateBinding
@@ -23,8 +27,11 @@ import com.ddmyb.shalendar.databinding.ItemMonthScheduleBinding
 import com.ddmyb.shalendar.util.CalendarFunc
 import com.ddmyb.shalendar.util.Logger
 import com.ddmyb.shalendar.view.month.adapter.MonthCalendarDateScheduleRVAdapter
+import com.ddmyb.shalendar.view.month.adapter.MonthCalendarFragmentAdapter
+import com.ddmyb.shalendar.view.month.adapter.MonthDateDetailAdapter
 import com.ddmyb.shalendar.view.month.data.MonthCalendarDateData
 import com.ddmyb.shalendar.view.month.data.MonthPageData
+import com.ddmyb.shalendar.view.month.data.TimeTableScheduleList
 import com.ddmyb.shalendar.view.month.presenter.MonthCalendarPagePresenter
 import com.islandparadise14.mintable.MinTimeTableView
 import com.islandparadise14.mintable.model.ScheduleDay
@@ -129,22 +136,43 @@ class MonthCalendarPageFragment(private val now: Long) : Fragment() {
         dialog.findViewById<TextView>(R.id.date).text = date.date.toString()
 
         dialog.findViewById<TextView>(R.id.day_of_week).text = presenter.getWeekOfDay(date)
-        val timetable = dialog.findViewById<TimeTableCustomView>(R.id.timetable)
-        timetable.initTable(arrayOf(""))
-        val scheduleList: ArrayList<ScheduleEntity> = ArrayList()
-        val schedule = ScheduleEntity(
-            32, //originId
-            "Database", //scheduleName
-            "IT Building 301", //roomInfo
-            ScheduleDay.MONDAY, //ScheduleDay object (MONDAY ~ SUNDAY)
-            "00:20", //startTime format: "HH:mm"
-            "23:30", //endTime  format: "HH:mm"
-            "#73fcae68", //backgroundColor (optional)
-            "#000000" //textcolor (optional)
-        )
-        scheduleList.add(schedule)
-        timetable.updateSchedules(scheduleList)
+//
+//        dialog.findViewById<FrameLayout>(R.id.timetable).addView(
+//            TimeTableFragment(listOf(TimeTableScheduleList(" ", date.scheduleList.list))).binding.root
+//        )
+
+        logger.logD("$parentFragment")
+        logger.logD("$childFragmentManager")
+
+//        requireActivity().supportFragmentManager.commit {
+//            add(R.id.timetable,
+//                TimeTableFragment(
+//                    listOf(TimeTableScheduleList(" ", date.scheduleList.list))
+//                )
+//            )
+//            setReorderingAllowed(true)
+//        }
+
+        dialog.findViewById<ViewPager2>(R.id.pager).apply {
+            orientation = ViewPager2.ORIENTATION_HORIZONTAL
+            adapter = MonthDateDetailAdapter(
+                requireActivity(),
+                TimeTableFragment(
+                    listOf(
+                        TimeTableScheduleList("n1", date.scheduleList.list),
+                    ),
+                    idxHeight = 50,
+                    idxWidthPercentage = 0.5f
+                )
+            )
+            setCurrentItem(0, false)
+            offscreenPageLimit = 1
+        }
+
         dialog.show()
+
+//        val dialog = MonthDateDetailDialogFragment()
+
     }
 
 }

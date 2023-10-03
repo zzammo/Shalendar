@@ -16,11 +16,12 @@ import androidx.databinding.DataBindingUtil
 import com.ddmyb.shalendar.R
 import com.ddmyb.shalendar.databinding.FragmentTimeTableBinding
 import com.ddmyb.shalendar.databinding.ItemTimeTableScheduleBinding
+import com.ddmyb.shalendar.util.CalendarFunc.ONE_DAY
 import com.ddmyb.shalendar.view.month.data.TimeTableScheduleList
 
 class TimeTableFragment(
     private val scheduleMap: List<TimeTableScheduleList>,
-    private val idxHeight: Int = 500,
+    private var idxHeight: Int = 50,
     private val idxWidthPercentage: Float = 0.7f
 ) : Fragment() {
 
@@ -36,6 +37,8 @@ class TimeTableFragment(
     ): View {
         binding = FragmentTimeTableBinding.inflate(inflater)
 
+        idxHeight = (idxHeight * (context?.resources?.displayMetrics?.density?:100f)).toInt()
+
         val idxView = PercentageCustomView(requireContext())
         val ilp = LinearLayout.LayoutParams(0, LayoutParams.WRAP_CONTENT)
         ilp.weight = idxWidthPercentage
@@ -49,7 +52,7 @@ class TimeTableFragment(
         for (time in 0 until 24) {
             val textView = TextView(requireContext())
             textView.text = time.toString()
-            textView.gravity = Gravity.CENTER
+            textView.gravity = Gravity.CENTER_HORIZONTAL
 
             val tlp = LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, 0)
             tlp.gravity = Gravity.CENTER
@@ -62,7 +65,6 @@ class TimeTableFragment(
 
         binding.topLayout.addView(idxView)
 
-        val ONE_DAY =  1000 * 60 * 60 * 24f
         for (schedules in scheduleMap) {
             val colView = PercentageCustomView(requireContext())
             val clp = LinearLayout.LayoutParams(0, LayoutParams.WRAP_CONTENT)
@@ -74,7 +76,6 @@ class TimeTableFragment(
             colView.binding.container.layoutParams = crlp
 
             colView.binding.title.text = schedules.name
-            var count = 0
             for (schedule in schedules.list) {
                 val scheduleBinding: ItemTimeTableScheduleBinding =
                     DataBindingUtil.inflate(
@@ -82,13 +83,11 @@ class TimeTableFragment(
                         R.layout.item_time_table_schedule,
                         colView.binding.container,
                         false)
-                scheduleBinding.root.setBackgroundColor(Color.BLUE+1000*count)
-                count+=1
 
                 scheduleBinding.data = schedule
 
-                val start = schedule.start % ONE_DAY
-                val end = schedule.end % ONE_DAY
+                val start = schedule.startTime % ONE_DAY
+                val end = schedule.endTime % ONE_DAY
 
                 colView.addView(scheduleBinding.root, start/ONE_DAY, (end-start)/ONE_DAY)
 //                colView.binding.container.addView(scheduleBinding.root)

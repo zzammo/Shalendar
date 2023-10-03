@@ -34,5 +34,7 @@
         android:layout_height="match_parent"
         android:layout_gravity="left"
         tools:ignore="RtlHardcoded"
-        app:headerLayout="@layout/navi_drawer" />
+        app:headerLayout="@layout/navi_drawer"
+        app:menu="@menu/menu_navi_drawer"/>
+
 </androidx.drawerlayout.widget.DrawerLayout>

@@ -55,7 +55,8 @@ dependencies {
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
-
+    //Glide
+    implementation 'com.github.bumptech.glide:glide:4.14.1'
     // DrawerLayout
     implementation 'androidx.legacy:legacy-support-v4:1.0.0' // DrawerLayout
     implementation 'com.google.android.material:material:1.0.0' // NavigationView
@@ -65,6 +66,16 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.6.1"
     // fragment
     implementation("androidx.fragment:fragment-ktx:1.6.1")
+
+    //카카오 SDK 모듈 설정
+    implementation "com.kakao.sdk:v2-user:2.9.0" // 카카오 로그인
+    implementation "com.kakao.sdk:v2-talk:2.9.0" // 친구, 메시지(카카오톡)
+    implementation "com.kakao.sdk:v2-share:2.11.2"
+    implementation "com.kakao.sdk:v2-story:2.8.3" // 카카오스토리
+    implementation "com.kakao.sdk:v2-link:2.8.3" // 메시지(카카오링크)
+    implementation "com.kakao.sdk:v2-navi:2.8.3" // 카카오내비
+    /*implementation group: 'com.kakao.sdk', name: 'kakao-message', version: '2.5.0'*/
+
 
     // viewpager
     implementation 'androidx.viewpager2:viewpager2:1.0.0'

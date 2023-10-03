@@ -18,11 +18,13 @@ import com.ddmyb.shalendar.LoginActivity
 import com.ddmyb.shalendar.R
 import com.ddmyb.shalendar.databinding.NaviDrawerBinding
 import com.ddmyb.shalendar.databinding.NaviDrawerTestPageBinding
+import com.ddmyb.shalendar.view.dialog.CustomNewCalendarDialog
 import com.ddmyb.shalendar.view.home.navidrawer.adapter.OwnedCalendarAdapter
+import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 
-class TestNaviDrawer : AppCompatActivity() {
+class TestNaviDrawer : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
     private var mFirebaseAuth: FirebaseAuth? = null
     private var mtvName: TextView? = null
 
@@ -31,6 +33,7 @@ class TestNaviDrawer : AppCompatActivity() {
     }
 
     private lateinit var naviBinding: NaviDrawerBinding
+
     private val viewModel by lazy {
         ViewModelProvider(this)[NaviViewModel::class.java]
     }
@@ -41,16 +44,18 @@ class TestNaviDrawer : AppCompatActivity() {
 
         val toolbar: Toolbar = findViewById(R.id.nvt_toolbar)
         setSupportActionBar(toolbar) // 툴바를 액티비티의 앱바로 지정
+
         supportActionBar?.setDisplayHomeAsUpEnabled(true) // 드로어를 꺼낼 홈 버튼 활성화
         supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_menu) // 홈버튼 이미지 변경
         supportActionBar?.setDisplayShowTitleEnabled(false) // 툴바에 타이틀 안보이게
 
 
         naviBinding = NaviDrawerBinding.bind(binding.ndtpNavView.getHeaderView(0))
+        binding.ndtpNavView.setNavigationItemSelectedListener(this) //navigation 리스너
 
         mtvName = naviBinding.tvName
-        mFirebaseAuth = FirebaseAuth.getInstance()
-        val currentUser = mFirebaseAuth!!.currentUser
+        //mFirebaseAuth = FirebaseAuth.getInstance()
+        //val currentUser = mFirebaseAuth!!.currentUser
 
         viewModel.loadAllCalendar{
             naviBinding.ndTeamcalendarRv.apply{
@@ -71,8 +76,7 @@ class TestNaviDrawer : AppCompatActivity() {
             }
         }
 
-        naviBinding.btnLogin.setOnClickListener{
-            Log.d("minseok","loginbtn")
+        /*naviBinding.btnLogin.setOnClickListener{
             //로그인하기
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
@@ -86,19 +90,19 @@ class TestNaviDrawer : AppCompatActivity() {
             val intent = intent
             startActivity(intent)
             finish()
-        }
+        }*/
     }
-    override fun onStart() {
+    /*override fun onStart() {
         super.onStart()
         Log.i("액티비티 테스트", "onStart()")
         mFirebaseAuth = FirebaseAuth.getInstance()
         // 사용자가 로그인되어 있는지 확인
         val currentUser = mFirebaseAuth!!.currentUser
         updateUI(currentUser) // UI 업데이트
-    }
+    }*/
 
 
-    @SuppressLint("SetTextI18n")
+    /*@SuppressLint("SetTextI18n")
     private fun updateUI(user: FirebaseUser?) {
         Log.i("액티비티 테스트", "updateUI")
         if (user != null) {
@@ -113,18 +117,10 @@ class TestNaviDrawer : AppCompatActivity() {
             naviBinding.btnLogout.visibility = View.GONE
             //binding.tvInfo.visibility = View.GONE
         }
-    }
+    }*/
     fun onClick(view: View) {
-        var expandView: View? = null
-        when (view) {
-            naviBinding.ndUpDownIv -> {
-                expandView = naviBinding.ndMycalendarLayout
-            }
-            naviBinding.ndUpDown2Iv -> {
-                expandView = naviBinding.ndTeamcalendarRv
-            }
-        }
-        if(expandView!!.visibility == View.VISIBLE) {
+        val expandView: View = naviBinding.ndTeamcalendarRv
+        if(expandView.visibility == View.VISIBLE) {
             ToggleAnimation.toggleArrow(view, true)
             ToggleAnimation.collapse(expandView)
         } else {
@@ -132,6 +128,7 @@ class TestNaviDrawer : AppCompatActivity() {
             ToggleAnimation.expand(expandView)
         }
     }
+
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_open_drawer, menu)
         return true
@@ -144,6 +141,16 @@ class TestNaviDrawer : AppCompatActivity() {
             }
             else -> super.onOptionsItemSelected(item)
         }
+    }
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        when(item.itemId){
+            R.id.menu_add_calendar->{
+                Toast.makeText(this,"add clicked",Toast.LENGTH_SHORT).show()
+                CustomNewCalendarDialog().show(supportFragmentManager, "")
+                binding.ndtpDrawerLayout.closeDrawers()
+            }
+        }
+        return false
     }
 
     @Deprecated("Deprecated in Java")
