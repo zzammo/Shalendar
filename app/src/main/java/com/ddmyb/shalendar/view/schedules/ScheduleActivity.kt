@@ -1,44 +1,43 @@
 package com.ddmyb.shalendar.view.schedules
 
-import android.Manifest
+import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationManager
 import android.os.Build
 import android.os.Bundle
-import android.os.Looper
-import android.provider.Settings
 import android.util.Log
+import android.view.MotionEvent
 import android.view.View
-import android.widget.CompoundButton
+import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.ddmyb.shalendar.R
 import com.ddmyb.shalendar.databinding.ActivityScheduleBinding
 import com.ddmyb.shalendar.view.programmatic_autocomplete.ProgrammaticAutocompleteGeocodingActivity
-import com.ddmyb.shalendar.view.schedules.adapter.NetworkStatusService
+import com.ddmyb.shalendar.view.schedules.presenter.SchedulePresenter
 import com.ddmyb.shalendar.view.schedules.utils.AlarmInfo.AlarmType.*
+import com.ddmyb.shalendar.view.schedules.utils.DateInfo
 import com.ddmyb.shalendar.view.schedules.utils.IterationType.*
+import com.ddmyb.shalendar.view.schedules.utils.MarkerInfo
 import com.ddmyb.shalendar.view.schedules.utils.MeansType
 import com.ddmyb.shalendar.view.schedules.utils.Permission
 import com.ddmyb.shalendar.view.schedules.utils.Permission.Companion.REQUIRED_PERMISSIONS
 import com.ddmyb.shalendar.view.schedules.utils.StartDateTimeDto
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationRequest
-import com.google.android.gms.location.LocationServices
-import com.google.android.gms.location.LocationSettingsRequest
+import com.ddmyb.shalendar.view.schedules.utils.TimeInfo
+import com.google.android.gms.maps.CameraUpdate
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.Marker
@@ -55,15 +54,16 @@ class ScheduleActivity(
 
 //    private val scheduleId: String = intent.getStringExtra("id")!!
 
-    private var mFusedLocationClient: FusedLocationProviderClient? = null
-    private lateinit var locationRequest: LocationRequest
+    private lateinit var presenter: SchedulePresenter
 
     private lateinit var resultLatLng: LatLng
     private lateinit var resultTitle: String
     private lateinit var resultLocation: Location
     private var isSrcCallBack = true
+    private lateinit var mMap: GoogleMap
+    private var srcMarker: Marker? = null
+    private var dstMarker: Marker? = null
 
-    private val presenter: SchedulePresenter = SchedulePresenter(this, StartDateTimeDto(null, LocalDateTime.now().plusHours(14)))
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -71,12 +71,9 @@ class ScheduleActivity(
         binding = ActivityScheduleBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.map.layoutParams.height = resources.displayMetrics.widthPixels - 20
-        binding.startDateTextview.text = getDateText(presenter.getSchedule().startLocalDateTime!!.monthValue, presenter.getSchedule().startLocalDateTime!!.dayOfMonth, presenter.getSchedule().startLocalDateTime!!.dayOfWeek.value)
-        binding.startTimeTextview.text = getTimeText(presenter.getSchedule().startLocalDateTime!!.hour, presenter.getSchedule().startLocalDateTime!!.minute)
-        binding.endDateTextview.text = getDateText(presenter.getSchedule().endLocalDateTime!!.monthValue, presenter.getSchedule().endLocalDateTime!!.dayOfMonth, presenter.getSchedule().endLocalDateTime!!.dayOfWeek.value)
-        binding.endTimeTextview.text = getTimeText(presenter.getSchedule().endLocalDateTime!!.hour, presenter.getSchedule().endLocalDateTime!!.minute)
+        presenter = SchedulePresenter(this, StartDateTimeDto(null, LocalDateTime.now().plusHours(14)), this)
 
+        binding.map.layoutParams.height = resources.displayMetrics.widthPixels - 20
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
         Log.d("mapFragment", mapFragment.toString())
@@ -89,16 +86,9 @@ class ScheduleActivity(
         initSwitchListener()
         initAlarmTimeListener()
         initIteratorListener()
-        initExpectedTimeListener()
+        initTimeRequiredListener()
         initSaveCancelListener()
-
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-        locationRequest = LocationRequest.create()
-            .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
-            .setInterval(10000)
-            .setFastestInterval(5000)
-        val builder = LocationSettingsRequest.Builder()
-        builder.addLocationRequest(locationRequest)
+        initTitleMemoListener(binding.root)
 
         getResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
             if (it.resultCode == RESULT_OK){
@@ -122,17 +112,38 @@ class ScheduleActivity(
                 presenter.getSchedule().srcPosition = resultLatLng
                 presenter.getSchedule().srcLocation = resultLocation
                 presenter.getSchedule().srcAddress = resultTitle
-                setSrcLocation(resultLocation, resultTitle)
+                presenter.updateMarker(resultLocation, resultTitle, isSource = true)
                 binding.srcAddressText.text = resultTitle
             }
             false -> {
                 presenter.getSchedule().dstPosition = resultLatLng
                 presenter.getSchedule().dstLocation = resultLocation
                 presenter.getSchedule().dstAddress = resultTitle
-                setDstLocation(resultLocation, resultTitle)
+                presenter.updateMarker(resultLocation, resultTitle, isSource = false)
                 binding.dstAddressText.text = resultTitle
             }
         }
+    }
+    private fun initTitleMemoListener(view: View) {
+        view.setOnTouchListener { _, event ->
+            if (event.action == MotionEvent.ACTION_DOWN) {
+                clearFocusAndHideKeyboard(binding.memo, binding.title)
+            }
+            false
+        }
+
+        if (view is ViewGroup) {
+            val childCount = view.childCount
+            for (i in 0 until childCount) {
+                val child = view.getChildAt(i)
+                initTitleMemoListener(child) // 재귀적으로 자식 뷰에 대해 처리
+            }
+        }
+    }
+    private fun clearFocusAndHideKeyboard(vararg views: View) {
+        views.forEach { it.clearFocus() }
+        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        views.forEach { imm.hideSoftInputFromWindow(it.windowToken, 0) }
     }
 
     private var datePickerFlag: Int = 0
@@ -140,9 +151,10 @@ class ScheduleActivity(
     private val clickedFlags = BooleanArray(4) { false }
 
     private fun initTimeSelectionListener() {
-        binding.startTimeTextview.setOnClickListener(View.OnClickListener {
+        binding.startTimeTextview.setOnClickListener{
 
             Log.d("datePickerFlag", datePickerFlag.toString())
+
             when (datePickerFlag) {
                 1 -> {
                     binding.dateStartLayout.visibility = View.GONE
@@ -176,9 +188,10 @@ class ScheduleActivity(
                     timePickerFlag = 1
                 }
             }
-        })
+        }
 
-        binding.endTimeTextview.setOnClickListener(View.OnClickListener {
+        binding.endTimeTextview.setOnClickListener{
+
             when (datePickerFlag) {
                 1 -> {
                     binding.dateStartLayout.visibility = View.GONE
@@ -210,7 +223,7 @@ class ScheduleActivity(
                     timePickerFlag = 0
                 }
             }
-        })
+        }
 
         binding.startDateTextview.setOnClickListener(View.OnClickListener {
             when (datePickerFlag) {
@@ -297,21 +310,30 @@ class ScheduleActivity(
         }
     }
 
-    fun showEndTimeText(endHour: Int, endMinute: Int) {
-        binding.endTimeTextview.text = getTimeText(endHour, endMinute)
+    fun showEndTimeText(timeInfo: TimeInfo) {
+        binding.endTimeTextview.text = timeInfo.toString()
+        binding.timeEndTimepicker.hour = timeInfo.hour
+        binding.timeEndTimepicker.minute = timeInfo.minute
+        Log.d("showEndTimeText", "execute")
     }
-    fun showStartTimeText(startHour: Int, startMinute: Int) {
-        binding.startTimeTextview.text = getTimeText(startHour, startMinute)
+    fun showStartTimeText(timeInfo: TimeInfo) {
+        binding.startTimeTextview.text = timeInfo.toString()
+        binding.timeStartTimepicker.hour = timeInfo.hour
+        binding.timeStartTimepicker.minute = timeInfo.minute
     }
-    fun showStartDateText(startMonth: Int, startDay: Int, startWeek: Int) {
-       binding.startDateTextview.text = getDateText(startMonth, startDay, startWeek)
+    fun showStartDateText(year: Int = 2023, dateInfo: DateInfo, flag: Boolean = false) {
+        binding.startDateTextview.text = dateInfo.toString()
+        if (flag) {
+            binding.dateStartDatepicker.updateDate(year, dateInfo.month - 1, dateInfo.day)
+        }
     }
-    fun showEndDateText(endMonth: Int, endDay: Int, endWeek: Int) {
-        binding.endDateTextview.text = getDateText(endMonth, endDay, endWeek)
+    fun showEndDateText(endYear: Int = 2023, dateInfo: DateInfo, flag: Boolean = false) {
+        binding.endDateTextview.text = dateInfo.toString()
+        if (flag) {
+            binding.dateEndDatepicker.updateDate(endYear, dateInfo.month - 1, dateInfo.day)
+        }
     }
-
-
-    fun initDateTimePicker(){
+    private fun initDateTimePicker(){
         binding.timeStartTimepicker.setOnTimeChangedListener{ _, startHour, startMinute ->
             presenter.setStartTime(startHour, startMinute)
         }
@@ -319,35 +341,11 @@ class ScheduleActivity(
             presenter.setEndTime(endHour, endMinute)
         }
         binding.dateStartDatepicker.setOnDateChangedListener { _, startYear, startMonth, startDay ->
-            presenter.setStartDate(startYear, startMonth, startDay)
+            presenter.setStartDate(startYear, startMonth + 1, startDay)
         }
         binding.dateEndDatepicker.setOnDateChangedListener { _, endYear, endMonth, endDay ->
-            presenter.setEndDate(endYear, endMonth, endDay)
+            presenter.setEndDate(endYear, endMonth + 1, endDay)
         }
-    }
-    private fun getDateText(month: Int, day: Int, dayOfWeek: Int): String {
-        val week = when (dayOfWeek) {
-            0 -> "일"
-            1 -> "월"
-            2 -> "화"
-            3 -> "수"
-            4 -> "목"
-            5 -> "금"
-            6 -> "토"
-            else -> ""
-        }
-        return "$month 월 $day 일 ($week)"
-    }
-    private fun getTimeText(hour: Int, minute: Int): String {
-        val period = if (hour < 12) {
-            if (hour == 0) "오전 12:" else "오전 $hour:"
-        } else {
-            if (hour == 12) "오후 12:" else "오후 ${hour - 12}:"
-        }
-
-        val minuteText = if (minute < 10) "0$minute" else minute.toString()
-
-        return "$period$minuteText"
     }
 
     private val maxValues = intArrayOf(360, 99, 365, 52)
@@ -378,14 +376,14 @@ class ScheduleActivity(
         /**
          * 알람을 할지 안할지 여부를 선택
          */
-        binding.alarmSwitch.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { _, isClicked ->
+        binding.alarmSwitch.setOnCheckedChangeListener { _, isClicked ->
             if (isClicked) {
                 binding.pathPanel.visibility = View.VISIBLE
             } else {
                 binding.pathPanel.visibility = View.GONE
                 presenter.setAlarmInfo()
             }
-        })
+        }
     }
 
     private var customVal = 5
@@ -424,8 +422,8 @@ class ScheduleActivity(
         )
         binding.charpicker.wrapSelectorWheel = false
 
-        binding.customAlramBtn.setOnClickListener{
-            binding.customAlramLayout.visibility = View.VISIBLE
+        binding.customAlarmBtn.setOnClickListener{
+            binding.customAlarmLayout.visibility = View.VISIBLE
             setNumPicker(customIndex)
             binding.numpicker.value = customVal
             binding.charpicker.value = customIndex
@@ -433,7 +431,7 @@ class ScheduleActivity(
             showCustomCheckBox()
 
             binding.numpickerLayout.visibility = View.VISIBLE
-            binding.customAlramBtn.isClickable = true
+            binding.customAlarmBtn.isClickable = true
             presenter.setAlarmInfo(CUSTOM, true)
         }
 
@@ -502,19 +500,19 @@ class ScheduleActivity(
         }
     }
 
-    fun showTimeRequired(timeRequired: String, departureTime: LocalDateTime){
+    fun showTimeRequired(timeRequired: String, timeInfo: TimeInfo){
         binding.timeRequieredTextview.post {
             binding.timeRequieredTextview.text = timeRequired
         }
         binding.preSrcTimeTextview.post {
-            binding.preSrcTimeTextview.text = getTimeText(departureTime.hour, departureTime.minute)
+            binding.preSrcTimeTextview.text = timeInfo.toString()
         }
     }
 
-    private fun initExpectedTimeListener(){
+    private fun initTimeRequiredListener(){
         binding.timeRequieredClick.setOnClickListener{
             if (presenter.getSchedule().meansType != MeansType.NULL) {
-                presenter.calExpectedTime()
+                presenter.calTimeRequired()
             } else {
                 Toast.makeText(applicationContext, "출발지 도착지 이동 수단을 모두 입력 하세요", Toast.LENGTH_SHORT)
                     .show()
@@ -535,32 +533,22 @@ class ScheduleActivity(
             }
         }
 
-        fun setClickListener(view: View) {
+        fun setAddressClickListener(view: View, isSource: Boolean) {
             view.setOnClickListener {
-                val isOnline: Boolean = NetworkStatusService.isOnline(applicationContext)
-                if (isOnline) {
-                    when (view) {
-                        binding.srcAddressText -> {
-                            Log.d("srcAddressText", "click")
-                            isSrcCallBack = true
-                        }
-                        binding.dstAddressText -> {
-                            Log.i("dstAddressText", "click")
-                            isSrcCallBack = false
-                        }
-                    }
-                    val intent = Intent(this, ProgrammaticAutocompleteGeocodingActivity::class.java)
-                    getResult.launch(intent)
-                } else {
-                    Toast.makeText(baseContext, "인터넷 연결 확인", Toast.LENGTH_SHORT).show()
-                }
+                val logTag = if (isSource) "srcAddressText" else "dstAddressText"
+                Log.d(logTag, "click")
+                presenter.loadAddressInfo(isSource, applicationContext)
             }
         }
-        binding.srcAddressText.isFocusable = false
-        binding.dstAddressText.isFocusable = false
-        setClickListener(binding.srcAddressText)
-        setClickListener(binding.dstAddressText)
+        setAddressClickListener(binding.srcAddressText, true)
+        setAddressClickListener(binding.dstAddressText, false)
     }
+    fun launchAutocompleteGeocodingActivity(isSource: Boolean){
+        isSrcCallBack = isSource
+        val intent = Intent(this, ProgrammaticAutocompleteGeocodingActivity::class.java)
+        getResult.launch(intent)
+    }
+
     private fun initSaveCancelListener(){
         binding.saveBtn.setOnClickListener(View.OnClickListener {
             presenter.saveSchedule()
@@ -588,190 +576,67 @@ class ScheduleActivity(
         }
     }
 
+    fun showUpdatedMarker(
+        markerInfo: MarkerInfo
+    ){
 
-    private lateinit var mMap: GoogleMap
-    private var srcMarker: Marker? = null
-    private var dstMarker: Marker? = null
-    private fun addLocationMarker(
-        location: Location,
-        markerTitle: String,
-        isSource: Boolean
-    ) {
-        val latLng = LatLng(location.latitude, location.longitude)
         val markerOptions = MarkerOptions()
-            .position(latLng)
-            .title(if (isSource) "출발지 : $markerTitle" else "도착지 : $markerTitle")
+            .position(markerInfo.position)
+            .title(markerInfo.title)
             .draggable(true)
-        val marker = mMap.addMarker(markerOptions)
-        marker?.showInfoWindow()
-
-        val zoomToFitBuilder = LatLngBounds.Builder()
-        zoomToFitBuilder.include(latLng)
-        var cnt = 1
-        if (isSource) {
-            presenter.getSchedule().dstPosition?.let {
-                zoomToFitBuilder.include(it)
-                cnt += 1
-            }
-        } else {
-            presenter.getSchedule().srcPosition?.let {
-                zoomToFitBuilder.include(it)
-                cnt += 1
-            }
+        val newMarker = mMap.addMarker(markerOptions)
+        newMarker?.showInfoWindow()
+        if (markerInfo.isSource){
+            srcMarker?.remove()
+            srcMarker = newMarker
+        }else {
+            dstMarker?.remove()
+            dstMarker = newMarker
         }
-        val cameraUpdate =
-            if (cnt == 1){
-                Log.d("cameraUpdate", "newLatLngZoom")
-                CameraUpdateFactory.newLatLngZoom(latLng, 15.0f)
-            } else {
-                Log.d("cameraUpdate", "newLatLngBounds")
-                val zoomToFitBound = zoomToFitBuilder.build()
-                val width = resources.displayMetrics.widthPixels
-                CameraUpdateFactory.newLatLngBounds(zoomToFitBound, width, width, width/4)
-            }
+
+
+        val cameraUpdate: CameraUpdate = if (srcMarker == null || dstMarker == null){
+            Log.d("cameraUpdate", "newLatLngZoom")
+            CameraUpdateFactory.newLatLngZoom(newMarker!!.position, 15.0f)
+        } else{
+            Log.d("cameraUpdate", "newLatLngBounds")
+            val zoomToFitBuilder = LatLngBounds.Builder()
+            zoomToFitBuilder.include(srcMarker!!.position)
+            zoomToFitBuilder.include(dstMarker!!.position)
+            val zoomToFitBound = zoomToFitBuilder.build()
+            val width = resources.displayMetrics.widthPixels
+            CameraUpdateFactory.newLatLngBounds(zoomToFitBound, width, width, width/4)
+        }
+
         mMap.animateCamera(cameraUpdate)
-
-        if (isSource) {
-            srcMarker = marker!!
-        } else {
-            dstMarker = marker!!
-        }
-    }
-    fun setSrcLocation(location: Location, markerTitle: String) {
-        srcMarker?.remove()
-        addLocationMarker(location, markerTitle, isSource = true)
-    }
-    fun setDstLocation(location: Location, markerTitle: String) {
-        dstMarker?.remove()
-        addLocationMarker(location, markerTitle, isSource = false)
-    }
-
-
-
-    // googleMap 관련 함수
-    override fun onMapReady(googleMap: GoogleMap) {
-        mMap = googleMap
-        setDefaultLocation()
-        if (hasLocationPermissions()) {
-            startLocationUpdates()
-        } else {
-            requestLocationPermissions()
-        }
-        configureMapUI()
-    }
-    private fun hasLocationPermissions(): Boolean {
-        val hasFineLocationPermission = ContextCompat.checkSelfPermission(
-            this,
-            Manifest.permission.ACCESS_FINE_LOCATION
-        ) == PackageManager.PERMISSION_GRANTED
-        val hasCoarseLocationPermission = ContextCompat.checkSelfPermission(
-            this,
-            Manifest.permission.ACCESS_COARSE_LOCATION
-        ) == PackageManager.PERMISSION_GRANTED
-
-        return hasFineLocationPermission && hasCoarseLocationPermission
-    }
-    private fun requestLocationPermissions() {
-        if (ActivityCompat.shouldShowRequestPermissionRationale(
-                this,
-                REQUIRED_PERMISSIONS[0]
-            )
-        ) {
-            // 사용자에게 퍼미션 요청 이유를 설명해줄 수 있는 경우
-            Snackbar.make(
-                findViewById(R.id.map), "이 앱을 실행하려면 위치 접근 권한이 필요합니다.",
-                Snackbar.LENGTH_INDEFINITE
-            )
-                .setAction("확인") {
-                    ActivityCompat.requestPermissions(
-                        this, REQUIRED_PERMISSIONS,
-                        Permission.PERMISSIONS_REQUEST_CODE
-                    )
-                }.show()
-        } else {
-            // 사용자에게 퍼미션 요청 이유를 설명할 필요 없는 경우
-            ActivityCompat.requestPermissions(
-                this, REQUIRED_PERMISSIONS,
-                Permission.PERMISSIONS_REQUEST_CODE
-            )
-        }
-    }
-    private fun configureMapUI() {
-        mMap.uiSettings.isMyLocationButtonEnabled = true
-        mMap.setOnMapClickListener {
-            Log.d("googleMap Click", "onMapClick")
-        }
-    }
-    private fun setDefaultLocation() {
-        val DEFAULT_LOCATION = LatLng(37.56, 126.97)
-        val markerTitle = "위치정보 가져올 수 없음"
-        val markerSnippet = "위치 퍼미션과 GPS 활성 요부 확인하세요"
-        srcMarker?.remove()
-        val markerOptions = MarkerOptions()
-            .position(DEFAULT_LOCATION)
-            .title(markerTitle)
-            .snippet(markerSnippet)
-            .draggable(true)
-            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
-        srcMarker = mMap.addMarker(markerOptions)!!
-        val cameraUpdate = CameraUpdateFactory.newLatLngZoom(DEFAULT_LOCATION, 15f)
-        mMap.moveCamera(cameraUpdate)
     }
     private fun checkLocationServicesStatus(): Boolean {
         val locationManager = getSystemService(LOCATION_SERVICE) as LocationManager
         return (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
                 || locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER))
     }
-    private fun startLocationUpdates() {
-        if (!checkLocationServicesStatus()) {
-            showPermissionDialog()
-        } else {
-            val hasFineLocationPermission = ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            )
-            val hasCoarseLocationPermission = ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            )
-            if (hasFineLocationPermission != PackageManager.PERMISSION_GRANTED ||
-                hasCoarseLocationPermission != PackageManager.PERMISSION_GRANTED
-            ) {
-                return
-            }
-            mFusedLocationClient?.requestLocationUpdates(
-                locationRequest!!,
-                presenter.getLocationCallback(applicationContext),
-                Looper.myLooper()
-            )
-            if (Permission.checkPermission(applicationContext)) {
-                mMap.isMyLocationEnabled = true
-            }
-        }
-    }
-    private fun showPermissionDialog() {
-        val builder = AlertDialog.Builder(this)
-        builder.setTitle("위치 서비스 비활성화")
-        builder.setMessage(
-            """
-            앱을 사용하기 위해서는 위치 서비스가 필요합니다.
-            위치 설정을 수정하실래요?
-            """.trimIndent()
-        )
-        builder.setCancelable(true)
-        builder.setPositiveButton("설정") { _, _ ->
-            val callGPSSettingIntent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
-            startActivityForResult(
-                callGPSSettingIntent,
-                Permission.GPS_ENABLE_REQUEST_CODE
-            )
-        }
-        builder.setNegativeButton(
-            "취소"
-        ) { dialog, _ -> dialog.cancel() }
-        builder.create().show()
-    }
+    @SuppressLint("MissingPermission")
+    override fun onMapReady(googleMap: GoogleMap) {
+        mMap = googleMap
 
+        presenter.requestLocationUpdate(applicationContext, checkLocationServicesStatus())
+
+        mMap.uiSettings.isMyLocationButtonEnabled = true
+        mMap.setOnMapClickListener {
+            Log.d("googleMap Click", "onMapClick")
+        }
+    }
+    fun showLocationPermissionsSnackBar(){
+        Snackbar.make(
+            binding.map, "위치 접근 권한이 필요합니다.",
+            Snackbar.LENGTH_INDEFINITE
+        ).setAction("확인") {
+            ActivityCompat.requestPermissions(
+                this, REQUIRED_PERMISSIONS,
+                Permission.PERMISSIONS_REQUEST_CODE
+            )
+        }.show()
+    }
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
@@ -782,33 +647,11 @@ class ScheduleActivity(
             grantResults.size == REQUIRED_PERMISSIONS.size
         ) {
             val allPermissionsGranted = grantResults.all { it == PackageManager.PERMISSION_GRANTED }
-
             if (allPermissionsGranted) {
-                // 모든 퍼미션을 허용한 경우
-                startLocationUpdates()
+                presenter.requestLocationUpdate(applicationContext, checkLocationServicesStatus())
             } else {
-                // 퍼미션 거부한 경우
-                val shouldShowRationale = ActivityCompat.shouldShowRequestPermissionRationale(
-                    this, REQUIRED_PERMISSIONS[0]
-                ) || ActivityCompat.shouldShowRequestPermissionRationale(
-                    this, REQUIRED_PERMISSIONS[1]
-                )
-
-                val message = if (shouldShowRationale) {
-                    // 사용자에게 퍼미션 요청 이유를 설명할 수 있는 경우
-                    "퍼미션이 거부되었습니다. 앱을 다시 실행하여 퍼미션을 허용해주세요."
-                } else {
-                    // "다시 묻지 않음"을 사용자가 체크하고 거부한 경우
-                    "퍼미션이 거부되었습니다. 설정(앱 정보)에서 퍼미션을 허용해야 합니다."
-                }
-
-                Snackbar.make(
-                    findViewById(R.id.map), message,
-                    Snackbar.LENGTH_INDEFINITE
-                ).setAction("확인") { finish() }.show()
+                showLocationPermissionsSnackBar()
             }
         }
     }
-
-
 }

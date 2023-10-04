@@ -3,7 +3,6 @@ package com.ddmyb.shalendar.view.schedules.utils
 import android.os.Build
 import androidx.annotation.RequiresApi
 import com.ddmyb.shalendar.view.schedules.utils.AlarmInfo.AlarmType.*
-import java.time.LocalDateTime
 
 @RequiresApi(Build.VERSION_CODES.O)
 class AlarmInfo {

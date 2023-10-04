@@ -1,12 +1,11 @@
-package com.ddmyb.shalendar.view.schedules.distance.adapter
+package com.ddmyb.shalendar.view.schedules.model.service.distance_matrix
 
-import com.ddmyb.shalendar.view.schedules.distance.model.TimeRequiredResponse
-import org.intellij.lang.annotations.Language
+import com.ddmyb.shalendar.view.schedules.model.data.google_distance_matrix.TimeRequiredResponse
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Query
 
-interface RetrofitService {
+interface DistanceMatrixService {
     @GET("json")
     fun getTimeRequired(@Query("destinations") destinations: String,
                         @Query("origins") origins: String,
