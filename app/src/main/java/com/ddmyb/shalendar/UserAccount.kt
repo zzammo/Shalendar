@@ -1,9 +1,9 @@
 package com.ddmyb.shalendar
 
-/**
- * 사용자 계정 정보 모델 클라스
- */
+//사용자 계정 정보 모델 클라스
 class UserAccount {
+    @JvmField
+    var nickName: String? = null    //닉네임
     @JvmField
     var idToken: String? = null //고유토큰
     @JvmField
