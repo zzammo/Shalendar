@@ -1,6 +1,4 @@
-package com.ddmyb.shalendar.view.schedules.distance.model
-
-import com.ddmyb.shalendar.view.schedules.distance.model.DistanceMatrixRow
+package com.ddmyb.shalendar.view.schedules.model.data.google_distance_matrix
 
 data class TimeRequiredResponse(
     var destination_addresses: Array<String>,

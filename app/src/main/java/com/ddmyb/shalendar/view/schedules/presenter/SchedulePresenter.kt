@@ -1,16 +1,27 @@
-package com.ddmyb.shalendar.view.schedules
+package com.ddmyb.shalendar.view.schedules.presenter
 
+import android.Manifest
+import android.app.Activity
 import android.content.Context
+import android.content.pm.PackageManager
+import android.location.Location
 import android.os.Build
 import android.util.Log
+import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.core.content.ContextCompat
 import com.ddmyb.shalendar.domain.Schedule
-import com.ddmyb.shalendar.view.schedules.adapter.GeoCodingService
-import com.ddmyb.shalendar.view.schedules.distance.adapter.RetrofitImpl
-import com.ddmyb.shalendar.view.schedules.distance.model.TextValueObject
+import com.ddmyb.shalendar.view.schedules.ScheduleActivity
+import com.ddmyb.shalendar.view.schedules.model.service.GeoCodingService
+import com.ddmyb.shalendar.view.schedules.model.service.NetworkStatusService
+import com.ddmyb.shalendar.view.schedules.model.service.distance_matrix.GoogleDistanceMatrixService
+import com.ddmyb.shalendar.view.schedules.model.service.fused_location.FusedLocationService
 import com.ddmyb.shalendar.view.schedules.utils.AlarmInfo
+import com.ddmyb.shalendar.view.schedules.utils.DateInfo
 import com.ddmyb.shalendar.view.schedules.utils.IterationType
+import com.ddmyb.shalendar.view.schedules.utils.MarkerInfo
 import com.ddmyb.shalendar.view.schedules.utils.StartDateTimeDto
+import com.ddmyb.shalendar.view.schedules.utils.TimeInfo
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.maps.model.LatLng
@@ -18,22 +29,37 @@ import java.time.LocalDate
 
 
 @RequiresApi(Build.VERSION_CODES.O)
-class SchedulePresenter(
-    val view: ScheduleActivity,
-    private val startDateTimeDto: StartDateTimeDto) {
+class SchedulePresenter {
 
     private val geoCodingService: GeoCodingService = GeoCodingService()
+    private val fusedLocationService: FusedLocationService
 
-    private val schedule: Schedule = if (startDateTimeDto.scheduleId.isNullOrEmpty()){
-        val s = Schedule()
-        s.startLocalDateTime = startDateTimeDto.dateTime
-        s.endLocalDateTime = s.startLocalDateTime!!.plusHours(1)
-        s
-    } else{
-        // repository find schedule
-        Schedule() }
+    private val view: ScheduleActivity
+
+    private val schedule: Schedule
+
     private val alarmInfo: AlarmInfo = AlarmInfo()
     private var iterationType: IterationType = IterationType.NO_REPEAT
+
+    constructor(view: ScheduleActivity,
+                startDateTimeDto: StartDateTimeDto,
+                activity: Activity){
+        this.view = view
+        this.fusedLocationService = FusedLocationService(activity)
+        this.schedule = if (startDateTimeDto.scheduleId.isNullOrEmpty()){
+            val s = Schedule()
+            s.startLocalDateTime = startDateTimeDto.dateTime
+            s.endLocalDateTime = s.startLocalDateTime!!.plusHours(1)
+            view.showStartTimeText(TimeInfo( s.startLocalDateTime!!.hour, s.startLocalDateTime!!.minute))
+            view.showEndTimeText(TimeInfo(s.endLocalDateTime!!.hour, s.endLocalDateTime!!.minute))
+            view.showStartDateText(s.startLocalDateTime!!.year, DateInfo(s.startLocalDateTime!!.monthValue, s.startLocalDateTime!!.dayOfMonth, s.startLocalDateTime!!.dayOfWeek.value), true)
+            view.showEndDateText(s.endLocalDateTime!!.year, DateInfo(s.endLocalDateTime!!.monthValue, s.endLocalDateTime!!.dayOfMonth, s.endLocalDateTime!!.dayOfWeek.value), true)
+            s
+        } else{
+            // repository find schedule
+            Schedule()
+        }
+    }
 
     fun getSchedule(): Schedule {
         return schedule
@@ -67,7 +93,7 @@ class SchedulePresenter(
 
     fun setStartTime(startHour: Int, startMinute: Int) {
         schedule.startLocalDateTime = schedule.startLocalDateTime?.withHour(startHour)?.withMinute(startMinute)
-        view.showStartTimeText(startHour, startMinute)
+        view.showStartTimeText(TimeInfo(startHour, startMinute))
 
         if (schedule.startLocalDateTime != null && schedule.endLocalDateTime != null) {
             val sameDate = schedule.startLocalDateTime!!.toLocalDate() == schedule.endLocalDateTime!!.toLocalDate()
@@ -75,13 +101,13 @@ class SchedulePresenter(
 
             if (sameDate && startTimeAfterEndTime) {
                 schedule.endLocalDateTime = schedule.endLocalDateTime!!.withHour(startHour).withMinute(startMinute)
-                view.showEndTimeText(schedule.endLocalDateTime!!.hour, schedule.endLocalDateTime!!.minute)
+                view.showEndTimeText(TimeInfo(schedule.endLocalDateTime!!.hour, schedule.endLocalDateTime!!.minute))
             }
         }
     }
     fun setEndTime(endHour: Int, endMinute: Int) {
         schedule.endLocalDateTime = schedule.endLocalDateTime?.withHour(endHour)?.withMinute(endMinute)
-        view.showEndTimeText(endHour, endMinute)
+        view.showEndTimeText(TimeInfo(endHour, endMinute))
 
         if (schedule.startLocalDateTime != null && schedule.endLocalDateTime != null) {
             val sameDate = schedule.startLocalDateTime!!.toLocalDate() == schedule.endLocalDateTime!!.toLocalDate()
@@ -89,7 +115,7 @@ class SchedulePresenter(
 
             if (sameDate && endTimeBeforeStartTime) {
                 schedule.startLocalDateTime = schedule.startLocalDateTime!!.withHour(endHour).withMinute(endMinute)
-                view.showStartTimeText(schedule.startLocalDateTime!!.hour, schedule.startLocalDateTime!!.minute)
+                view.showStartTimeText(TimeInfo(schedule.startLocalDateTime!!.hour, schedule.startLocalDateTime!!.minute))
             }
         }
     }
@@ -102,7 +128,7 @@ class SchedulePresenter(
         if (newStartDate != null) {
             schedule.startLocalDateTime = newStartDate
             val startWeek = schedule.startLocalDateTime!!.dayOfWeek.value
-            view.showStartDateText(startMonth, startDay, startWeek)
+            view.showStartDateText(startYear, DateInfo(startMonth, startDay, startWeek))
             updateDates(schedule.startLocalDateTime!!.toLocalDate())
         }
     }
@@ -114,7 +140,7 @@ class SchedulePresenter(
         if (newEndDate != null) {
             schedule.endLocalDateTime = newEndDate
             val endWeek = newEndDate.dayOfWeek.value
-            view.showEndDateText(endMonth, endDay, endWeek)
+            view.showEndDateText(endYear, DateInfo(endMonth, endDay, endWeek))
             updateDates(newEndDate.toLocalDate())
         }
     }
@@ -128,12 +154,12 @@ class SchedulePresenter(
     private fun updateDates(newDate: LocalDate) {
         if (newDate.isBefore(schedule.startLocalDateTime?.toLocalDate())) {
             schedule.startLocalDateTime = schedule.startLocalDateTime?.with(newDate)
-            view.showStartDateText(schedule.startLocalDateTime!!.monthValue, schedule.startLocalDateTime!!.dayOfMonth, schedule.startLocalDateTime!!.dayOfWeek.value)
+            view.showStartDateText(schedule.startLocalDateTime!!.year, DateInfo(schedule.startLocalDateTime!!.monthValue, schedule.startLocalDateTime!!.dayOfMonth, schedule.startLocalDateTime!!.dayOfWeek.value))
         }
 
         if (newDate.isAfter(schedule.endLocalDateTime?.toLocalDate())) {
             schedule.endLocalDateTime = schedule.endLocalDateTime?.with(newDate)
-            view.showEndDateText(schedule.endLocalDateTime!!.monthValue, schedule.endLocalDateTime!!.dayOfMonth, schedule.endLocalDateTime!!.dayOfWeek.value)
+            view.showEndDateText(schedule.endLocalDateTime!!.year, DateInfo(schedule.endLocalDateTime!!.monthValue, schedule.endLocalDateTime!!.dayOfMonth, schedule.endLocalDateTime!!.dayOfWeek.value))
         }
     }
 
@@ -156,33 +182,61 @@ class SchedulePresenter(
                         schedule.srcLocation = location
                     }
 
-                    view.setSrcLocation(
-                        schedule.srcLocation!!,
-                        schedule.srcAddress!!
-                    )
+                    updateMarker(schedule.srcLocation!!, schedule.srcAddress!!, true)
                 }
             }
         }
     }
 
-    fun getMarkerTitle(context: Context): String? {
-        val currentAddress = geoCodingService.getAddress(schedule.srcPosition!!, context)
-        Log.d("currentAddress", currentAddress.toString())
-        return currentAddress
-    }
-
-    fun calExpectedTime(){
-        var costRequired: TextValueObject? = null
-        RetrofitImpl.execute {
-            costRequired = getTimeRequired(
+    fun calTimeRequired(){
+        GoogleDistanceMatrixService.execute {
+            val costRequired = getTimeRequired(
                 schedule.srcPosition!!,
                 schedule.dstPosition!!,
                 schedule.startLocalDateTime!!,
                 schedule.meansType
             )
-            schedule.cost = costRequired!!
-            schedule.departureLocalDateTime = schedule.startLocalDateTime!!.minusSeconds(costRequired!!.value.toLong())
-            view.showTimeRequired(costRequired!!.text, schedule.departureLocalDateTime!!)
+            schedule.cost = costRequired
+            schedule.departureLocalDateTime = schedule.startLocalDateTime!!.minusSeconds(costRequired.value.toLong())
+            view.showTimeRequired(costRequired.text, TimeInfo(schedule.departureLocalDateTime!!.hour, schedule.departureLocalDateTime!!.minute))
+        }
+    }
+
+    fun loadAddressInfo(isSource: Boolean, applicationContext: Context){
+        val isOnline: Boolean = NetworkStatusService.isOnline(applicationContext)
+        if (isOnline) {
+            view.launchAutocompleteGeocodingActivity(isSource)
+        } else {
+            Toast.makeText(applicationContext, "인터넷 연결을 확인해 주세요.", Toast.LENGTH_SHORT).show()
+
+        }
+    }
+
+    fun updateMarker(location: Location, markerTitle: String, isSource: Boolean){
+        val title = if (isSource) "출발지 : $markerTitle" else "도착지 : $markerTitle"
+        val position = LatLng(location.latitude, location.longitude)
+        val markerInfo = MarkerInfo(position, title, isSource)
+        view.showUpdatedMarker(markerInfo)
+    }
+
+    private fun hasLocationPermissions(context: Context): Boolean {
+        val hasFineLocationPermission = ContextCompat.checkSelfPermission(
+            context,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+        val hasCoarseLocationPermission = ContextCompat.checkSelfPermission(
+            context,
+            Manifest.permission.ACCESS_COARSE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+
+        return hasFineLocationPermission && hasCoarseLocationPermission
+    }
+
+    fun requestLocationUpdate(context: Context, checkLocationServicesStatus: Boolean){
+        if (hasLocationPermissions(context) && checkLocationServicesStatus ){
+            fusedLocationService.updateLiveLocation(getLocationCallback(context))
+        }else{
+            view.showLocationPermissionsSnackBar()
         }
     }
 

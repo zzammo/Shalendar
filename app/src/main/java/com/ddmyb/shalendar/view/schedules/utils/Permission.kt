@@ -9,6 +9,7 @@ interface Permission {
     companion object {
         const val PERMISSIONS_REQUEST_CODE = 100
         const val GPS_ENABLE_REQUEST_CODE = 2001
+
         val REQUIRED_PERMISSIONS = arrayOf(
             Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.ACCESS_COARSE_LOCATION

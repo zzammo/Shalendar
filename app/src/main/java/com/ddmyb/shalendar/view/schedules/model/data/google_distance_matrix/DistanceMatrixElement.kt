@@ -1,4 +1,4 @@
-package com.ddmyb.shalendar.view.schedules.distance.model
+package com.ddmyb.shalendar.view.schedules.model.data.google_distance_matrix
 
 data class DistanceMatrixElement(
     var status: String,

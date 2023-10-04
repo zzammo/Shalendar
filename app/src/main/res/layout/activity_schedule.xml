@@ -30,6 +30,7 @@
                 android:layout_marginHorizontal="10sp"
                 android:textColor="@color/text_white"
                 android:background="@null"
+                android:focusableInTouchMode="true"
                 android:hint=" 제목"/>
 
 
@@ -265,9 +266,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:padding="7sp"
-                        android:layout_marginHorizontal="10sp"
-                        android:scaleX="1.2"
-                        android:scaleY="1"/>
+                        android:layout_marginHorizontal="10sp" />
                 </LinearLayout>
             </LinearLayout>
 
@@ -464,7 +463,7 @@
 
 
             <LinearLayout
-                android:id="@+id/ago_panel"
+                android:id="@+id/alarm_setting_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
@@ -546,7 +545,7 @@
                         android:textColor="@color/text_white" />
 
                     <LinearLayout
-                        android:id="@+id/custom_alram_layout"
+                        android:id="@+id/custom_alarm_layout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:visibility="gone"
@@ -583,7 +582,7 @@
                     </LinearLayout>
 
                     <LinearLayout
-                        android:id="@+id/custom_alram_btn"
+                        android:id="@+id/custom_alarm_btn"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
@@ -722,6 +721,7 @@
                         android:layout_marginHorizontal="7sp"
                         android:layout_gravity="center"
                         android:background="@null"
+                        android:focusableInTouchMode="true"
                         android:hint="메모"/>
                 </LinearLayout>
             </LinearLayout>

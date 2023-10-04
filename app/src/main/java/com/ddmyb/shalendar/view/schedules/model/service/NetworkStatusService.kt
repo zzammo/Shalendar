@@ -1,4 +1,4 @@
-package com.ddmyb.shalendar.view.schedules.adapter
+package com.ddmyb.shalendar.view.schedules.model.service
 
 import android.content.Context
 import android.net.ConnectivityManager

@@ -40,8 +40,7 @@ class HolidayApiExplorer {
             conn.requestMethod = "GET"
             conn.setRequestProperty("Content-type", "application/json")
             Log.d("WeGlonD", "Holiday - Response code: " + conn.responseCode)
-            val rd: BufferedReader
-            rd = if (conn.responseCode >= 200 && conn.responseCode <= 300) {
+            val rd: BufferedReader = if (conn.responseCode in 200..300) {
                 BufferedReader(InputStreamReader(conn.inputStream))
             } else {
                 BufferedReader(InputStreamReader(conn.errorStream))

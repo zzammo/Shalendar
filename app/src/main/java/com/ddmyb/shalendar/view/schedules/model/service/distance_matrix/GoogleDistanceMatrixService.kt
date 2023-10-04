@@ -1,11 +1,10 @@
-package com.ddmyb.shalendar.view.schedules.distance.adapter
+package com.ddmyb.shalendar.view.schedules.model.service.distance_matrix
 
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
 import com.ddmyb.shalendar.BuildConfig
-import com.ddmyb.shalendar.view.schedules.distance.model.TextValueObject
-import com.ddmyb.shalendar.view.schedules.distance.model.TimeRequiredResponse
+import com.ddmyb.shalendar.view.schedules.model.data.google_distance_matrix.TextValueObject
 import com.ddmyb.shalendar.view.schedules.utils.MeansType
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.CoroutineScope
@@ -14,26 +13,23 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.http.Query
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 
-object RetrofitImpl {
-    private const val URL = "https://maps.googleapis.com/maps/api/distancematrix/json"
+object GoogleDistanceMatrixService {
+    private const val URL = "https://maps.googleapis.com/maps/api/distancematrix/"
     private const val API_KEY = BuildConfig.MAPS_API_KEY
 
     private val retrofit = Retrofit.Builder()
         .baseUrl(URL)
         .addConverterFactory(GsonConverterFactory.create())
         .build()
-
-    val service: RetrofitService = retrofit.create(RetrofitService::class.java)
-
+    val service: DistanceMatrixService = retrofit.create(DistanceMatrixService::class.java)
     @RequiresApi(Build.VERSION_CODES.O)
     suspend fun getTimeRequired(dstLatLng: LatLng,
                                 srcLatLng: LatLng,
                                 dstTime: LocalDateTime,
-                                meansType: MeansType): TextValueObject{
+                                meansType: MeansType): TextValueObject {
         val dst = dstLatLng.latitude.toString() + "," + dstLatLng.longitude.toString()
         val src = srcLatLng.latitude.toString() + "," + srcLatLng.longitude.toString()
         Log.d("dst", dst)
@@ -60,7 +56,7 @@ object RetrofitImpl {
      */
 
     val TAG = "RetroFitImpl"
-    fun execute(ifFail: suspend () -> Unit = {}, block: suspend RetrofitImpl.() -> Unit): Job {
+    fun execute(ifFail: suspend () -> Unit = {}, block: suspend GoogleDistanceMatrixService.() -> Unit): Job {
         return CoroutineScope(Dispatchers.IO).launch {
             try {
                 Log.d(TAG, "execute block start")
