@@ -3,10 +3,13 @@ package com.ddmyb.shalendar.view.home.navidrawer
 import ToggleAnimation
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.TextView
+import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
@@ -14,14 +17,22 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.ddmyb.shalendar.LoginActivity
 import com.ddmyb.shalendar.databinding.NaviDrawerBinding
 import com.ddmyb.shalendar.view.home.navidrawer.adapter.OwnedCalendarAdapter
+import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.ddmyb.shalendar.domain.Schedule
+import com.ddmyb.shalendar.domain.protoSchedule
+import java.time.LocalDateTime
 
 class NaviDrawerActivity :AppCompatActivity() {
 
     private var mFirebaseAuth: FirebaseAuth? = null
+    private var mDatabaseRef: DatabaseReference? = null //실시간 데이터베이스
     private var mtvName: TextView? = null
-
+    private val mSc: Schedule? = null
+    //private val mpSc: protoSchedule? = null
 
     private val binding by lazy {
         NaviDrawerBinding.inflate(layoutInflater)
@@ -31,13 +42,14 @@ class NaviDrawerActivity :AppCompatActivity() {
         ViewModelProvider(this)[NaviViewModel::class.java]
     }
 
-
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
         mtvName = binding.tvName
         mFirebaseAuth = FirebaseAuth.getInstance()
+        mDatabaseRef = FirebaseDatabase.getInstance().getReference("Users")
         val currentUser = mFirebaseAuth!!.currentUser
 
         viewModel.loadAllCalendar{
@@ -57,6 +69,14 @@ class NaviDrawerActivity :AppCompatActivity() {
                     }
                 }
             }
+        }
+
+        binding.btnAddSc.setOnClickListener {
+            val firebaseUser = mFirebaseAuth!!.currentUser
+            val mpSc=protoSchedule()
+            //mpSc.apply { scheduleId="candy" }
+            mDatabaseRef!!.child(firebaseUser!!.uid).push().setValue(mpSc)
+            Toast.makeText(this@NaviDrawerActivity, "업로드 성공", Toast.LENGTH_SHORT).show()
         }
 
         binding.btnLogin.setOnClickListener{
@@ -93,7 +113,7 @@ class NaviDrawerActivity :AppCompatActivity() {
         Log.i("액티비티 테스트", "updateUI")
         if (user != null) {
             // 사용자가 로그인한 경우
-            binding.tvName.text = "Hello ${user.email}!"
+            binding.tvName.text = "Hello ${user.email}"
             binding.btnLogin.visibility = View.GONE
             binding.btnLogout.visibility = View.VISIBLE
         } else {
