@@ -4,7 +4,7 @@ import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
 import com.ddmyb.shalendar.BuildConfig
-import com.ddmyb.shalendar.view.schedules.model.data.google_distance_matrix.TextValueObject
+import com.ddmyb.shalendar.view.schedules.model.dto.google_distance_matrix.utils.TextValueObject
 import com.ddmyb.shalendar.view.schedules.utils.MeansType
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.CoroutineScope
@@ -24,7 +24,7 @@ object GoogleDistanceMatrixService {
         .baseUrl(URL)
         .addConverterFactory(GsonConverterFactory.create())
         .build()
-    val service: DistanceMatrixService = retrofit.create(DistanceMatrixService::class.java)
+    val service: DistanceMatrixApiClient = retrofit.create(DistanceMatrixApiClient::class.java)
     @RequiresApi(Build.VERSION_CODES.O)
     suspend fun getTimeRequired(dstLatLng: LatLng,
                                 srcLatLng: LatLng,
@@ -37,7 +37,7 @@ object GoogleDistanceMatrixService {
         Log.d("meansType", meansType.toString())
         Log.d("dstTime", dstTime.toEpochSecond(ZoneOffset.UTC).toString())
         val response =
-            service.getTimeRequired(dst, src, API_KEY, dstTime.toEpochSecond(ZoneOffset.UTC).toString(), meansType.toString())
+            service.getTimeRequiredByPublic(dst, src, API_KEY, dstTime.toEpochSecond(ZoneOffset.UTC).toString(), meansType.toString())
                 .execute()
         val timeRequiredResponse = response.body()
         Log.d("response Code", response.code().toString())

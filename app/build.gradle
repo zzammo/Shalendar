@@ -22,6 +22,7 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         buildConfigField "String", "MAPS_API_KEY", properties["MAPS_API_KEY"]
+        buildConfigField "String", "TMPAS_APP_KEY", properties["TMPAS_APP_KEY"]
     }
 
     buildTypes {
@@ -112,4 +113,8 @@ dependencies {
     // For example, add the dependencies for Firebase Authentication and Cloud Firestore
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.firebase:firebase-firestore")
+
+    implementation 'com.squareup.okhttp3:okhttp:4.9.1'
+    implementation 'com.squareup.okhttp3:logging-interceptor:4.8.0'
+    implementation "com.squareup.okhttp3:okhttp-urlconnection:4.9.1"
 }
