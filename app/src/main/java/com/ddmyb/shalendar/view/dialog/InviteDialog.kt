@@ -36,7 +36,7 @@ class InviteDialog : DialogFragment(){
 
 
         binding.dicSendBtn.setOnClickListener{
-            kakao.sendKakaoLink("멘석 Shalendar로 초대장", "여기 링크 넣을거에요 멘석멘석", "")
+            kakao.sendKakaoLink("팀 Shalendar로 초대합니다", "Apple", "")
 
         }
         return dialog
