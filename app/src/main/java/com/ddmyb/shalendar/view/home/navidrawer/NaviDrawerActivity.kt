@@ -13,26 +13,19 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.ddmyb.shalendar.LoginActivity
 import com.ddmyb.shalendar.databinding.NaviDrawerBinding
 import com.ddmyb.shalendar.view.home.navidrawer.adapter.OwnedCalendarAdapter
-import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
-import com.ddmyb.shalendar.domain.Schedule
 import com.ddmyb.shalendar.domain.protoSchedule
-import com.ddmyb.shalendar.view.month.adapter.MonthCalendarDateScheduleRVAdapter
 import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.ValueEventListener
-import com.kakao.sdk.common.util.Utility
 import kotlin.random.Random
 
 class NaviDrawerActivity :AppCompatActivity() {
@@ -87,11 +80,16 @@ class NaviDrawerActivity :AppCompatActivity() {
 
         binding.btnAddSc.setOnClickListener {
             val firebaseUser = mFirebaseAuth!!.currentUser
-            val mpSc = protoSchedule()
-            val randomNumber = Random.nextInt(1,101)
-            mpSc.title="title $randomNumber"
-            mDatabaseRef!!.child(firebaseUser!!.uid).push().setValue(mpSc)
-            Toast.makeText(this@NaviDrawerActivity, "업로드 성공", Toast.LENGTH_SHORT).show()
+            if(firebaseUser!=null) {
+                val mpSc = protoSchedule()
+                val randomNumber = Random.nextInt(1,101)
+                mpSc.title="title $randomNumber"
+                mDatabaseRef!!.child(firebaseUser.uid).push().setValue(mpSc)
+                Toast.makeText(this@NaviDrawerActivity, "업로드 성공", Toast.LENGTH_SHORT).show()
+            }
+            else{
+                Toast.makeText(this@NaviDrawerActivity, "로그인 되어있지 않습니다", Toast.LENGTH_SHORT).show()
+            }
         }
         binding.btnLogin.setOnClickListener {
             Log.d("minseok", "loginbtn")
@@ -131,7 +129,7 @@ class NaviDrawerActivity :AppCompatActivity() {
 //                })
 //        }
         if(currentUser!=null) {
-            mDatabaseRef!!.child(currentUser!!.uid).addChildEventListener(object : ChildEventListener {
+            mDatabaseRef!!.child(currentUser.uid).addChildEventListener(object : ChildEventListener {
                 override fun onChildAdded(dataSnapshot: DataSnapshot, previousChildName: String?) {
                     val value = dataSnapshot.child("title").getValue(String::class.java)
                     if (value != null) {
