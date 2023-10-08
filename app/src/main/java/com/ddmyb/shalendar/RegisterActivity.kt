@@ -25,7 +25,7 @@ class RegisterActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         mFirebaseAuth = FirebaseAuth.getInstance() // 파이어베이스 데이터베이스 연동
-        mDatabaseRef = FirebaseDatabase.getInstance().getReference("Users")
+        mDatabaseRef = FirebaseDatabase.getInstance().getReference("UsersAccount")
 
         binding.btnRegister.setOnClickListener(View.OnClickListener {
             //회원가입 처리 시작
@@ -47,7 +47,8 @@ class RegisterActivity : AppCompatActivity() {
                     Toast.makeText(this@RegisterActivity, "진행중", Toast.LENGTH_SHORT).show()
                     //child는 해당 키 위치로 이동하는 함수입니다.
                     //키가 없는데 "UserAccount"와 firebaseUser.getUid()같이 값을 지정한 경우 자동으로 생성합니다.
-                    mDatabaseRef!!.child("UserAccount").child(firebaseUser!!.uid).setValue(account)
+                    mDatabaseRef!!.child(firebaseUser!!.uid).setValue(account)
+                    //mDatabaseRef!!.child(firebaseUser!!.email.toString().replace(".","_")).setValue(account)
                     Toast.makeText(this@RegisterActivity, "회원가입에 성공하셨습니다", Toast.LENGTH_LONG).show()
                 } else {
                     Toast.makeText(this@RegisterActivity, "회원가입에 실패하셨습니다", Toast.LENGTH_LONG).show()
