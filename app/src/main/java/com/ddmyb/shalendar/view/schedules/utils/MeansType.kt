@@ -2,13 +2,12 @@ package com.ddmyb.shalendar.view.schedules.utils
 
 enum class MeansType {
 
-    WALK, PUBLIC, CAR, BICYCLE, NULL;
+    WALK, PUBLIC, CAR, NULL;
     override fun toString(): String {
         return when (this) {
-            WALK -> "walking"
+            WALK -> "pedestrian"
             PUBLIC -> "transit"
-            CAR -> "driving"
-            BICYCLE -> "bicycling"
+            CAR -> "car"
             NULL -> "NULL"
         }
     }

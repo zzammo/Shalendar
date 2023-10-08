@@ -3,87 +3,60 @@ package com.ddmyb.shalendar.view.schedules.utils
 import android.os.Build
 import androidx.annotation.RequiresApi
 import com.ddmyb.shalendar.view.schedules.utils.AlarmInfo.AlarmType.*
+import java.time.LocalDateTime
+import java.time.ZoneOffset
 
 @RequiresApi(Build.VERSION_CODES.O)
 class AlarmInfo {
 
-    val alarmTypes = HashMap<AlarmType, Boolean>().apply {
-        put(START_TIME, false)
-        put(TEN_MIN_AGO, false)
-        put(HOUR_AGO, false)
-        put(DAY_AGO, false)
-        put(CUSTOM, false)
-    }
-
-    private var customTimeDelta: TimeDelta? = TimeDelta()
+    var alarmType = NULL
+    private var customSeconds: Long = 0
     enum class AlarmType {
-        START_TIME, TEN_MIN_AGO, HOUR_AGO, DAY_AGO, CUSTOM
-    }
-
-    fun toTimeDelta(): List<TimeDelta?> {
-        val ret = mutableListOf<TimeDelta?>()
-        alarmTypes.forEach { (alarmType, isEnabled) ->
-            if (isEnabled) {
-                val timeDelta = when (alarmType) {
-                    START_TIME -> TimeDelta(0, 0, 0, 0)
-                    TEN_MIN_AGO -> TimeDelta(0, 0, 0, 0)
-                    HOUR_AGO -> TimeDelta(0, 0, 0, 0)
-                    DAY_AGO -> TimeDelta(0, 0, 0, 0)
-                    CUSTOM -> customTimeDelta
-                }
-                ret.add(timeDelta)
-            }
-        }
-        return ret
+        START_TIME, TEN_MIN_AGO, HOUR_AGO, DAY_AGO, CUSTOM, NULL
     }
 
     fun toString(value: Int, index: Int): String {
-        var ret = ""
-        alarmTypes.forEach { (alarmType, isEnabled) ->
-            if (isEnabled) {
-                ret += when (alarmType) {
-                    START_TIME -> "일정 시작시간, "
-                    TEN_MIN_AGO -> "10분, "
-                    HOUR_AGO -> "1시간, "
-                    DAY_AGO -> "1일, "
-                    CUSTOM -> getCustomText(value, index)
-                }
-            }
+        return when (alarmType) {
+            NULL -> "알람 설정 없음"
+            START_TIME -> "일정 시작 시각"
+            TEN_MIN_AGO -> "10분 전"
+            HOUR_AGO -> "1시간 전"
+            DAY_AGO -> "1일 전"
+            CUSTOM -> getCustomText(value, index)
         }
-        ret = if (ret == "") {
-            "알람 설정 없음"
-        } else {
-            ret.substring(0, ret.length - 2) + " 전"
+    }
+
+    fun toSeconds():Long{
+        return when (alarmType) {
+            NULL -> 0
+            START_TIME -> 0
+            TEN_MIN_AGO -> LocalDateTime.of(0, 0, 0, 0, 10, 0).toEpochSecond(ZoneOffset.UTC)
+            HOUR_AGO -> LocalDateTime.of(0, 0, 0, 1, 0, 0).toEpochSecond(ZoneOffset.UTC)
+            DAY_AGO -> LocalDateTime.of(0, 0, 1, 0, 0, 0).toEpochSecond(ZoneOffset.UTC)
+            CUSTOM -> customSeconds
         }
-        return ret
     }
 
     fun getCustomText(value: Int, index: Int): String {
         var ret = ""
         ret += value.toString()
         when (index) {
-            0 -> ret += "분, "
-            1 -> ret += "시간, "
-            2 -> ret += "일, "
-            3 -> ret += "주, "
+            0 -> ret += "분 전"
+            1 -> ret += "시간 전"
+            2 -> ret += "일 전"
+            3 -> ret += "주 전"
         }
         return ret
     }
 
     fun updateCustomTime(value: Int, index: Int){
-        customTimeDelta = when(index){
-            0 -> TimeDelta(0 ,0 ,0, value)
-            1 -> TimeDelta(0, 0, value,0)
-            2 -> TimeDelta(0, value, 0,0)
-            3 -> TimeDelta(value, 0, 0, 0)
-            else -> null
+        val localDateTime =when(index) {
+            0 -> LocalDateTime.of(0, 0, 0, 0, value, 0)
+            1 -> LocalDateTime.of(0, 0, 0, value, 0, 0)
+            2 -> LocalDateTime.of(0, 0, value, 0, 0, 0)
+            3 -> LocalDateTime.of(0, 0, value * 7, 0, 0, 0)
+            else -> LocalDateTime.of(0, 0, 0, 0, 0, 0)
         }
+        customSeconds =  localDateTime.toEpochSecond(ZoneOffset.UTC)
     }
-
-    data class TimeDelta(
-        var week: Int = 0,
-        var day: Int = 0,
-        var hour: Int = 0,
-        var minute: Int = 0
-    )
 }

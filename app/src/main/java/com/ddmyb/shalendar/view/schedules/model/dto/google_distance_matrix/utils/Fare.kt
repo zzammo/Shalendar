@@ -1,4 +1,4 @@
-package com.ddmyb.shalendar.view.schedules.model.data.google_distance_matrix
+package com.ddmyb.shalendar.view.schedules.model.dto.google_distance_matrix.utils
 
 data class Fare(
     var currency: String,

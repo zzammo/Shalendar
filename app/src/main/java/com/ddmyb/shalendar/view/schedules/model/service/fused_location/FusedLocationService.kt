@@ -17,8 +17,8 @@ class FusedLocationService {
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(activity)
         locationRequest = LocationRequest.create()
             .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
-            .setInterval(10000)
-            .setFastestInterval(5000)
+            .setInterval(Long.MAX_VALUE)
+            .setFastestInterval(Long.MAX_VALUE)
         LocationSettingsRequest.Builder().addLocationRequest(locationRequest)
     }
     @SuppressLint("MissingPermission")

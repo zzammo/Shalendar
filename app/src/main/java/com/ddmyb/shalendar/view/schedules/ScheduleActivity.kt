@@ -24,6 +24,7 @@ import com.ddmyb.shalendar.R
 import com.ddmyb.shalendar.databinding.ActivityScheduleBinding
 import com.ddmyb.shalendar.view.programmatic_autocomplete.ProgrammaticAutocompleteGeocodingActivity
 import com.ddmyb.shalendar.view.schedules.presenter.SchedulePresenter
+import com.ddmyb.shalendar.view.schedules.utils.AlarmInfo
 import com.ddmyb.shalendar.view.schedules.utils.AlarmInfo.AlarmType.*
 import com.ddmyb.shalendar.view.schedules.utils.DateInfo
 import com.ddmyb.shalendar.view.schedules.utils.IterationType.*
@@ -52,8 +53,6 @@ private lateinit var getResult: ActivityResultLauncher<Intent>
 class ScheduleActivity(
     ) : AppCompatActivity(), OnMapReadyCallback{
 
-//    private val scheduleId: String = intent.getStringExtra("id")!!
-
     private lateinit var presenter: SchedulePresenter
 
     private lateinit var resultLatLng: LatLng
@@ -71,7 +70,10 @@ class ScheduleActivity(
         binding = ActivityScheduleBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        presenter = SchedulePresenter(this, StartDateTimeDto(null, LocalDateTime.now().plusHours(14)), this)
+        val startDateTimeDto = intent.getSerializableExtra("StartDateTimeDto") as? StartDateTimeDto
+            ?: StartDateTimeDto(scheduleId = null, dateTime = LocalDateTime.now())
+        Log.d("startDateTimeDto", startDateTimeDto.toString())
+        presenter = SchedulePresenter(this, startDateTimeDto, this)
 
         binding.map.layoutParams.height = resources.displayMetrics.widthPixels - 20
         val mapFragment = supportFragmentManager
@@ -79,7 +81,6 @@ class ScheduleActivity(
         Log.d("mapFragment", mapFragment.toString())
         val callBack = mapFragment.getMapAsync(this)
         Log.d("mapFragment", callBack.toString())
-
 
         initTimeSelectionListener()
         initDateTimePicker()
@@ -110,14 +111,12 @@ class ScheduleActivity(
         when (isSrcCallBack) {
             true -> {
                 presenter.getSchedule().srcPosition = resultLatLng
-                presenter.getSchedule().srcLocation = resultLocation
                 presenter.getSchedule().srcAddress = resultTitle
                 presenter.updateMarker(resultLocation, resultTitle, isSource = true)
                 binding.srcAddressText.text = resultTitle
             }
             false -> {
                 presenter.getSchedule().dstPosition = resultLatLng
-                presenter.getSchedule().dstLocation = resultLocation
                 presenter.getSchedule().dstAddress = resultTitle
                 presenter.updateMarker(resultLocation, resultTitle, isSource = false)
                 binding.dstAddressText.text = resultTitle
@@ -374,45 +373,53 @@ class ScheduleActivity(
             }
         }
         /**
-         * 알람을 할지 안할지 여부를 선택
+         * 출발 전 알람을 할지 안할지 여부를 선택
          */
-        binding.alarmSwitch.setOnCheckedChangeListener { _, isClicked ->
+        binding.departureAlarmSwitch.setOnCheckedChangeListener { _, isClicked ->
             if (isClicked) {
                 binding.pathPanel.visibility = View.VISIBLE
             } else {
                 binding.pathPanel.visibility = View.GONE
-                presenter.setAlarmInfo()
             }
         }
+    }
+
+    fun isCheckedDepartureAlarmSwitch():Boolean{
+        return binding.departureAlarmSwitch.isChecked
     }
 
     private var customVal = 5
     private var customIndex = 0 //0 -> 분 1 -> 시간 -> 2 -> 일 3 -> 주
     private fun initAlarmTimeListener(){
 
+        val alarmRadioGroup = binding.alarmRadioGroup
+
+        val alarmTypeMap = mapOf(
+            R.id.alarm_radio_button_null to NULL,
+            R.id.checkbox_ontime to AlarmInfo.AlarmType.START_TIME,
+            R.id.checkbox_10_min_ago to AlarmInfo.AlarmType.TEN_MIN_AGO,
+            R.id.checkbox_hourago to HOUR_AGO,
+            R.id.checkbox_dayago to DAY_AGO,
+            R.id.checkbox_custom to CUSTOM
+        )
+
+        alarmRadioGroup.setOnCheckedChangeListener { _, id ->
+            binding.alarmRadioGroupLayout.visibility = View.GONE
+            presenter.setAlarmInfo(alarmTypeMap[id]!!)
+            binding.alarmTimeTextview.background = ContextCompat.getDrawable(this, R.color.bg_white)
+            showAlarmTimeText()
+        }
+
         binding.alarmTimeLayout.setOnClickListener {
 
-            val isVisible = binding.alarmTimeCheckboxLayout.visibility == View.VISIBLE
+            val isVisible = binding.alarmRadioGroupLayout.visibility == View.VISIBLE
             if (isVisible) {
                 binding.alarmTimeTextview.background = ContextCompat.getDrawable(this, R.color.bg_white)
                 showAlarmTimeText()
             } else {
                 binding.alarmTimeTextview.background = ContextCompat.getDrawable(this, R.drawable.ed_text)
             }
-            binding.alarmTimeCheckboxLayout.visibility = if (!isVisible) View.VISIBLE else View.GONE
-        }
-
-        binding.checkboxOntime.setOnCheckedChangeListener{ _, isChecked ->
-            presenter.setAlarmInfo(START_TIME, isChecked)
-        }
-        binding.checkbox10MinAgo.setOnCheckedChangeListener{ _, isChecked ->
-            presenter.setAlarmInfo(TEN_MIN_AGO, isChecked)
-        }
-        binding.checkboxHourago.setOnCheckedChangeListener { _, isChecked ->
-            presenter.setAlarmInfo(HOUR_AGO, isChecked)
-        }
-        binding.checkboxDayago.setOnCheckedChangeListener { _, isChecked ->
-            presenter.setAlarmInfo(DAY_AGO, isChecked)
+            binding.alarmRadioGroupLayout.visibility = if (!isVisible) View.VISIBLE else View.GONE
         }
 
         binding.charpicker.maxValue = 3
@@ -432,7 +439,7 @@ class ScheduleActivity(
 
             binding.numpickerLayout.visibility = View.VISIBLE
             binding.customAlarmBtn.isClickable = true
-            presenter.setAlarmInfo(CUSTOM, true)
+            presenter.setAlarmInfo(CUSTOM)
         }
 
         binding.checkboxCustom.setOnCheckedChangeListener{ _, isChecked ->
@@ -445,7 +452,7 @@ class ScheduleActivity(
             } else {
                 binding.numpickerLayout.visibility = View.GONE
             }
-            presenter.setAlarmInfo(CUSTOM, isChecked)
+            presenter.setAlarmInfo(CUSTOM)
         }
 
         binding.numpicker.setOnValueChangedListener{ _, _, value ->
@@ -509,26 +516,31 @@ class ScheduleActivity(
         }
     }
 
-    private fun initTimeRequiredListener(){
-        binding.timeRequieredClick.setOnClickListener{
-            if (presenter.getSchedule().meansType != MeansType.NULL) {
-                presenter.calTimeRequired()
-            } else {
-                Toast.makeText(applicationContext, "출발지 도착지 이동 수단을 모두 입력 하세요", Toast.LENGTH_SHORT)
-                    .show()
-            }
+    private fun handleRadioButtonSelection(){
+        if (presenter.getSchedule().meansType != MeansType.NULL && presenter.getSchedule().dstAddress != null) {
+            presenter.calTimeRequired()
+        } else {
+            Toast.makeText(baseContext, "출발지 도착지 이동 수단을 모두 입력 하세요", Toast.LENGTH_SHORT)
+                .show()
+            binding.meansRadiogroup.clearCheck()
+            presenter.getSchedule().meansType = MeansType.NULL
         }
+    }
 
+    private fun initTimeRequiredListener(){
         binding.meansRadiogroup.setOnCheckedChangeListener{ _, button ->
             when (button) {
                 R.id.radiobutton_walk -> {
                     presenter.getSchedule().meansType = MeansType.WALK
+                    handleRadioButtonSelection()
                 }
                 R.id.radiobutton_public -> {
                     presenter.getSchedule().meansType = MeansType.PUBLIC
+                    handleRadioButtonSelection()
                 }
                 R.id.radiobutton_car -> {
                     presenter.getSchedule().meansType = MeansType.CAR
+                    handleRadioButtonSelection()
                 }
             }
         }
@@ -551,7 +563,7 @@ class ScheduleActivity(
 
     private fun initSaveCancelListener(){
         binding.saveBtn.setOnClickListener(View.OnClickListener {
-            presenter.saveSchedule()
+            presenter.saveSchedule(applicationContext)
             setResult(RESULT_OK)
             finish()
         })
@@ -653,5 +665,12 @@ class ScheduleActivity(
                 showLocationPermissionsSnackBar()
             }
         }
+    }
+
+    fun readTitle(): String{
+        return binding.title.text.toString()
+    }
+    fun readMemo(): String{
+        return binding.title.text.toString()
     }
 }

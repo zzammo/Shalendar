@@ -1,7 +1,9 @@
 package com.ddmyb.shalendar.view.home
 
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.ddmyb.shalendar.R
@@ -12,7 +14,8 @@ import com.ddmyb.shalendar.view.maptest.MapActivity
 import com.ddmyb.shalendar.view.test.TestActivity
 import com.ddmyb.shalendar.view.schedules.ScheduleActivity
 
-    class MainActivity : AppCompatActivity() {
+@RequiresApi(Build.VERSION_CODES.O)
+class MainActivity : AppCompatActivity() {
 
         private lateinit var binding: ActivityMainBinding
         override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,6 +38,10 @@ import com.ddmyb.shalendar.view.schedules.ScheduleActivity
 //            }
             binding.mapTestButton.setOnClickListener {
                 val intent = Intent(this, MapActivity::class.java)
+                startActivity(intent)
+            }
+            binding.amWeatherBtn.setOnClickListener {
+                val intent = Intent(this, WeatherTest::class.java)
                 startActivity(intent)
             }
     }
