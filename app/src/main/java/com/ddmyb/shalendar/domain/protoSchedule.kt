@@ -2,9 +2,8 @@ package com.ddmyb.shalendar.domain
 
 import android.location.Location
 import android.os.Build
-import android.provider.AlarmClock
 import androidx.annotation.RequiresApi
-import com.ddmyb.shalendar.view.schedules.model.data.google_distance_matrix.TextValueObject
+import com.ddmyb.shalendar.view.schedules.model.dto.google_distance_matrix.utils.TextValueObject
 import com.ddmyb.shalendar.view.schedules.utils.MeansType
 import com.google.android.gms.maps.model.LatLng
 import java.time.LocalDateTime
