@@ -1,6 +1,5 @@
 package com.ddmyb.shalendar.view.holiday
 
-import android.content.Context
 import android.util.Log
 import android.util.Xml
 import com.ddmyb.shalendar.BuildConfig
