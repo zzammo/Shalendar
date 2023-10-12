@@ -17,10 +17,10 @@ data class protoSchedule (
 
     // 소요 시간
     var meansType: MeansType = MeansType.NULL,
-    var cost: TextValueObject? = TextValueObject(text="cost",value=777),//.apply { this.text="cost" }
+    var cost: TextValueObject? = TextValueObject("apple",30),
 
     // 출발 위치 + 도착 위치
-    var srcLocation: Location? = null,
+    var srcLocation: Location? = Location("provider"),
     var dstLocation: Location? = Location("provider"),
     var srcPosition: LatLng? = LatLng(11.111,22.222),
     var dstPosition: LatLng? = LatLng(33.333,44.444),
