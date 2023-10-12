@@ -40,9 +40,9 @@ class MainActivity : AppCompatActivity() {
                 val intent = Intent(this, MapActivity::class.java)
                 startActivity(intent)
             }
-            binding.amWeatherBtn.setOnClickListener {
-                val intent = Intent(this, WeatherTest::class.java)
-                startActivity(intent)
-            }
+//            binding.amWeatherBtn.setOnClickListener {
+//                val intent = Intent(this, WeatherTest::class.java)
+//                startActivity(intent)
+//            }
     }
 }
