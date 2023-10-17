@@ -21,26 +21,12 @@ class MonthActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this@MonthActivity, R.layout.activity_month)
 
-        val refList = makeRefs(10)
-
-        calendar = MonthCalendarFragment(refList)
+        calendar = MonthCalendarFragment(10)
 
         supportFragmentManager.commit {
             add(R.id.calendar, calendar)
             setReorderingAllowed(true)
         }
-    }
-
-    private fun makeRefs(count: Int): List<Long> {
-        val list = mutableListOf<Long>()
-        val cal = Calendar.getInstance()
-        cal.add(Calendar.MONTH, -count/2-1)
-        for (i in -count/2..count/2) {
-            cal.add(Calendar.MONTH, 1)
-            logger.logD("$i : ${cal.get(Calendar.YEAR)}.${cal.get(Calendar.MONTH)+1}.${cal.get(Calendar.DATE)}")
-            list.add(cal.timeInMillis)
-        }
-        return list
     }
 
 }

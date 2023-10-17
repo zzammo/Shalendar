@@ -14,6 +14,7 @@ import com.ddmyb.shalendar.view.holiday.HolidayApi
 import com.ddmyb.shalendar.view.holiday.data.HolidayDTO
 import com.ddmyb.shalendar.view.maptest.MapActivity
 import com.ddmyb.shalendar.view.schedules.ScheduleActivity
+import com.ddmyb.shalendar.view.weather.WeatherTest
 import com.ddmyb.shalendar.view.test.TestActivity
 
 @RequiresApi(Build.VERSION_CODES.O)

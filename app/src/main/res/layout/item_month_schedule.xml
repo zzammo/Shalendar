@@ -10,6 +10,7 @@
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/schedule_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@{schedule.color}">
@@ -19,6 +20,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:breakStrategy="high_quality"
+            android:text="@{schedule.name}"
             android:textSize="@dimen/D_third_text"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="test"/>
