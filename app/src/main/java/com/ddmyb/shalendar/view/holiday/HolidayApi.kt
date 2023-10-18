@@ -5,6 +5,8 @@ import com.ddmyb.shalendar.BuildConfig
 import com.ddmyb.shalendar.util.HttpResult
 import com.ddmyb.shalendar.view.holiday.data.HolidayApiService
 import com.ddmyb.shalendar.view.holiday.data.HolidayDTO
+import com.google.common.reflect.TypeToken
+import com.google.gson.Gson
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -23,37 +25,35 @@ class HolidayApi {
             .build()
         val service: HolidayApiService = retrofit.create(HolidayApiService::class.java)
         fun getHolidays(
-            year: String,
-            month: String,
-            httpResult: HttpResult<List<HolidayDTO.HolidayItem>>) {
-            service.getHolidays(key, 1, 100, year, month, "json")
-                .enqueue(object : Callback<HolidayDTO.Result>
-                {
+            year: Int,
+            month: Int,
+            httpResult: HttpResult
+        ) {
+            service.getHolidays(key, 1, 100, year.toString(), String.format("%02d", month), "json")
+                .enqueue(object : Callback<HolidayDTO.Result> {
                     override fun onResponse(call: Call<HolidayDTO.Result>, response: Response<HolidayDTO.Result>) {
                         if (response.isSuccessful) {
                             val result = response.body()
-                            //Log.d(TAG,"success"+response.body())
                             if (result != null) {
-                                Log.d(TAG, "response successful")
                                 val holidayItems = result.response.body.items.item
-                                holidayItems.let {
-                                    for (holidayItem in it) {
-                                        //Log.d(TAG, "dateName: ${holidayItem.dateName}, locdate: ${holidayItem.locdate}")
-                                    }
+                                Log.d("minseok",holidayItems.toString())
+                                val gson = Gson()
+                                val holidayList: List<HolidayDTO.HolidayItem> = when (result.response.body.totalCount) {
+                                    0 -> emptyList()
+                                    1 -> listOf(gson.fromJson(holidayItems.toString(), HolidayDTO.HolidayItem::class.java))
+                                    else -> gson.fromJson(holidayItems.toString(), object : TypeToken<List<HolidayDTO.HolidayItem>>() {}.type)
                                 }
-                                httpResult.success(holidayItems)
+
+                                httpResult.success(holidayList)
                             } else {
-                                Log.d(TAG, "response fail")
                                 httpResult.appFail()
                             }
                         } else {
-                            Log.e(TAG, "Holiday - Request failed with code: " + response.code())
                             httpResult.appFail()
                         }
                         httpResult.finally()
                     }
                     override fun onFailure(call: Call<HolidayDTO.Result>, t: Throwable) {
-                        Log.e(TAG, "Holiday - Request failed", t)
                         httpResult.fail(t)
                         httpResult.finally()
                     }

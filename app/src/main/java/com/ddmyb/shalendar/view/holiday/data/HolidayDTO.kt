@@ -18,12 +18,12 @@ object HolidayDTO
         val items: HolidayItems,
         @SerializedName("totalCount")
         val totalCount: Int,
-
         )
     data class HolidayItems(
         @SerializedName("item")
-        val item: List<HolidayItem>
+        val item: Any
     )
+
     data class HolidayItem(
         @SerializedName("dateName")
         val dateName: String,
