@@ -17,6 +17,7 @@ import com.ddmyb.shalendar.dummy_fragment.PersonalCalendarFragment
 import com.ddmyb.shalendar.dummy_fragment.ProflieFragment
 import com.ddmyb.shalendar.util.HttpResult
 import com.ddmyb.shalendar.view.holiday.HolidayApi
+import com.ddmyb.shalendar.view.holiday.data.HolidayDTO
 import com.ddmyb.shalendar.view.maptest.MapActivity
 import com.ddmyb.shalendar.view.month.MonthCalendarFragment
 import com.ddmyb.shalendar.view.test.TestActivity
@@ -96,8 +97,8 @@ class MainActivity : AppCompatActivity() {
             HolidayApi.getHolidays(
                 year = 2023,
                 month = 12,
-                object: HttpResult {
-                    override fun success(data: Any?) {
+                object: HttpResult<List<HolidayDTO.HolidayItem>> {
+                    override fun success(data: List<HolidayDTO.HolidayItem>) {
                         Log.d("minseok",data.toString())
                     }
 
