@@ -21,7 +21,7 @@ class MonthActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this@MonthActivity, R.layout.activity_month)
 
-        calendar = MonthCalendarFragment(10)
+        calendar = MonthCalendarFragment(50)
 
         supportFragmentManager.commit {
             add(R.id.calendar, calendar)

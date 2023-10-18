@@ -9,7 +9,8 @@ import com.google.android.gms.maps.model.LatLng
 import java.time.LocalDateTime
 
 @RequiresApi(Build.VERSION_CODES.O)
-data class Schedule (
+data class
+Schedule (
     var scheduleId: String? = "scheduleId",
     var isPublic: Boolean = false,
     var userId: Int? = 201915204,

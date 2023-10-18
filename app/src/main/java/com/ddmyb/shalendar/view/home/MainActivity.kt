@@ -15,6 +15,7 @@ import com.ddmyb.shalendar.dummy_fragment.GroupCalendarFragment
 import com.ddmyb.shalendar.dummy_fragment.PersonalCalendarFragment
 import com.ddmyb.shalendar.dummy_fragment.ProflieFragment
 import com.ddmyb.shalendar.view.maptest.MapActivity
+import com.ddmyb.shalendar.view.month.MonthCalendarFragment
 import com.ddmyb.shalendar.view.test.TestActivity
 import com.ddmyb.shalendar.view.schedules.ScheduleActivity
 import com.ddmyb.shalendar.view.weather.WeatherTest
@@ -57,7 +58,7 @@ class MainActivity : AppCompatActivity() {
                 when (menuItem.itemId) {
                     R.id.item_fragment1 -> {
                         supportFragmentManager.beginTransaction()
-                            .replace(R.id.main_frame, PersonalCalendarFragment()).commit()
+                            .replace(R.id.main_frame, MonthCalendarFragment(10)).commit()
                         true
                     }
 
