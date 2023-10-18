@@ -121,6 +121,8 @@ class MonthCalendarPageFragment(private val now: Long) : Fragment(R.layout.fragm
         presenter.loadHoliday(object : HttpResult<List<HolidayDTO.HolidayItem>>{
             override fun success(data: List<HolidayDTO.HolidayItem>) {
 
+                logger.logD("$data")
+
                 for (item in data) {
                     val year = item.locdate/10000
                     val month = (item.locdate%10000)/100

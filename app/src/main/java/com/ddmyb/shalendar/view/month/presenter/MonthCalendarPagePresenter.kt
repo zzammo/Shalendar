@@ -1,6 +1,7 @@
 package com.ddmyb.shalendar.view.month.presenter
 
 import android.graphics.Color
+import android.util.Log
 import com.ddmyb.shalendar.util.CalendarFunc
 import com.ddmyb.shalendar.util.HttpResult
 import com.ddmyb.shalendar.util.MutableLiveListData
@@ -80,9 +81,10 @@ class MonthCalendarPagePresenter(
     }
 
     fun loadHoliday(httpResult: HttpResult<List<HolidayDTO.HolidayItem>>) {
+        Log.d("Presenter", "${pageData.year}, ${pageData.month}")
         HolidayApi.getHolidays(
-            pageData.year.toString(),
-            pageData.month.toString(),
+            pageData.year,
+            pageData.month,
             httpResult
         )
     }

@@ -27,21 +27,24 @@ class HolidayApi {
         fun getHolidays(
             year: Int,
             month: Int,
-            httpResult: HttpResult
+            httpResult: HttpResult<List<HolidayDTO.HolidayItem>>
         ) {
             service.getHolidays(key, 1, 100, year.toString(), String.format("%02d", month), "json")
                 .enqueue(object : Callback<HolidayDTO.Result> {
                     override fun onResponse(call: Call<HolidayDTO.Result>, response: Response<HolidayDTO.Result>) {
                         if (response.isSuccessful) {
                             val result = response.body()
+                            Log.d(TAG, response.toString())
                             if (result != null) {
                                 val holidayItems = result.response.body.items.item
-                                Log.d("minseok",holidayItems.toString())
                                 val gson = Gson()
+                                Log.d("minseok",holidayItems.toString())
+
+
                                 val holidayList: List<HolidayDTO.HolidayItem> = when (result.response.body.totalCount) {
                                     0 -> emptyList()
-                                    1 -> listOf(gson.fromJson(holidayItems.toString(), HolidayDTO.HolidayItem::class.java))
-                                    else -> gson.fromJson(holidayItems.toString(), object : TypeToken<List<HolidayDTO.HolidayItem>>() {}.type)
+                                    1 -> listOf(gson.fromJson(gson.toJson(holidayItems), HolidayDTO.HolidayItem::class.java))
+                                    else -> gson.fromJson(gson.toJson(holidayItems), object : TypeToken<List<HolidayDTO.HolidayItem>>() {}.type)
                                 }
 
                                 httpResult.success(holidayList)
