@@ -1,61 +1,54 @@
 package com.ddmyb.shalendar.view.month
 
-import android.app.Activity
 import android.app.Dialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
-import android.view.ViewGroup
 import android.view.Window
-import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat.getColor
 import androidx.core.view.get
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.commit
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewpager2.widget.ViewPager2
 import com.ddmyb.shalendar.R
 import com.ddmyb.shalendar.databinding.FragmentMonthCalendarPageBinding
 import com.ddmyb.shalendar.databinding.ItemMonthDateBinding
-import com.ddmyb.shalendar.databinding.ItemMonthScheduleBinding
-import com.ddmyb.shalendar.util.CalendarFunc
 import com.ddmyb.shalendar.util.HttpResult
 import com.ddmyb.shalendar.util.Logger
 import com.ddmyb.shalendar.util.MutableLiveListData
 import com.ddmyb.shalendar.view.holiday.data.HolidayDTO
 import com.ddmyb.shalendar.view.month.adapter.MonthCalendarDateScheduleRVAdapter
-import com.ddmyb.shalendar.view.month.adapter.MonthCalendarFragmentAdapter
 import com.ddmyb.shalendar.view.month.adapter.MonthDateDetailAdapter
 import com.ddmyb.shalendar.view.month.data.MonthCalendarDateData
 import com.ddmyb.shalendar.view.month.data.MonthPageData
 import com.ddmyb.shalendar.view.month.data.ScheduleData
 import com.ddmyb.shalendar.view.month.data.TimeTableScheduleList
 import com.ddmyb.shalendar.view.month.presenter.MonthCalendarPagePresenter
-import com.islandparadise14.mintable.MinTimeTableView
-import com.islandparadise14.mintable.model.ScheduleDay
-import com.islandparadise14.mintable.model.ScheduleEntity
 import java.util.Calendar
 
-class MonthCalendarPageFragment(private val now: Long) : Fragment() {
+class MonthCalendarPageFragment(private val now: Long) : Fragment(R.layout.fragment_month_calendar_page) {
 
     private val logger = Logger("MonthCalendarPageFragment", true)
 
     private lateinit var presenter: MonthCalendarPagePresenter
+
+    private lateinit var binding: FragmentMonthCalendarPageBinding
 
     private val cal = Calendar.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        cal.timeInMillis = now
+        logger.logD("${cal.get(Calendar.YEAR)}, ${cal.get(Calendar.MONTH)+1} created")
+    }
 
-        logger.logD("${cal.get(Calendar.YEAR)}, ${cal.get(Calendar.MONTH)+1}")
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        cal.timeInMillis = now
 
         presenter = MonthCalendarPagePresenter(
             MonthPageData(
@@ -64,15 +57,7 @@ class MonthCalendarPageFragment(private val now: Long) : Fragment() {
                 MutableLiveListData()
             )
         )
-
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        val binding: FragmentMonthCalendarPageBinding =
-            FragmentMonthCalendarPageBinding.inflate(inflater)
+        binding = FragmentMonthCalendarPageBinding.bind(view)
 
         binding.data = presenter.pageData
         val itemBindingList = mutableListOf<ItemMonthDateBinding>()
@@ -177,8 +162,6 @@ class MonthCalendarPageFragment(private val now: Long) : Fragment() {
             override fun finally() {
             }
         })
-
-        return binding.root
     }
 
     private fun showScheduleDialog(date: MonthCalendarDateData) {

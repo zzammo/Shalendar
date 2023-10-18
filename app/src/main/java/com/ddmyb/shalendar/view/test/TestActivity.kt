@@ -49,5 +49,10 @@ class TestActivity : AppCompatActivity() {
             val intent = Intent(this, TimeTableTestActivity::class.java)
             startActivity(intent)
         }
+
+        binding.firebaseTest.setOnClickListener {
+            val intent = Intent(this, FirebaseTestActivity::class.java)
+            startActivity(intent)
+        }
     }
 }

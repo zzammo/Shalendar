@@ -30,7 +30,7 @@
             android:id="@+id/lunar_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@{String.valueOf(data.isHoliday)}"
+            android:text="@{String.valueOf(data.lunar)}"
             android:textSize="11sp"
             android:textColor="#838383"
             android:layout_marginStart="@dimen/D_third_text"

@@ -61,5 +61,11 @@
             android:layout_height="wrap_content"
             android:text="timetable_test"/>
 
+        <Button
+            android:id="@+id/firebase_test"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="firebase test"/>
+
     </LinearLayout>
 </layout>

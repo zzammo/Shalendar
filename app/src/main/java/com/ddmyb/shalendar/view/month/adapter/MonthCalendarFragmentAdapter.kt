@@ -6,15 +6,15 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.ddmyb.shalendar.view.month.MonthCalendarPageFragment
 
 class MonthCalendarFragmentAdapter(
-    private val refList: List<Long>,
+    private val fragmentList: List<MonthCalendarPageFragment>,
     fragmentActivity: FragmentActivity
 ): FragmentStateAdapter(fragmentActivity), MonthCalendarAdapter {
 
     override fun createFragment(position: Int): Fragment {
-        return MonthCalendarPageFragment(refList[position])
+        return fragmentList[position]
     }
 
     override fun getItemCount(): Int {
-        return refList.size
+        return fragmentList.size
     }
 }
