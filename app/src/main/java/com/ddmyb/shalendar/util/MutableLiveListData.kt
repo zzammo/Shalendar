@@ -91,6 +91,10 @@ class MutableLiveListData<T> : MutableLiveData<MutableList<T>>() {
         return returnValue
     }
 
+    fun replaceAt(index: Int, value: T) {
+        list[index] = value
+        changeObserver(index)
+    }
 
     fun replaceAll(operator: (T) -> Pair<T, Boolean>) {
         for (i in list.indices) {

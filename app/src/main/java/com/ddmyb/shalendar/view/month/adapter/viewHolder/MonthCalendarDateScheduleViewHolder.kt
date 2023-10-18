@@ -9,6 +9,6 @@ class MonthCalendarDateScheduleViewHolder(
 ): RecyclerView.ViewHolder(binding.root){
 
     fun bind(schedule: ScheduleData) {
-        binding.scheduleName.text = schedule.name
+        binding.schedule = schedule
     }
 }

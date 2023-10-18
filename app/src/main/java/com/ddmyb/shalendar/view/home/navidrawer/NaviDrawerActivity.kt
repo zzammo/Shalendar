@@ -17,16 +17,18 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.ddmyb.shalendar.LoginActivity
 import com.ddmyb.shalendar.databinding.NaviDrawerBinding
+import com.ddmyb.shalendar.domain.Schedule
+import com.ddmyb.shalendar.domain.protoSchedule
 import com.ddmyb.shalendar.view.home.navidrawer.adapter.OwnedCalendarAdapter
+import com.ddmyb.shalendar.view.schedules.model.dto.google_distance_matrix.utils.TextValueObject
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
-import com.ddmyb.shalendar.domain.protoSchedule
 import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
-import kotlin.random.Random
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import java.time.format.DateTimeFormatter
 
 class NaviDrawerActivity :AppCompatActivity() {
 
@@ -81,9 +83,21 @@ class NaviDrawerActivity :AppCompatActivity() {
         binding.btnAddSc.setOnClickListener {
             val firebaseUser = mFirebaseAuth!!.currentUser
             if(firebaseUser!=null) {
+                val mSc = Schedule()
                 val mpSc = protoSchedule()
-                val randomNumber = Random.nextInt(1,101)
-                mpSc.title="title $randomNumber"
+                mpSc.scheduleId=mSc.scheduleId
+                mpSc.isPublic=mSc.isPublic
+                mpSc.userId=mSc.userId
+                mpSc.startLocalDateTime=mSc.startLocalDateTime?.format(DateTimeFormatter.ofPattern("yyyymmddhhmmssSSS"))
+                mpSc.endLocalDateTime=mSc.endLocalDateTime!!.format(DateTimeFormatter.ofPattern("yyyymmddhhmmssSSS"))
+                mpSc.meansType=mSc.meansType
+                mpSc.cost=mSc.cost
+                mpSc.srcPosition=mSc.srcPosition.toString()
+                mpSc.dstPosition=mSc.dstPosition.toString()
+                mpSc.srcAddress=mSc.srcAddress
+                mpSc.srcAddress=mSc.srcAddress
+                mpSc.dstAddress=mSc.dstAddress
+                mpSc.departureLocalDateTime=mSc.departureLocalDateTime!!.format(DateTimeFormatter.ofPattern("yyyymmddhhmmssSSS"))
                 mDatabaseRef!!.child(firebaseUser.uid).push().setValue(mpSc)
                 Toast.makeText(this@NaviDrawerActivity, "업로드 성공", Toast.LENGTH_SHORT).show()
             }
@@ -107,27 +121,6 @@ class NaviDrawerActivity :AppCompatActivity() {
             finish()
         }
 
-//        if(currentUser!=null) {
-//            mDatabaseRef!!.child(currentUser!!.uid)
-//                .addListenerForSingleValueEvent(object : ValueEventListener {
-//                    override fun onDataChange(dataSnapshot: DataSnapshot) {
-//                        // 데이터가 변경될 때 호출됩니다.
-//                        // dataSnapshot에서 필요한 데이터를 추출하고 처리할 수 있습니다.
-//                        for (childSnapshot in dataSnapshot.children) {
-//                            val value = childSnapshot.child("title").getValue(String::class.java)
-//                            if (value != null) {
-//                                adapter2!!.add(value)
-//                            }
-//                        }
-//                    }
-//
-//                    override fun onCancelled(databaseError: DatabaseError) {
-//                        // 데이터 읽기가 취소되면 호출됩니다.
-//                        // 오류 처리를 수행할 수 있습니다.
-//                        println("데이터 읽기 오류: ${databaseError.toException()}")
-//                    }
-//                })
-//        }
         if(currentUser!=null) {
             mDatabaseRef!!.child(currentUser.uid).addChildEventListener(object : ChildEventListener {
                 override fun onChildAdded(dataSnapshot: DataSnapshot, previousChildName: String?) {

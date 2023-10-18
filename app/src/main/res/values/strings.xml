@@ -216,6 +216,9 @@
     <string name="isOpen_time_hint" translatable="false">Select isOpen time</string>
     <string name="isOpen_use_custom_time_hint" translatable="false">Use custom isOpen time? (must set time zone, date, and time)</string>
     <string name="isOpen_default_place_id" translatable="false">ChIJD3uTd9hx5kcR1IQvGfr8dbk</string>
+    <string name="title_activity_fullscreen_alarm">FullscreenAlarmActivity</string>
+    <string name="dummy_button">알람 종료</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
 
 </resources>
 

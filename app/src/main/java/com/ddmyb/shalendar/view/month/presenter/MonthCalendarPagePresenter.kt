@@ -2,7 +2,11 @@ package com.ddmyb.shalendar.view.month.presenter
 
 import android.graphics.Color
 import com.ddmyb.shalendar.util.CalendarFunc
+import com.ddmyb.shalendar.util.HttpResult
 import com.ddmyb.shalendar.util.MutableLiveListData
+import com.ddmyb.shalendar.view.holiday.HolidayApi
+import com.ddmyb.shalendar.view.holiday.data.HolidayDTO
+import com.ddmyb.shalendar.view.lunar.LunarCalendar
 import com.ddmyb.shalendar.view.month.data.MonthCalendarDateData
 import com.ddmyb.shalendar.view.month.data.MonthPageData
 import com.ddmyb.shalendar.view.month.data.ScheduleData
@@ -24,33 +28,48 @@ class MonthCalendarPagePresenter(
         cal.add(Calendar.DATE, -dayOfWeek)
 
         for (j in 0 until dayOfWeek) {
+            val year = cal.get(Calendar.YEAR)
+            val month = cal.get(Calendar.MONTH)+1
+            val date = cal.get(Calendar.DATE)
             pageData.calendarDateList.add(
                 MonthCalendarDateData(
-                    pageData.year,
-                    cal.get(Calendar.MONTH)+1,
-                    cal.get(Calendar.DATE),
+                    year,
+                    month,
+                    date,
+                    false,
+                    LunarCalendar.LunarToSolar(dateToYYYYMMDD(year, month, date)).substring(4),
                     MutableLiveListData()
                 )
             )
             cal.add(Calendar.DATE, 1)
         }
         for (j in 1..max) {
+            val year = cal.get(Calendar.YEAR)
+            val month = cal.get(Calendar.MONTH)+1
+            val date = cal.get(Calendar.DATE)
             pageData.calendarDateList.add(
                 MonthCalendarDateData(
-                    pageData.year,
-                    cal.get(Calendar.MONTH)+1,
-                    cal.get(Calendar.DATE),
+                    year,
+                    month,
+                    date,
+                    false,
+                    LunarCalendar.LunarToSolar(dateToYYYYMMDD(year, month, date)).substring(4),
                     MutableLiveListData()
                 )
             )
             cal.add(Calendar.DATE, 1)
         }
-        while (pageData.calendarDateList.size < 6*7) {
+        while (pageData.calendarDateList.value!!.size < 6 * 7) {
+            val year = cal.get(Calendar.YEAR)
+            val month = cal.get(Calendar.MONTH)+1
+            val date = cal.get(Calendar.DATE)
             pageData.calendarDateList.add(
                 MonthCalendarDateData(
-                    pageData.year,
-                    cal.get(Calendar.MONTH)+1,
-                    cal.get(Calendar.DATE),
+                    year,
+                    month,
+                    date,
+                    false,
+                    LunarCalendar.SolarToLunar(dateToYYYYMMDD(year, month, date)).substring(4),
                     MutableLiveListData()
                 )
             )
@@ -60,48 +79,67 @@ class MonthCalendarPagePresenter(
         selected = -1
     }
 
+    fun loadHoliday(httpResult: HttpResult<List<HolidayDTO.HolidayItem>>) {
+        HolidayApi.getHolidays(
+            pageData.year.toString(),
+            pageData.month.toString(),
+            httpResult
+        )
+    }
+
     fun loadSchedule(idx: Int) {
         //TODO: load schedules
-        pageData.calendarDateList[idx].scheduleList.add(
-            ScheduleData(
-                "n1",
-                (1000 * 60 * 60) * 3L,
-                (1000 * 60 * 60) * 4L,
-                Color.BLUE
-            )
-        )
-        pageData.calendarDateList[idx].scheduleList.add(
-            ScheduleData(
-                "n2",
-                (1000 * 60 * 60) * 5L,
-                (1000 * 60 * 60) * 10L,
-                Color.RED
-            )
-        )
-        pageData.calendarDateList[idx].scheduleList.add(
-            ScheduleData(
-                "n3",
-                (1000 * 60 * 60) * 12L,
-                (1000 * 60 * 60) * 14L,
-                Color.CYAN
-            )
-        )
-        pageData.calendarDateList[idx].scheduleList.add(
-            ScheduleData(
-                "n4",
-                (1000 * 60 * 60) * 15L,
-                (1000 * 60 * 60) * 19L,
-                Color.GRAY
-            )
-        )
-        pageData.calendarDateList[idx].scheduleList.add(
-            ScheduleData(
-                "n5",
-                (1000 * 60 * 60) * 20L,
-                ((1000 * 60 * 60) * 20.5).toLong(),
-                Color.YELLOW
-            )
-        )
+//        pageData.calendarDateList[idx].scheduleList.add(
+//            ScheduleData(
+//                "n1",
+//                (1000 * 60 * 60) * 3L,
+//                (1000 * 60 * 60) * 4L,
+//                Color.BLUE
+//            )
+//        )
+//        pageData.calendarDateList[idx].scheduleList.add(
+//            ScheduleData(
+//                "n2",
+//                (1000 * 60 * 60) * 5L,
+//                (1000 * 60 * 60) * 10L,
+//                Color.RED
+//            )
+//        )
+//        pageData.calendarDateList[idx].scheduleList.add(
+//            ScheduleData(
+//                "n3",
+//                (1000 * 60 * 60) * 12L,
+//                (1000 * 60 * 60) * 14L,
+//                Color.CYAN
+//            )
+//        )
+//        pageData.calendarDateList[idx].scheduleList.add(
+//            ScheduleData(
+//                "n4",
+//                (1000 * 60 * 60) * 15L,
+//                (1000 * 60 * 60) * 19L,
+//                Color.GRAY
+//            )
+//        )
+//        pageData.calendarDateList[idx].scheduleList.add(
+//            ScheduleData(
+//                "n5",
+//                (1000 * 60 * 60) * 20L,
+//                ((1000 * 60 * 60) * 20.5).toLong(),
+//                Color.YELLOW
+//            )
+//        )
+    }
+
+    fun findDate(year: Int, month: Int, date: Int): Int? {
+        for (i in pageData.calendarDateList.value!!.indices) {
+            val dateData = pageData.calendarDateList.value!![i]
+            if (dateData.year == year &&
+                dateData.month == month &&
+                dateData.date == date)
+                return i
+        }
+        return null
     }
 
     fun selectDate(idx: Int): Int {
@@ -124,21 +162,30 @@ class MonthCalendarPagePresenter(
     }
 
     fun isSaturday(date: MonthCalendarDateData): Boolean {
-        val cal = Calendar.getInstance()
-        cal.set(date.year, date.month-1, date.date)
-        return cal.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY
+        return date.isSaturday()
     }
     fun isSunday(date: MonthCalendarDateData): Boolean {
-        val cal = Calendar.getInstance()
-        cal.set(date.year, date.month-1, date.date)
-        return cal.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY
+        return date.isSunday()
     }
     fun isHoliday(date: MonthCalendarDateData): Boolean {
-        return false
+        return date.isHoliday
     }
 
     fun isThisMonth(date: MonthCalendarDateData): Boolean {
         return date.month == pageData.month
+    }
+
+    fun dateToYYYYMMDD(year: Int, month: Int, date: Int): String {
+        val yyyy = year.toString()
+        val mm = when(month) {
+            in 1 .. 9 -> "0${month}"
+            else -> "$month"
+        }
+        val dd = when(date) {
+            in 1 .. 9 -> "0${date}"
+            else -> "$date"
+        }
+        return "$yyyy$mm$dd"
     }
 
 }
