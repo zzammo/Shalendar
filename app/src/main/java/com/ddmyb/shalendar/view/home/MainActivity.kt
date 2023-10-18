@@ -5,13 +5,12 @@ package com.ddmyb.shalendar.view.home
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.view.WindowManager
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.ddmyb.shalendar.R
 import com.ddmyb.shalendar.databinding.ActivityMainBinding
-import com.ddmyb.shalendar.dummy_fragment.AlarmManagerFragment
+import com.ddmyb.shalendar.view.alarm_manager.AlarmManagerFragment
 import com.ddmyb.shalendar.dummy_fragment.GroupCalendarFragment
 import com.ddmyb.shalendar.dummy_fragment.PersonalCalendarFragment
 import com.ddmyb.shalendar.dummy_fragment.ProflieFragment
