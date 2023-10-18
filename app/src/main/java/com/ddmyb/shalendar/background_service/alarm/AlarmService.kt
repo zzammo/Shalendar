@@ -16,14 +16,13 @@ class AlarmService {
     private val pendingIntent: PendingIntent
     constructor(context: Context){
         alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        pendingIntent = Intent(context, AlarmReceiver::class.java).let {
-            it.putExtra("code", AlarmReceiver.REQUEST_CODE)
-            it.putExtra("count", 32)
-            PendingIntent.getBroadcast(context,
-                AlarmReceiver.REQUEST_CODE,
-                it,
-                PendingIntent.FLAG_IMMUTABLE)
-        }
+        val intent = Intent(context, AlarmReceiver::class.java)
+        intent.putExtra("code", AlarmReceiver.REQUEST_CODE)
+        pendingIntent = PendingIntent.getBroadcast(
+            context,
+            AlarmReceiver.REQUEST_CODE,
+            intent,
+            PendingIntent.FLAG_IMMUTABLE)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -33,8 +32,7 @@ class AlarmService {
         val localDateTime = instant.atZone(ZoneId.systemDefault()).toLocalDateTime()
 
         Log.d("setAlarmWithTime",localDateTime.toString())
-
-
+        
         alarmManager.setExactAndAllowWhileIdle(
             AlarmManager.RTC_WAKEUP,
             seconds * 1000,

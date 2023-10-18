@@ -21,7 +21,6 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintRight_toRightOf="parent"/>
 
-
         <Button
             android:id="@+id/schedules_button"
             android:layout_width="wrap_content"
@@ -35,7 +34,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="mapTest"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/bottom_nav"
             app:layout_constraintLeft_toLeftOf="parent"/>
 
         <Button
@@ -43,10 +42,28 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="weatherTest"
-
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/bottom_nav"
             app:layout_constraintEnd_toEndOf="parent" />
 
+        <FrameLayout
+            android:id="@+id/main_frame"
+            android:layout_width="100dp"
+            android:layout_height="200dp"
+            app:layout_constraintTop_toBottomOf="@+id/schedules_button"
+            app:layout_constraintStart_toEndOf="@+id/schedules_button"/>
+
+        <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:id="@+id/bottom_nav"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#fff"
+
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:labelVisibilityMode="unlabeled"
+            app:menu="@menu/bottom_menu"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+
 </layout>

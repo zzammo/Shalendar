@@ -1,23 +1,30 @@
 package com.ddmyb.shalendar.view.home
 
+//import com.ddmyb.shalendar.view.dialog.TestDialog
+
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.view.WindowManager
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.ddmyb.shalendar.R
 import com.ddmyb.shalendar.databinding.ActivityMainBinding
-//import com.ddmyb.shalendar.view.dialog.TestDialog
-import com.ddmyb.shalendar.util.KakaoInvite
+import com.ddmyb.shalendar.dummy_fragment.AlarmManagerFragment
+import com.ddmyb.shalendar.dummy_fragment.GroupCalendarFragment
+import com.ddmyb.shalendar.dummy_fragment.PersonalCalendarFragment
+import com.ddmyb.shalendar.dummy_fragment.ProflieFragment
 import com.ddmyb.shalendar.view.maptest.MapActivity
-import com.ddmyb.shalendar.view.test.TestActivity
 import com.ddmyb.shalendar.view.schedules.ScheduleActivity
+import com.ddmyb.shalendar.view.test.TestActivity
+
 
 @RequiresApi(Build.VERSION_CODES.O)
 class MainActivity : AppCompatActivity() {
 
         private lateinit var binding: ActivityMainBinding
+        private lateinit var windowManager: WindowManager
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
             binding = DataBindingUtil.setContentView(this@MainActivity, R.layout.activity_main)
@@ -44,5 +51,45 @@ class MainActivity : AppCompatActivity() {
 //                val intent = Intent(this, WeatherTest::class.java)
 //                startActivity(intent)
 //            }
-    }
+
+            supportFragmentManager.beginTransaction()
+                .add(R.id.main_frame, PersonalCalendarFragment()).commit()
+
+            binding.bottomNav.setOnItemSelectedListener { menuItem ->
+                when (menuItem.itemId) {
+                    R.id.item_fragment1 -> {
+                        supportFragmentManager.beginTransaction()
+                            .replace(R.id.main_frame, PersonalCalendarFragment()).commit()
+                        true
+                    }
+
+
+                    R.id.item_fragment2 -> {
+                        supportFragmentManager.beginTransaction()
+                            .replace(R.id.main_frame, GroupCalendarFragment()).commit()
+                        true
+                    }
+
+                    R.id.item_fragment3 -> {
+                        val intent = Intent(this, ScheduleActivity::class.java)
+                        intent.putExtra("id", "dnaoidfnaodf")
+                        startActivity(intent)
+                        false
+                    }
+
+                    R.id.item_fragment4 -> {
+                        supportFragmentManager.beginTransaction()
+                            .replace(R.id.main_frame, AlarmManagerFragment()).commit()
+                        true
+                    }
+
+                    R.id.item_fragment5 -> {
+                        supportFragmentManager.beginTransaction()
+                            .replace(R.id.main_frame, ProflieFragment()).commit()
+                        true
+                    }
+                    else -> false
+                }
+            }
+        }
 }

@@ -71,7 +71,7 @@ class ScheduleActivity(
         setContentView(binding.root)
 
         val startDateTimeDto = intent.getSerializableExtra("StartDateTimeDto") as? StartDateTimeDto
-            ?: StartDateTimeDto(scheduleId = null, dateTime = LocalDateTime.now())
+            ?: StartDateTimeDto(scheduleId = null, dateTime = LocalDateTime.now().withSecond(0))
         Log.d("startDateTimeDto", startDateTimeDto.toString())
         presenter = SchedulePresenter(this, startDateTimeDto, this)
 
