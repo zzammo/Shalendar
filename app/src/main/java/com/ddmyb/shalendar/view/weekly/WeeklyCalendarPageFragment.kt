@@ -213,7 +213,8 @@ class WeeklyCalendarPageFragment(private val now: Long): Fragment() {
         }
 
         if (!listOfSchedule.isEmpty()) {
-            (activity as WeeklyCalendarActivity).openSlidingUpPanel(blankStartCal, listOfSchedule)
+//            .openSlidingUpPanel(blankStartCal, listOfSchedule)
+            (parentFragmentManager.findFragmentByTag("week") as WeeklyCalendarFragment).openSlidingUpPanel(blankStartCal, listOfSchedule)
         }
     }
 
