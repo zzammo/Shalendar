@@ -62,7 +62,6 @@ class MainActivity : AppCompatActivity() {
                         true
                     }
 
-
                     R.id.item_fragment2 -> {
                         supportFragmentManager.beginTransaction()
                             .replace(R.id.main_frame, GroupCalendarFragment()).commit()
