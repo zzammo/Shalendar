@@ -25,12 +25,16 @@ import com.ddmyb.shalendar.databinding.FragmentMonthCalendarPageBinding
 import com.ddmyb.shalendar.databinding.ItemMonthDateBinding
 import com.ddmyb.shalendar.databinding.ItemMonthScheduleBinding
 import com.ddmyb.shalendar.util.CalendarFunc
+import com.ddmyb.shalendar.util.HttpResult
 import com.ddmyb.shalendar.util.Logger
+import com.ddmyb.shalendar.util.MutableLiveListData
+import com.ddmyb.shalendar.view.holiday.data.HolidayDTO
 import com.ddmyb.shalendar.view.month.adapter.MonthCalendarDateScheduleRVAdapter
 import com.ddmyb.shalendar.view.month.adapter.MonthCalendarFragmentAdapter
 import com.ddmyb.shalendar.view.month.adapter.MonthDateDetailAdapter
 import com.ddmyb.shalendar.view.month.data.MonthCalendarDateData
 import com.ddmyb.shalendar.view.month.data.MonthPageData
+import com.ddmyb.shalendar.view.month.data.ScheduleData
 import com.ddmyb.shalendar.view.month.data.TimeTableScheduleList
 import com.ddmyb.shalendar.view.month.presenter.MonthCalendarPagePresenter
 import com.islandparadise14.mintable.MinTimeTableView
@@ -44,10 +48,11 @@ class MonthCalendarPageFragment(private val now: Long) : Fragment() {
 
     private lateinit var presenter: MonthCalendarPagePresenter
 
+    private val cal = Calendar.getInstance()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val cal = Calendar.getInstance()
         cal.timeInMillis = now
 
         logger.logD("${cal.get(Calendar.YEAR)}, ${cal.get(Calendar.MONTH)+1}")
@@ -56,9 +61,10 @@ class MonthCalendarPageFragment(private val now: Long) : Fragment() {
             MonthPageData(
                 cal.get(Calendar.YEAR),
                 cal.get(Calendar.MONTH)+1,
-                mutableListOf()
+                MutableLiveListData()
             )
         )
+
     }
 
     override fun onCreateView(
@@ -69,11 +75,13 @@ class MonthCalendarPageFragment(private val now: Long) : Fragment() {
             FragmentMonthCalendarPageBinding.inflate(inflater)
 
         binding.data = presenter.pageData
+        val itemBindingList = mutableListOf<ItemMonthDateBinding>()
 
-        for (i in 0 until presenter.pageData.calendarDateList.size) {
+        for (i in 0 until presenter.pageData.calendarDateList.value!!.size) {
             val itemBinding: ItemMonthDateBinding = DataBindingUtil.bind(binding.dateLayout[i])!!
+            itemBindingList.add(itemBinding)
 
-            val calendarDate = presenter.pageData.calendarDateList[i]
+            val calendarDate = presenter.pageData.calendarDateList.value!![i]
 
             itemBinding.schedules.apply {
                 layoutManager = object: LinearLayoutManager(requireContext()) {
@@ -105,24 +113,70 @@ class MonthCalendarPageFragment(private val now: Long) : Fragment() {
                 if (selectedIdx != -1)
                     binding.dateLayout[selectedIdx].background = null
 
-                binding.dateLayout[i].background = AppCompatResources.getDrawable(requireContext(), R.drawable.month_date_selected)
+                binding.dateLayout[i].background =
+                    AppCompatResources.getDrawable(requireContext(), R.drawable.month_date_selected)
 
                 showScheduleDialog(calendarDate)
             }
 
             itemBinding.data = calendarDate
 
-            if (presenter.isSaturday(calendarDate)) {
-                itemBinding.date.setTextColor(Color.BLUE)
-            }
-            else if (presenter.isSunday(calendarDate) || presenter.isHoliday(calendarDate)) {
-                itemBinding.date.setTextColor(Color.RED)
-            }
-
             if (!presenter.isThisMonth(calendarDate)) {
                 itemBinding.root.alpha = 0.3F
             }
         }
+
+        presenter.pageData.calendarDateList.apply {
+            this.observeChange {
+                logger.logD("change observe $it")
+                itemBindingList[it].data = this.value!![it]
+            }
+        }
+
+        presenter.loadHoliday(object : HttpResult<List<HolidayDTO.HolidayItem>>{
+            override fun success(data: List<HolidayDTO.HolidayItem>) {
+
+                for (item in data) {
+                    val year = item.locdate/10000
+                    val month = (item.locdate%10000)/100
+                    val date = item.locdate%100
+
+                    val index = presenter.findDate(year, month, date)
+                    if (index != null) {
+                        val dateData = presenter.pageData.calendarDateList.value!![index]
+                        dateData.isHoliday = true
+
+                        cal.set(year, month-1, date)
+                        cal.set(Calendar.HOUR, 0)
+                        cal.set(Calendar.MINUTE, 0)
+                        cal.set(Calendar.SECOND, 0)
+                        cal.set(Calendar.MILLISECOND, 0)
+                        val start = cal.timeInMillis
+
+                        cal.add(Calendar.DATE, 1)
+                        val end = cal.timeInMillis-1
+
+                        dateData.scheduleList.add(
+                            ScheduleData(item.dateName, start, end, true, Color.RED)
+                        )
+
+                        presenter.pageData.calendarDateList.replaceAt(index, dateData)
+                        logger.logD("holiday $dateData")
+                    }
+
+                    logger.logD("$item")
+                }
+            }
+
+            override fun appFail() {
+            }
+
+            override fun fail(throwable: Throwable) {
+            }
+
+            override fun finally() {
+            }
+        })
 
         return binding.root
     }
@@ -136,22 +190,6 @@ class MonthCalendarPageFragment(private val now: Long) : Fragment() {
         dialog.findViewById<TextView>(R.id.date).text = date.date.toString()
 
         dialog.findViewById<TextView>(R.id.day_of_week).text = presenter.getWeekOfDay(date)
-//
-//        dialog.findViewById<FrameLayout>(R.id.timetable).addView(
-//            TimeTableFragment(listOf(TimeTableScheduleList(" ", date.scheduleList.list))).binding.root
-//        )
-
-        logger.logD("$parentFragment")
-        logger.logD("$childFragmentManager")
-
-//        requireActivity().supportFragmentManager.commit {
-//            add(R.id.timetable,
-//                TimeTableFragment(
-//                    listOf(TimeTableScheduleList(" ", date.scheduleList.list))
-//                )
-//            )
-//            setReorderingAllowed(true)
-//        }
 
         dialog.findViewById<ViewPager2>(R.id.pager).apply {
             orientation = ViewPager2.ORIENTATION_HORIZONTAL
@@ -170,8 +208,6 @@ class MonthCalendarPageFragment(private val now: Long) : Fragment() {
         }
 
         dialog.show()
-
-//        val dialog = MonthDateDetailDialogFragment()
 
     }
 

@@ -6,5 +6,6 @@ data class ScheduleData(
     val name: String,
     val startTime: Long,
     val endTime: Long,
+    val isWholeDay: Boolean = false,
     val color: Int = Color.BLUE
 )

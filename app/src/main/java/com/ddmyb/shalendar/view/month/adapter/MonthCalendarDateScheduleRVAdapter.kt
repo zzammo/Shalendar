@@ -10,7 +10,7 @@ import com.ddmyb.shalendar.view.month.adapter.viewHolder.MonthCalendarDateSchedu
 import com.ddmyb.shalendar.view.month.data.ScheduleData
 
 class MonthCalendarDateScheduleRVAdapter(
-    val scheduleList: MutableLiveListData<ScheduleData>
+    private val scheduleList: MutableLiveListData<ScheduleData>
 ): RecyclerView.Adapter<MonthCalendarDateScheduleViewHolder>() {
 
     override fun onCreateViewHolder(

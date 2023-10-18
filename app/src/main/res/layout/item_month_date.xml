@@ -21,8 +21,21 @@
             android:layout_height="wrap_content"
             android:text="@{String.valueOf(data.date)}"
             android:textSize="@dimen/D_secondary_text"
+            android:textColor="@{data.color}"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
+            tools:text="00"/>
+
+        <TextView
+            android:id="@+id/lunar_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{String.valueOf(data.isHoliday)}"
+            android:textSize="11sp"
+            android:textColor="#838383"
+            android:layout_marginStart="@dimen/D_third_text"
+            app:layout_constraintBottom_toBottomOf="@id/date"
+            app:layout_constraintStart_toEndOf="@id/date"
             tools:text="00"/>
 
         <com.ddmyb.shalendar.view.month.TouchInterceptorCustomView

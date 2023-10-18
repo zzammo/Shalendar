@@ -8,7 +8,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.ddmyb.shalendar.R
 import com.ddmyb.shalendar.databinding.ActivityWeeklyCalendarBinding
-import com.ddmyb.shalendar.view.holiday.HolidayApiExplorer
 import com.ddmyb.shalendar.view.weekly.adapter.WeeklyCalendarAdapter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -32,7 +31,7 @@ class WeeklyCalendarActivity : AppCompatActivity() {
             val cal = Calendar.getInstance()
             val names = arrayListOf<String>()
             val dates = arrayListOf<Long>()
-            HolidayApiExplorer.getHolidays(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH)+1, names, dates)
+            /*HolidayApiExplorer.getHolidays(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH)+1, names, dates)*/
             Log.d(TAG, "holiday size: "+names.size)
             for (i in 0 until names.size) {
                 val caltemp = Calendar.getInstance()

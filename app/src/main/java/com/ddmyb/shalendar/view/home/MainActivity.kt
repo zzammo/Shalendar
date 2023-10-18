@@ -16,15 +16,14 @@ import com.ddmyb.shalendar.dummy_fragment.GroupCalendarFragment
 import com.ddmyb.shalendar.dummy_fragment.PersonalCalendarFragment
 import com.ddmyb.shalendar.dummy_fragment.ProflieFragment
 import com.ddmyb.shalendar.view.maptest.MapActivity
-import com.ddmyb.shalendar.view.schedules.ScheduleActivity
 import com.ddmyb.shalendar.view.test.TestActivity
-
+import com.ddmyb.shalendar.view.schedules.ScheduleActivity
+import com.ddmyb.shalendar.view.weather.WeatherTest
 
 @RequiresApi(Build.VERSION_CODES.O)
 class MainActivity : AppCompatActivity() {
 
         private lateinit var binding: ActivityMainBinding
-        private lateinit var windowManager: WindowManager
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
             binding = DataBindingUtil.setContentView(this@MainActivity, R.layout.activity_main)
@@ -39,18 +38,18 @@ class MainActivity : AppCompatActivity() {
                 intent.putExtra("id", "dnaoidfnaodf")
                 startActivity(intent)
             }
-//            binding.dialogTestButton.setOnClickListener {
-//                val intent = Intent(this, TestDialog::class.java)
-//                startActivity(intent)
-//            }
+/*            binding.dialogTestButton.setOnClickListener {
+                val intent = Intent(this, TestDialog::class.java)
+                startActivity(intent)
+            }*/
             binding.mapTestButton.setOnClickListener {
                 val intent = Intent(this, MapActivity::class.java)
                 startActivity(intent)
             }
-//            binding.amWeatherBtn.setOnClickListener {
-//                val intent = Intent(this, WeatherTest::class.java)
-//                startActivity(intent)
-//            }
+            binding.amWeatherBtn.setOnClickListener {
+                val intent = Intent(this, WeatherTest::class.java)
+                startActivity(intent)
+            }
 
             supportFragmentManager.beginTransaction()
                 .add(R.id.main_frame, PersonalCalendarFragment()).commit()

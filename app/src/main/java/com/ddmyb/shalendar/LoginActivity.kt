@@ -16,36 +16,21 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.kakao.sdk.common.util.Utility
+import com.ddmyb.shalendar.manageSchedule
 
 class LoginActivity : AppCompatActivity() {
-    private var mFirebaseAuth: FirebaseAuth? = null //파이어베이스 인증 처리
-    private var mDatabaseRef: DatabaseReference? = null //실시간 데이터베이스
 
     private val binding by lazy {
         ActivityLoginBinding.inflate(layoutInflater)
     }
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
-
-        mFirebaseAuth = FirebaseAuth.getInstance()
-        mDatabaseRef = FirebaseDatabase.getInstance().getReference("MaengDol")
         binding.btnLogin.setOnClickListener {
-            val strEmail = binding.etEmail.getText().toString()
-            val strPwd = binding.etPwd.getText().toString()
-            mFirebaseAuth!!.signInWithEmailAndPassword(strEmail, strPwd)
-                .addOnCompleteListener(this@LoginActivity) { task ->
-                    if (task.isSuccessful) {
-                        Toast.makeText(this@LoginActivity, "로그인 성공", Toast.LENGTH_SHORT).show()
-                        val intent = Intent(this@LoginActivity, NaviDrawerActivity::class.java)
-                        startActivity(intent)
-                        finish()
-                    } else {
-                        Toast.makeText(this@LoginActivity, "로그인 실패..!", Toast.LENGTH_SHORT).show()
-                    }
-                }
+            manageSchedule().Login(
+                binding.etEmail.getText().toString(), binding.etPwd.getText().toString(), applicationContext
+            )
         }
         binding.btnRegister.setOnClickListener { //회원가입 화면으로 이동
             val intent = Intent(this@LoginActivity, RegisterActivity::class.java)
