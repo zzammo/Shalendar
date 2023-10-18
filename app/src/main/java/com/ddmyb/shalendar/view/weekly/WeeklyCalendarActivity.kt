@@ -7,9 +7,12 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.ddmyb.shalendar.R
+import com.ddmyb.shalendar.data.Schedule
 import com.ddmyb.shalendar.databinding.ActivityWeeklyCalendarBinding
 import com.ddmyb.shalendar.view.holiday.HolidayApiExplorer
+import com.ddmyb.shalendar.view.weekly.adapter.SlidingUpPanelAdapter
 import com.ddmyb.shalendar.view.weekly.adapter.WeeklyCalendarAdapter
+import com.sothree.slidinguppanel.SlidingUpPanelLayout
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -23,7 +26,8 @@ class WeeklyCalendarActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_weekly_calendar)
+        binding = ActivityWeeklyCalendarBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         binding.pager.adapter = WeeklyCalendarAdapter(getFirstDays(10),this)
         binding.pager.setCurrentItem(10, false)
@@ -61,5 +65,27 @@ class WeeklyCalendarActivity : AppCompatActivity() {
         }
 
         return result
+    }
+
+    public fun openSlidingUpPanel(cal:Calendar, scheduleList: ArrayList<Schedule>) {
+        binding.tvToday.text = getDateString(cal)
+        val slidingUpPanelAdapter = SlidingUpPanelAdapter(scheduleList, cal, this@WeeklyCalendarActivity)
+        binding.planRecyclerView.adapter = slidingUpPanelAdapter
+        slidingUpPanelAdapter.notifyDataSetChanged()
+        binding.slidingMainFrame.panelState = SlidingUpPanelLayout.PanelState.ANCHORED
+    }
+
+    private fun getDateString(cal: Calendar): String {
+        val str = "${cal.get(Calendar.MONTH)}월 ${cal.get(Calendar.DATE)}일 "
+        when (cal.get(Calendar.DAY_OF_WEEK)) {
+            Calendar.SUNDAY -> return str + "일요일"
+            Calendar.MONDAY -> return str + "월요일"
+            Calendar.TUESDAY -> return str + "화요일"
+            Calendar.WEDNESDAY -> return str + "수요일"
+            Calendar.THURSDAY -> return str + "목요일"
+            Calendar.FRIDAY -> return str + "금요일"
+            Calendar.SATURDAY -> return str + "토요일"
+            else -> return str
+        }
     }
 }

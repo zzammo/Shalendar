@@ -55,8 +55,8 @@ class WeeklyCalendarPageFragment(private val now: Long): Fragment() {
 
         binding.root.viewTreeObserver.addOnWindowFocusChangeListener { hasFocus ->
             pixel_1minute = binding.clPlanSunday.height / 1440f
-            Log.d(TAG, "ConstlaintLayout height: " + binding.clPlanSunday.height)
-            Log.d(TAG, "pixel 1minute: " + pixel_1minute)
+            Log.d(TAG, "ConstlaintLayout height: ${binding.clPlanSunday.height}")
+            Log.d(TAG, "pixel 1minute: $pixel_1minute")
             onResume()
         }
 
@@ -127,6 +127,10 @@ class WeeklyCalendarPageFragment(private val now: Long): Fragment() {
         val endCal = Calendar.getInstance()
         endCal.timeInMillis = schedule.endTime
 
+        //이번주에 표시할 것이 아니면 리턴
+        if(endCal.get(Calendar.DAY_OF_MONTH) < weeklyDates.daynums[0] || weeklyDates.daynums[6] < startCal.get(Calendar.DAY_OF_MONTH))
+            return;
+
         var flag = false
 
         if(startCal.get(Calendar.DAY_OF_MONTH) != endCal.get(Calendar.DAY_OF_MONTH)){
@@ -158,8 +162,8 @@ class WeeklyCalendarPageFragment(private val now: Long): Fragment() {
 
         scheduleContainers[dayOfWeek].invalidate()
 
-        Log.d(TAG, "schedule x: "+ scheduleView.x)
-        Log.d(TAG, "schedule y: "+ scheduleView.y)
+        Log.d(TAG, "schedule x: ${scheduleView.x}")
+        Log.d(TAG, "schedule y: ${scheduleView.y}")
 
         if (flag) {
             startCal.add(Calendar.DATE, 1)
@@ -205,7 +209,11 @@ class WeeklyCalendarPageFragment(private val now: Long): Fragment() {
         }
 
         for (s in listOfSchedule) {
-            Log.d(TAG,"schedule: "+s.name)
+            Log.d(TAG,"schedule: ${s.name}")
+        }
+
+        if (!listOfSchedule.isEmpty()) {
+            (activity as WeeklyCalendarActivity).openSlidingUpPanel(blankStartCal, listOfSchedule)
         }
     }
 
