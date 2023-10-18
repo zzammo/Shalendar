@@ -1,9 +1,13 @@
 package com.ddmyb.shalendar
 
+import android.content.Context
+import android.content.Intent
 import android.os.Build
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import com.ddmyb.shalendar.domain.Schedule
 import com.ddmyb.shalendar.domain.protoSchedule
+import com.ddmyb.shalendar.view.home.navidrawer.NaviDrawerActivity
 import com.ddmyb.shalendar.view.schedules.utils.MeansType
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.auth.FirebaseAuth
@@ -25,7 +29,6 @@ class manageSchedule {
     object mychildEventListener: ChildEventListener {
 
         var List1 = arrayListOf<Schedule>()
-        @RequiresApi(Build.VERSION_CODES.O)
         override fun onChildAdded(dataSnapshot: DataSnapshot, previousChildName: String?) {
             val mSc: Schedule = Schedule()
             mSc.scheduleId = dataSnapshot.child("scheduleId").getValue(String::class.java)
@@ -40,11 +43,12 @@ class manageSchedule {
                 dataSnapshot.child("endLocalDateTime").getValue(String::class.java),
                 DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS")
             )
-            //mSc.meansType = MeansType.(dataSnapshot.child("meansType").getValue(Int::class.java))
             mSc.cost?.text =
                 dataSnapshot.child("cost").child("text").getValue(String::class.java).toString()
             mSc.cost!!.value =
                 dataSnapshot.child("cost").child("text").getValue(Int::class.java)!!
+            mSc.meansType= dataSnapshot.child("meansType").getValue(String::class.java)
+                ?.let { MeansType.fromLabel(it) }!!
             mSc.srcPosition = dataSnapshot.child("srcPosition").getValue(String::class.java)
                 ?.let { parseLatLngFromString(it) }
             mSc.dstPosition = dataSnapshot.child("dstPosition").getValue(String::class.java)
@@ -79,7 +83,19 @@ class manageSchedule {
         }
     }
 
+    fun Login(strEmail : String, strPwd : String, context: Context) {
+        mFirebaseAuth = FirebaseAuth.getInstance()
+        mFirebaseAuth!!.signInWithEmailAndPassword(strEmail, strPwd)
+            .addOnCompleteListener() { task ->
+                if (task.isSuccessful) {
+                    Toast.makeText(context, "로그인 성공", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(context, "로그인 실패", Toast.LENGTH_SHORT).show()
+                }
+            }
+    }
     fun saveSchedule(curSc : Schedule) {
+        mFirebaseAuth = FirebaseAuth.getInstance()
         val currentUser = mFirebaseAuth.currentUser
         mDatabaseRef = FirebaseDatabase.getInstance().getReference("UsersSchedule").child(currentUser!!.uid)
         mDatabaseRef.push().setValue(curSc)
