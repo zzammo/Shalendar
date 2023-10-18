@@ -22,7 +22,6 @@ class manageSchedule {
 
     private lateinit var mFirebaseAuth: FirebaseAuth
     private lateinit var mDatabaseRef: DatabaseReference //실시간 데이터베이스
-    val currentUser = mFirebaseAuth.currentUser
     object mychildEventListener: ChildEventListener {
 
         var List1 = arrayListOf<Schedule>()
@@ -81,11 +80,13 @@ class manageSchedule {
     }
 
     fun saveSchedule(curSc : Schedule) {
+        val currentUser = mFirebaseAuth.currentUser
         mDatabaseRef = FirebaseDatabase.getInstance().getReference("UsersSchedule").child(currentUser!!.uid)
         mDatabaseRef.push().setValue(curSc)
         return;
     }
     fun loadSchedule(minValue:String,maxValue:String): List<Schedule> {
+        val currentUser = mFirebaseAuth.currentUser
         mDatabaseRef = FirebaseDatabase.getInstance().getReference("UsersSchedule").child(currentUser!!.uid)
         val query1: Query = mDatabaseRef!!.orderByChild("startLocalDateTime").startAt(minValue)
         val query2: Query = query1.orderByChild("endLocalDateTime").endAt(maxValue)
