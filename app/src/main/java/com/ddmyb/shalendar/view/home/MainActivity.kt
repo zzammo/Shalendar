@@ -27,63 +27,64 @@ import com.ddmyb.shalendar.view.weather.WeatherTest
 @RequiresApi(Build.VERSION_CODES.O)
 class MainActivity : AppCompatActivity() {
 
-        private lateinit var binding: ActivityMainBinding
-        override fun onCreate(savedInstanceState: Bundle?) {
-            super.onCreate(savedInstanceState)
-            binding = DataBindingUtil.setContentView(this@MainActivity, R.layout.activity_main)
+    private lateinit var binding: ActivityMainBinding
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = DataBindingUtil.setContentView(this@MainActivity, R.layout.activity_main)
 
-            binding.testButton.setOnClickListener {
-                val intent = Intent(this, TestActivity::class.java)
-                startActivity(intent)
-            }
+        binding.testButton.setOnClickListener {
+            val intent = Intent(this, TestActivity::class.java)
+            startActivity(intent)
+        }
 
-            binding.schedulesButton.setOnClickListener {
-                val intent = Intent(this, ScheduleActivity::class.java)
-                intent.putExtra("id", "dnaoidfnaodf")
-                startActivity(intent)
-            }
-/*            binding.dialogTestButton.setOnClickListener {
-                val intent = Intent(this, TestDialog::class.java)
-                startActivity(intent)
-            }*/
-            binding.mapTestButton.setOnClickListener {
-                val intent = Intent(this, MapActivity::class.java)
-                startActivity(intent)
-            }
-            binding.amWeatherBtn.setOnClickListener {
-                val intent = Intent(this, WeatherTest::class.java)
-                startActivity(intent)
-            }
-
-            supportFragmentManager.beginTransaction()
-                .add(R.id.main_frame, PersonalCalendarFragment()).commit()
-
-            binding.bottomNav.setOnItemSelectedListener { menuItem ->
-                when (menuItem.itemId) {
-                    R.id.item_fragment1 -> {
-                        supportFragmentManager.beginTransaction()
-                            .replace(R.id.main_frame, MonthCalendarFragment(10)).commit()
-                        true
-                    }
-
-                    R.id.item_fragment2 -> {
-                        supportFragmentManager.beginTransaction()
-                            .replace(R.id.main_frame, GroupCalendarFragment()).commit()
-                        true
-                    }
-
-                    R.id.item_fragment3 -> {
-                        val intent = Intent(this, ScheduleActivity::class.java)
-                        intent.putExtra("id", "dnaoidfnaodf")
+        binding.schedulesButton.setOnClickListener {
+            val intent = Intent(this, ScheduleActivity::class.java)
+            intent.putExtra("id", "dnaoidfnaodf")
+            startActivity(intent)
+        }
+        /*            binding.dialogTestButton.setOnClickListener {
+                        val intent = Intent(this, TestDialog::class.java)
                         startActivity(intent)
-                        false
-                    }
+                    }*/
+        binding.mapTestButton.setOnClickListener {
+            val intent = Intent(this, MapActivity::class.java)
+            startActivity(intent)
+        }
+        binding.amWeatherBtn.setOnClickListener {
+            val intent = Intent(this, WeatherTest::class.java)
+            startActivity(intent)
+        }
 
-                    R.id.item_fragment4 -> {
-                        supportFragmentManager.beginTransaction()
-                            .replace(R.id.main_frame, AlarmManagerFragment()).commit()
-                        true
-                    }
+        supportFragmentManager.beginTransaction()
+            .add(R.id.main_frame, PersonalCalendarFragment()).commit()
+
+        binding.bottomNav.setOnItemSelectedListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.item_fragment1 -> {
+                    supportFragmentManager.beginTransaction()
+                        .replace(R.id.main_frame, MonthCalendarFragment(10)).commit()
+                    true
+                }
+
+
+                R.id.item_fragment2 -> {
+                    supportFragmentManager.beginTransaction()
+                        .replace(R.id.main_frame, GroupCalendarFragment()).commit()
+                    true
+                }
+
+                R.id.item_fragment3 -> {
+                    val intent = Intent(this, ScheduleActivity::class.java)
+                    intent.putExtra("id", "dnaoidfnaodf")
+                    startActivity(intent)
+                    false
+                }
+
+                R.id.item_fragment4 -> {
+                    supportFragmentManager.beginTransaction()
+                        .replace(R.id.main_frame, AlarmManagerFragment()).commit()
+                    true
+                }
 
                     R.id.item_fragment5 -> {
                         supportFragmentManager.beginTransaction()

@@ -25,7 +25,7 @@ import kotlinx.coroutines.withContext
 import java.io.IOException
 import java.time.LocalDate
 
-class WeatherTest : AppCompatActivity() {
+class WeatherTest2 : AppCompatActivity() {
     companion object {
         private const val PERMISSIONS_REQUEST_CODE = 100
     }
@@ -45,7 +45,7 @@ class WeatherTest : AppCompatActivity() {
         temperature = binding.awtWeatherTv
         weather = HashMap();
         weatherView = binding.awtIv
-        weatherApi = WeatherApi2(this@WeatherTest)
+        weatherApi = WeatherApi2(this@WeatherTest2)
 
         // 1. 위치 퍼미션을 가지고 있는지 체크합니다.
         val hasFineLocationPermission = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
@@ -63,7 +63,7 @@ class WeatherTest : AppCompatActivity() {
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, REQUIRED_PERMISSIONS[0])) {
                 // 3-2. 요청을 진행하기 전에 사용자가에게 퍼미션이 필요한 이유를 설명해줄 필요가 있습니다.
                 Snackbar.make(binding.root, "이 앱을 실행하려면 위치 접근 권한이 필요합니다.", Snackbar.LENGTH_INDEFINITE)
-                    .setAction("확인") { ActivityCompat.requestPermissions(this@WeatherTest, REQUIRED_PERMISSIONS, PERMISSIONS_REQUEST_CODE) }.show()
+                    .setAction("확인") { ActivityCompat.requestPermissions(this@WeatherTest2, REQUIRED_PERMISSIONS, PERMISSIONS_REQUEST_CODE) }.show()
                 // 3-3. 사용자게에 퍼미션 요청을 합니다. 요청 결과는 onRequestPermissionResult에서 수신됩니다.
             } else {
                 // 4-1. 사용자가 퍼미션 거부를 한 적이 없는 경우에는 퍼미션 요청을 바로 합니다.  // 요청 결과는 onRequestPermissionResult에서 수신됩니다.
