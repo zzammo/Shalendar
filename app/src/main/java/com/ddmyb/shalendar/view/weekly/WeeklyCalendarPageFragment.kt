@@ -23,7 +23,6 @@ import com.ddmyb.shalendar.view.schedules.ScheduleActivity
 import com.ddmyb.shalendar.view.weekly.data.WeeklyDates
 import java.util.Calendar
 
-@RequiresApi(Build.VERSION_CODES.O)
 class WeeklyCalendarPageFragment(private val now: Long): Fragment() {
 
     val TAG = "WeGlonD"
