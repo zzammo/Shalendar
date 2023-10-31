@@ -17,9 +17,7 @@ import com.ddmyb.shalendar.R
 import com.ddmyb.shalendar.data.Schedule
 import com.ddmyb.shalendar.databinding.FragmentWeeklyCalendarPageBinding
 import com.ddmyb.shalendar.view.schedules.ScheduleActivity
-import com.ddmyb.shalendar.view.schedules.utils.NewScheduleDto
 import com.ddmyb.shalendar.view.weekly.data.WeeklyDates
-import java.time.LocalDateTime
 import java.util.Calendar
 
 @RequiresApi(Build.VERSION_CODES.O)

@@ -18,7 +18,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.ddmyb.shalendar.LoginActivity
 import com.ddmyb.shalendar.databinding.NaviDrawerBinding
 import com.ddmyb.shalendar.domain.Schedule
-import com.ddmyb.shalendar.domain.protoSchedule
 import com.ddmyb.shalendar.view.home.navidrawer.adapter.OwnedCalendarAdapter
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -86,7 +85,7 @@ class NaviDrawerActivity :AppCompatActivity() {
                 val mpSc = protoSchedule()
                 mpSc.scheduleId=mSc.scheduleId
 //                mpSc.isPublic=mSc.isPublic
-                mpSc.userId=mSc.userId
+//                mpSc.userId=mSc.userId
                 mpSc.startLocalDateTime=mSc.startLocalDatetime?.format(DateTimeFormatter.ofPattern("yyyymmddhhmmssSSS"))
                 mpSc.endLocalDateTime=mSc.endLocalDatetime!!.format(DateTimeFormatter.ofPattern("yyyymmddhhmmssSSS"))
                 mpSc.meansType=mSc.meansType

@@ -32,7 +32,7 @@ import com.ddmyb.shalendar.view.schedules.utils.MarkerInfo
 import com.ddmyb.shalendar.view.schedules.utils.MeansType
 import com.ddmyb.shalendar.view.schedules.utils.Permission
 import com.ddmyb.shalendar.view.schedules.utils.Permission.Companion.REQUIRED_PERMISSIONS
-import com.ddmyb.shalendar.view.schedules.utils.NewScheduleDto
+import com.ddmyb.shalendar.util.NewScheduleDto
 import com.ddmyb.shalendar.view.schedules.utils.TimeInfo
 import com.google.android.gms.maps.CameraUpdate
 import com.google.android.gms.maps.CameraUpdateFactory

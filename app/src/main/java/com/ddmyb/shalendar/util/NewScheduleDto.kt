@@ -1,4 +1,4 @@
-package com.ddmyb.shalendar.view.schedules.utils
+package com.ddmyb.shalendar.util
 
 import java.io.Serializable
 

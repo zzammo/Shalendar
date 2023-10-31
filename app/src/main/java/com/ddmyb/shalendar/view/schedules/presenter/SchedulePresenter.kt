@@ -25,7 +25,7 @@ import com.ddmyb.shalendar.view.schedules.utils.DateInfo
 import com.ddmyb.shalendar.view.schedules.utils.IterationType
 import com.ddmyb.shalendar.view.schedules.utils.MarkerInfo
 import com.ddmyb.shalendar.view.schedules.utils.MeansType
-import com.ddmyb.shalendar.view.schedules.utils.NewScheduleDto
+import com.ddmyb.shalendar.util.NewScheduleDto
 import com.ddmyb.shalendar.view.schedules.utils.TimeInfo
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationResult

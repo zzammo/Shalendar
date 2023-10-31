@@ -9,11 +9,9 @@ import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.ddmyb.shalendar.R
 import com.ddmyb.shalendar.domain.Alarm
 import com.ddmyb.shalendar.view.alarm_manager.adapter.AlarmRVAdapter
-import java.time.LocalDateTime
 
 @RequiresApi(Build.VERSION_CODES.O)
 class AlarmManagerFragment : Fragment() {

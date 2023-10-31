@@ -13,7 +13,7 @@ import java.time.ZoneId
 data class ScheduleDto (
     var scheduleId: String = "scheduleId",
     var groupId: Int = -1, // 개인 일정일 경우 -1, 그룹 일정일 경우 그룹 id
-    var userId: Int = 201915204,
+    var userId: String = "",
     var color: Int = R.color.cat_0, // .
 
     // 일정 시작 시간
