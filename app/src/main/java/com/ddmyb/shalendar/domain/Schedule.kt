@@ -12,8 +12,8 @@ import java.time.ZoneId
 
 @RequiresApi(Build.VERSION_CODES.O)
 data class Schedule (
-    var scheduleId: String = "scheduleId",
-    var groupId: Int = -1, // 개인 일정일 경우 -1, 그룹 일정일 경우 그룹 id
+    var scheduleId: String = "",
+    var groupId: String = "", // 개인 일정일 경우 "", 그룹 일정일 경우 그룹 id
     var userId: String = "",
     var color: Int = R.color.cat_0, // .
 
