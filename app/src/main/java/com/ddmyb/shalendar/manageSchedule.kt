@@ -53,10 +53,10 @@ class manageSchedule {
             mSc.srcAddress = dataSnapshot.child("dstAddress").getValue(String::class.java)!!
             mSc.dstAddress = dataSnapshot.child("dstAddress").getValue(String::class.java)!!
 
-            mSc.dptMills = LocalDateTime.parse(
-                dataSnapshot.child("departureLocalDateTime").getValue(String::class.java),
-                DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS")
-            )
+//            mSc.dptMills = LocalDateTime.parse(
+//                dataSnapshot.child("departureLocalDateTime").getValue(String::class.java),
+//                DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS")
+//            )
 
             mSc.title = dataSnapshot.child("title").getValue(String::class.java)!!
             mSc.memo = dataSnapshot.child("memo").getValue(String::class.java)!!
@@ -133,10 +133,10 @@ class manageSchedule {
                 mSc.srcAddress = dataSnapshot.child("dstAddress").toString()
                 mSc.dstAddress = dataSnapshot.child("dstAddress").toString()
 
-                mSc.dptMills = LocalDateTime.parse(
-                    dataSnapshot.child("departureLocalDateTime").getValue(String::class.java),
-                    DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS")
-                )
+//                mSc.dptMills = LocalDateTime.parse(
+//                    dataSnapshot.child("departureLocalDateTime").getValue(String::class.java),
+//                    DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS")
+//                )
 
                 mSc.title = dataSnapshot.child("title").toString()
                 mSc.memo = dataSnapshot.child("memo").toString()

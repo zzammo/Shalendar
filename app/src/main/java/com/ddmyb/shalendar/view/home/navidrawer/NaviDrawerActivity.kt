@@ -96,7 +96,7 @@ class NaviDrawerActivity :AppCompatActivity() {
                 mpSc.srcAddress=mSc.srcAddress
                 mpSc.srcAddress=mSc.srcAddress
                 mpSc.dstAddress=mSc.dstAddress
-                mpSc.departureLocalDateTime=mSc.dptMills!!.format(DateTimeFormatter.ofPattern("yyyymmddhhmmssSSS"))
+//                mpSc.departureLocalDateTime=mSc.dptMills!!.format(DateTimeFormatter.ofPattern("yyyymmddhhmmssSSS"))
                 mDatabaseRef!!.child(firebaseUser.uid).push().setValue(mpSc)
                 Toast.makeText(this@NaviDrawerActivity, "업로드 성공", Toast.LENGTH_SHORT).show()
             }
