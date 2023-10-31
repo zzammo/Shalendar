@@ -31,7 +31,7 @@ class manageSchedule {
             mSc.scheduleId = dataSnapshot.child("scheduleId").getValue(String::class.java).toString()
 //            mSc.isPublic =
 //                dataSnapshot.child("startLocalDateTime").getValue(Boolean::class.java) == true
-            mSc.userId = dataSnapshot.child("userId").getValue(Int::class.java)!!
+            mSc.userId = dataSnapshot.child("userId").getValue(String::class.java)!!
             mSc.startLocalDatetime = LocalDateTime.parse(
                 dataSnapshot.child("startLocalDateTime").getValue(String::class.java),
                 DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS")
@@ -112,7 +112,7 @@ class manageSchedule {
                 mSc.scheduleId = dataSnapshot.child("scheduleId").getValue(String::class.java).toString()
 //                mSc.isPublic =
 //                    dataSnapshot.child("startLocalDateTime").getValue(Boolean::class.java) == true
-                mSc.userId = dataSnapshot.child("userId").getValue(Int::class.java)!!
+                mSc.userId = dataSnapshot.child("userId").getValue(String::class.java)!!
                 mSc.startLocalDatetime = LocalDateTime.parse(
                     dataSnapshot.child("startLocalDateTime").getValue(String::class.java),
                     DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS")
