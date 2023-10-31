@@ -19,7 +19,7 @@ class AlarmRVAdapter(val itemList: ArrayList<Alarm>): RecyclerView.Adapter<Alarm
 
     override fun onBindViewHolder(holder: AlarmViewHolder, position: Int) {
         holder.tv_name.text = itemList[position].name
-        holder.tv_start_time.text = itemList[position].time.toString()
-        holder.tv_end_time.text = itemList[position].time.toString()
+        holder.tv_start_time.text = itemList[position].mills.toString()
+        holder.tv_end_time.text = itemList[position].mills.toString()
     }
 }

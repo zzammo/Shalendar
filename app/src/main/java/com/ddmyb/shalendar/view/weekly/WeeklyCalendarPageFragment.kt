@@ -181,8 +181,8 @@ class WeeklyCalendarPageFragment(private val now: Long): Fragment() {
         cal.timeInMillis = now
         cal.add(Calendar.DATE, dayOfWeek)
 
-        val startLocalDateTime = LocalDateTime.of(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH)+1, cal.get(Calendar.DATE), hour, 0, 0)
-        intent.putExtra("StartDateTimeDto", NewScheduleDto("", startLocalDateTime))
+//        val startLocalDateTime = LocalDateTime.of(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH)+1, cal.get(Calendar.DATE), hour, 0, 0)
+//        intent.putExtra("StartDateTimeDto", NewScheduleDto("", startLocalDateTime))
         startActivity(intent)
     }
 

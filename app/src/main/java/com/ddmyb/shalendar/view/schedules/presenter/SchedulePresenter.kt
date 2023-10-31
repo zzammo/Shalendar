@@ -13,6 +13,7 @@ import androidx.core.content.ContextCompat
 import com.ddmyb.shalendar.background_service.alarm.AlarmService
 import com.ddmyb.shalendar.domain.Alarm
 import com.ddmyb.shalendar.domain.Schedule
+import com.ddmyb.shalendar.domain.ScheduleDto
 import com.ddmyb.shalendar.view.schedules.ScheduleActivity
 import com.ddmyb.shalendar.view.schedules.model.service.GeoCodingService
 import com.ddmyb.shalendar.view.schedules.model.service.NetworkStatusService
@@ -139,25 +140,28 @@ class SchedulePresenter {
             updateDates(newEndDate.toLocalDate())
         }
     }
-    private fun handleAlarm(context: Context){
+
+    fun saveSchedule(context: Context) {
+
+        schedule.title = view.readTitle()
+        schedule.memo = view.readMemo()
+
+        val scheduleDto = ScheduleDto(schedule)
         val alarmService =  AlarmService(context)
+
         if (alarmInfo.alarmType == AlarmInfo.AlarmType.NULL){
             return
         }
         if (view.isCheckedDepartureAlarmSwitch()){
             val seconds = schedule.dptLocalDateTime.atZone(ZoneId.systemDefault()).toEpochSecond() - alarmInfo.toSeconds()
-            val newAlarm = Alarm(schedule.title, schedule.memo, schedule.dptLocalDateTime, schedule.color)
+            val newAlarm = Alarm(scheduleDto)
             alarmService.setAlarmWithTime(seconds, newAlarm)
         }else{
             val seconds = schedule.startLocalDatetime.atZone(ZoneId.systemDefault()).toEpochSecond() - alarmInfo.toSeconds()
-            val newAlarm = Alarm(schedule.title, schedule.memo, schedule.startLocalDatetime, schedule.color)
+            val newAlarm = Alarm(scheduleDto)
             alarmService.setAlarmWithTime(seconds, newAlarm)
         }
-    }
-    fun saveSchedule(context: Context) {
-        schedule.title = view.readTitle()
-        schedule.memo = view.readMemo()
-        handleAlarm(context)
+
         if (NetworkStatusService.isOnline(context)){
             // firebase repository 구현
         }
