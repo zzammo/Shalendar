@@ -1,5 +1,4 @@
 package com.ddmyb.shalendar.data
-
-data class OwnedCalendar(
-    var name: String = "",
-)
+class OwnedCalendar(var text: String, var type: Int) {
+    var invisibleChildren: MutableList<OwnedCalendar>? = null
+}
