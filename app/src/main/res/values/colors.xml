@@ -7,7 +7,7 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="red">#DB4437</color>
+9    <color name="red">#DB4437</color>
     <color name="blue">#FF0000FF</color>
     <color name="transparent">#00000000</color>
     <color name="boundry">#FFDCDCDC</color>
@@ -25,6 +25,8 @@
     <color name="black_overlay">#66000000</color>
 
     <color name="google_blue">#4285F4</color>
+    <color name="google_blue_.33Alpha">#544285F4</color>
+    <color name="google_blue_.1Alpha">#1A4285F4</color>
 
     <color name="cat_0">#E9B9AA</color>
     <color name="cat_1">#D98481</color>

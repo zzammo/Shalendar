@@ -11,7 +11,7 @@
                 android:width="0.5dp"
                 android:color="@color/boundry" />
 
-            <solid android:color="@color/transparent_blue" />
+            <solid android:color="@color/google_blue_.33Alpha" />
             <corners android:radius="15dp" />
         </shape>
     </item>
