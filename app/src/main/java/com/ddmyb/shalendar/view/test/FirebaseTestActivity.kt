@@ -2,19 +2,11 @@ package com.ddmyb.shalendar.view.test
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
-import android.view.View
-import android.view.View.OnClickListener
-import android.widget.Button
-import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import com.ddmyb.shalendar.R
 import com.ddmyb.shalendar.databinding.ActivityFirebaseTestBinding
-import com.ddmyb.shalendar.domain.Schedule
+import com.ddmyb.shalendar.domain.Alarm
 import com.ddmyb.shalendar.manageSchedule
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.Query
 
 class FirebaseTestActivity : AppCompatActivity() {
 
@@ -37,7 +29,7 @@ class FirebaseTestActivity : AppCompatActivity() {
         }
 
         binding.saveScheduleButton.setOnClickListener {
-            manageSchedule().saveSchedule(Schedule())
+            manageSchedule().saveSchedule(Alarm())
         }
 //        test(object: View.OnClickListener {
 //            override fun onClick(p0: View?) {

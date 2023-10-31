@@ -32,8 +32,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility 1.8
+        targetCompatibility 1.8
     }
     kotlinOptions {
         jvmTarget = '1.8'
@@ -124,4 +124,7 @@ dependencies {
     //sliding up panel
     implementation 'com.github.hannesa2:AndroidSlidingUpPanel:4.2.1'
 
+    // room
+    implementation 'androidx.room:room-runtime:2.2.6'
+    annotationProcessor 'androidx.room:room-compiler:2.2.6'
 }
