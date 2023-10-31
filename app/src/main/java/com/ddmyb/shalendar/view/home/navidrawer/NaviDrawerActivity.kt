@@ -20,7 +20,6 @@ import com.ddmyb.shalendar.databinding.NaviDrawerBinding
 import com.ddmyb.shalendar.domain.Schedule
 import com.ddmyb.shalendar.domain.protoSchedule
 import com.ddmyb.shalendar.view.home.navidrawer.adapter.OwnedCalendarAdapter
-import com.ddmyb.shalendar.view.schedules.model.dto.google_distance_matrix.utils.TextValueObject
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.ChildEventListener
@@ -86,10 +85,10 @@ class NaviDrawerActivity :AppCompatActivity() {
                 val mSc = Schedule()
                 val mpSc = protoSchedule()
                 mpSc.scheduleId=mSc.scheduleId
-                mpSc.isPublic=mSc.isPublic
+//                mpSc.isPublic=mSc.isPublic
                 mpSc.userId=mSc.userId
-                mpSc.startLocalDateTime=mSc.startLocalDateTime?.format(DateTimeFormatter.ofPattern("yyyymmddhhmmssSSS"))
-                mpSc.endLocalDateTime=mSc.endLocalDateTime!!.format(DateTimeFormatter.ofPattern("yyyymmddhhmmssSSS"))
+                mpSc.startLocalDateTime=mSc.startLocalDatetime?.format(DateTimeFormatter.ofPattern("yyyymmddhhmmssSSS"))
+                mpSc.endLocalDateTime=mSc.endLocalDatetime!!.format(DateTimeFormatter.ofPattern("yyyymmddhhmmssSSS"))
                 mpSc.meansType=mSc.meansType
                 mpSc.cost=mSc.cost
                 mpSc.srcPosition=mSc.srcPosition.toString()
@@ -97,7 +96,7 @@ class NaviDrawerActivity :AppCompatActivity() {
                 mpSc.srcAddress=mSc.srcAddress
                 mpSc.srcAddress=mSc.srcAddress
                 mpSc.dstAddress=mSc.dstAddress
-                mpSc.departureLocalDateTime=mSc.departureLocalDateTime!!.format(DateTimeFormatter.ofPattern("yyyymmddhhmmssSSS"))
+                mpSc.departureLocalDateTime=mSc.dptMills!!.format(DateTimeFormatter.ofPattern("yyyymmddhhmmssSSS"))
                 mDatabaseRef!!.child(firebaseUser.uid).push().setValue(mpSc)
                 Toast.makeText(this@NaviDrawerActivity, "업로드 성공", Toast.LENGTH_SHORT).show()
             }

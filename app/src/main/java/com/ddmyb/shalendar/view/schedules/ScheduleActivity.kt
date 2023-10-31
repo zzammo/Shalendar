@@ -32,7 +32,7 @@ import com.ddmyb.shalendar.view.schedules.utils.MarkerInfo
 import com.ddmyb.shalendar.view.schedules.utils.MeansType
 import com.ddmyb.shalendar.view.schedules.utils.Permission
 import com.ddmyb.shalendar.view.schedules.utils.Permission.Companion.REQUIRED_PERMISSIONS
-import com.ddmyb.shalendar.view.schedules.utils.StartDateTimeDto
+import com.ddmyb.shalendar.view.schedules.utils.NewScheduleDto
 import com.ddmyb.shalendar.view.schedules.utils.TimeInfo
 import com.google.android.gms.maps.CameraUpdate
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -45,6 +45,7 @@ import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.snackbar.Snackbar
 import java.time.LocalDateTime
+import java.time.ZoneId
 
 private lateinit var binding: ActivityScheduleBinding
 private lateinit var getResult: ActivityResultLauncher<Intent>
@@ -70,10 +71,10 @@ class ScheduleActivity(
         binding = ActivityScheduleBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val startDateTimeDto = intent.getSerializableExtra("StartDateTimeDto") as? StartDateTimeDto
-            ?: StartDateTimeDto(scheduleId = null, dateTime = LocalDateTime.now().withSecond(0))
-        Log.d("startDateTimeDto", startDateTimeDto.toString())
-        presenter = SchedulePresenter(this, startDateTimeDto, this)
+        val newScheduleDto = intent.getSerializableExtra("StartDateTimeDto") as? NewScheduleDto
+            ?: NewScheduleDto(scheduleId = "0", mills = LocalDateTime.now().atZone(ZoneId.systemDefault()).toEpochSecond() * 1000)
+        Log.d("startDateTimeDto", newScheduleDto.toString())
+        presenter = SchedulePresenter(this, newScheduleDto, this)
 
         binding.map.layoutParams.height = resources.displayMetrics.widthPixels - 20
         val mapFragment = supportFragmentManager

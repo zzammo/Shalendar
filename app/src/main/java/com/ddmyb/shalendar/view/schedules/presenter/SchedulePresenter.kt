@@ -6,12 +6,12 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Build
-import android.os.SystemClock
 import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import com.ddmyb.shalendar.background_service.alarm.AlarmService
+import com.ddmyb.shalendar.domain.Alarm
 import com.ddmyb.shalendar.domain.Schedule
 import com.ddmyb.shalendar.view.schedules.ScheduleActivity
 import com.ddmyb.shalendar.view.schedules.model.service.GeoCodingService
@@ -24,14 +24,14 @@ import com.ddmyb.shalendar.view.schedules.utils.DateInfo
 import com.ddmyb.shalendar.view.schedules.utils.IterationType
 import com.ddmyb.shalendar.view.schedules.utils.MarkerInfo
 import com.ddmyb.shalendar.view.schedules.utils.MeansType
-import com.ddmyb.shalendar.view.schedules.utils.StartDateTimeDto
+import com.ddmyb.shalendar.view.schedules.utils.NewScheduleDto
 import com.ddmyb.shalendar.view.schedules.utils.TimeInfo
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.maps.model.LatLng
+import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
-import java.time.ZoneOffset
 
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -48,18 +48,18 @@ class SchedulePresenter {
     private var iterationType: IterationType = IterationType.NO_REPEAT
 
     constructor(view: ScheduleActivity,
-                startDateTimeDto: StartDateTimeDto,
+                newScheduleDto: NewScheduleDto,
                 activity: Activity){
         this.view = view
         this.fusedLocationService = FusedLocationService(activity)
-        this.schedule = if (startDateTimeDto.scheduleId.isNullOrEmpty()){
+        this.schedule = if (newScheduleDto.scheduleId.isNullOrEmpty()){
             val s = Schedule()
-            s.startLocalDateTime = startDateTimeDto.dateTime
-            s.endLocalDateTime = s.startLocalDateTime!!.plusHours(1)
-            view.showStartTimeText(TimeInfo( s.startLocalDateTime!!.hour, s.startLocalDateTime!!.minute))
-            view.showEndTimeText(TimeInfo(s.endLocalDateTime!!.hour, s.endLocalDateTime!!.minute))
-            view.showStartDateText(s.startLocalDateTime!!.year, DateInfo(s.startLocalDateTime!!.monthValue, s.startLocalDateTime!!.dayOfMonth, s.startLocalDateTime!!.dayOfWeek.value), true)
-            view.showEndDateText(s.endLocalDateTime!!.year, DateInfo(s.endLocalDateTime!!.monthValue, s.endLocalDateTime!!.dayOfMonth, s.endLocalDateTime!!.dayOfWeek.value), true)
+            s.startLocalDatetime = Instant.ofEpochMilli(newScheduleDto.mills).atZone(ZoneId.systemDefault()).toLocalDateTime()
+            s.endLocalDatetime = s.startLocalDatetime.plusHours(1)
+            view.showStartTimeText(TimeInfo( s.startLocalDatetime.hour, s.startLocalDatetime.minute))
+            view.showEndTimeText(TimeInfo(s.endLocalDatetime.hour, s.endLocalDatetime.minute))
+            view.showStartDateText(s.startLocalDatetime.year, DateInfo(s.startLocalDatetime.monthValue, s.startLocalDatetime.dayOfMonth, s.startLocalDatetime.dayOfWeek.value), true)
+            view.showEndDateText(s.endLocalDatetime.year, DateInfo(s.endLocalDatetime.monthValue, s.endLocalDatetime.dayOfMonth, s.endLocalDatetime.dayOfWeek.value), true)
             s
         } else{
             // repository find schedule
@@ -89,51 +89,51 @@ class SchedulePresenter {
     }
 
     fun setStartTime(startHour: Int, startMinute: Int) {
-        schedule.startLocalDateTime = schedule.startLocalDateTime?.withHour(startHour)?.withMinute(startMinute)
+        schedule.startLocalDatetime = schedule.startLocalDatetime.withHour(startHour)?.withMinute(startMinute)!!
         view.showStartTimeText(TimeInfo(startHour, startMinute))
 
-        if (schedule.startLocalDateTime != null && schedule.endLocalDateTime != null) {
-            val sameDate = schedule.startLocalDateTime!!.toLocalDate() == schedule.endLocalDateTime!!.toLocalDate()
-            val startTimeAfterEndTime = schedule.startLocalDateTime!!.isAfter(schedule.endLocalDateTime)
+        if (schedule.startLocalDatetime != null && schedule.endLocalDatetime != null) {
+            val sameDate = schedule.startLocalDatetime.toLocalDate() == schedule.endLocalDatetime.toLocalDate()
+            val startTimeAfterEndTime = schedule.startLocalDatetime.isAfter(schedule.endLocalDatetime)
 
             if (sameDate && startTimeAfterEndTime) {
-                schedule.endLocalDateTime = schedule.endLocalDateTime!!.withHour(startHour).withMinute(startMinute)
-                view.showEndTimeText(TimeInfo(schedule.endLocalDateTime!!.hour, schedule.endLocalDateTime!!.minute))
+                schedule.endLocalDatetime = schedule.endLocalDatetime.withHour(startHour).withMinute(startMinute)
+                view.showEndTimeText(TimeInfo(schedule.endLocalDatetime.hour, schedule.endLocalDatetime.minute))
             }
         }
     }
     fun setEndTime(endHour: Int, endMinute: Int) {
-        schedule.endLocalDateTime = schedule.endLocalDateTime?.withHour(endHour)?.withMinute(endMinute)
+        schedule.endLocalDatetime = schedule.endLocalDatetime.withHour(endHour)?.withMinute(endMinute)!!
         view.showEndTimeText(TimeInfo(endHour, endMinute))
 
-        if (schedule.startLocalDateTime != null && schedule.endLocalDateTime != null) {
-            val sameDate = schedule.startLocalDateTime!!.toLocalDate() == schedule.endLocalDateTime!!.toLocalDate()
-            val endTimeBeforeStartTime = schedule.endLocalDateTime!!.isBefore(schedule.startLocalDateTime)
+        if (schedule.startLocalDatetime != null && schedule.endLocalDatetime != null) {
+            val sameDate = schedule.startLocalDatetime.toLocalDate() == schedule.endLocalDatetime.toLocalDate()
+            val endTimeBeforeStartTime = schedule.endLocalDatetime.isBefore(schedule.startLocalDatetime)
 
             if (sameDate && endTimeBeforeStartTime) {
-                schedule.startLocalDateTime = schedule.startLocalDateTime!!.withHour(endHour).withMinute(endMinute)
-                view.showStartTimeText(TimeInfo(schedule.startLocalDateTime!!.hour, schedule.startLocalDateTime!!.minute))
+                schedule.startLocalDatetime = schedule.startLocalDatetime.withHour(endHour).withMinute(endMinute)
+                view.showStartTimeText(TimeInfo(schedule.startLocalDatetime.hour, schedule.startLocalDatetime.minute))
             }
         }
     }
 
 
     fun setStartDate(startYear: Int, startMonth: Int, startDay: Int) {
-        val newStartDate = schedule.startLocalDateTime?.withYear(startYear)?.withMonth(startMonth)?.withDayOfMonth(startDay)
+        val newStartDate = schedule.startLocalDatetime.withYear(startYear)?.withMonth(startMonth)?.withDayOfMonth(startDay)
 
         if (newStartDate != null) {
-            schedule.startLocalDateTime = newStartDate
-            val startWeek = schedule.startLocalDateTime!!.dayOfWeek.value
+            schedule.startLocalDatetime = newStartDate
+            val startWeek = schedule.startLocalDatetime.dayOfWeek.value
             view.showStartDateText(startYear, DateInfo(startMonth, startDay, startWeek))
-            updateDates(schedule.startLocalDateTime!!.toLocalDate())
+            updateDates(schedule.startLocalDatetime.toLocalDate())
         }
     }
 
     fun setEndDate(endYear: Int, endMonth: Int, endDay: Int) {
-        val newEndDate = schedule.endLocalDateTime?.withYear(endYear)?.withMonth(endMonth)?.withDayOfMonth(endDay)
+        val newEndDate = schedule.endLocalDatetime.withYear(endYear)?.withMonth(endMonth)?.withDayOfMonth(endDay)
 
         if (newEndDate != null) {
-            schedule.endLocalDateTime = newEndDate
+            schedule.endLocalDatetime = newEndDate
             val endWeek = newEndDate.dayOfWeek.value
             view.showEndDateText(endYear, DateInfo(endMonth, endDay, endWeek))
             updateDates(newEndDate.toLocalDate())
@@ -145,14 +145,15 @@ class SchedulePresenter {
             return
         }
         if (view.isCheckedDepartureAlarmSwitch()){
-            val seconds = schedule.departureLocalDateTime!!.atZone(ZoneId.systemDefault()).toEpochSecond() - alarmInfo.toSeconds()
-            alarmService.setAlarmWithTime(seconds)
+            val seconds = schedule.dptLocalDateTime.atZone(ZoneId.systemDefault()).toEpochSecond() - alarmInfo.toSeconds()
+            val newAlarm = Alarm(schedule.title, schedule.memo, schedule.dptLocalDateTime, schedule.color)
+            alarmService.setAlarmWithTime(seconds, newAlarm)
         }else{
-            val seconds = schedule.startLocalDateTime!!.atZone(ZoneId.systemDefault()).toEpochSecond() - alarmInfo.toSeconds()
-            alarmService.setAlarmWithTime(seconds)
+            val seconds = schedule.startLocalDatetime.atZone(ZoneId.systemDefault()).toEpochSecond() - alarmInfo.toSeconds()
+            val newAlarm = Alarm(schedule.title, schedule.memo, schedule.startLocalDatetime, schedule.color)
+            alarmService.setAlarmWithTime(seconds, newAlarm)
         }
     }
-
     fun saveSchedule(context: Context) {
         schedule.title = view.readTitle()
         schedule.memo = view.readMemo()
@@ -164,14 +165,22 @@ class SchedulePresenter {
     }
 
     private fun updateDates(newDate: LocalDate) {
-        if (newDate.isBefore(schedule.startLocalDateTime?.toLocalDate())) {
-            schedule.startLocalDateTime = schedule.startLocalDateTime?.with(newDate)
-            view.showStartDateText(schedule.startLocalDateTime!!.year, DateInfo(schedule.startLocalDateTime!!.monthValue, schedule.startLocalDateTime!!.dayOfMonth, schedule.startLocalDateTime!!.dayOfWeek.value))
+        if (newDate.isBefore(schedule.startLocalDatetime.toLocalDate())) {
+            schedule.startLocalDatetime = schedule.startLocalDatetime.with(newDate)!!
+            view.showStartDateText(schedule.startLocalDatetime.year, DateInfo(schedule.startLocalDatetime.monthValue, schedule.startLocalDatetime.dayOfMonth, schedule.startLocalDatetime.dayOfWeek.value))
         }
 
-        if (newDate.isAfter(schedule.endLocalDateTime?.toLocalDate())) {
-            schedule.endLocalDateTime = schedule.endLocalDateTime?.with(newDate)
-            view.showEndDateText(schedule.endLocalDateTime!!.year, DateInfo(schedule.endLocalDateTime!!.monthValue, schedule.endLocalDateTime!!.dayOfMonth, schedule.endLocalDateTime!!.dayOfWeek.value))
+        if (newDate.isAfter(schedule.endLocalDatetime.toLocalDate())) {
+            schedule.endLocalDatetime = schedule.endLocalDatetime.with(newDate)!!
+            view.showEndDateText(
+                schedule.endLocalDatetime.year,
+                DateInfo(
+                    schedule.endLocalDatetime.monthValue,
+                    schedule.endLocalDatetime.dayOfMonth,
+
+                    schedule.endLocalDatetime.dayOfWeek.value
+                )
+            )
         }
     }
 
@@ -183,9 +192,9 @@ class SchedulePresenter {
                 val locationList = locationResult.locations
                 if (locationList.isNotEmpty()) {
                     val location = locationList.last()
-                    schedule.srcPosition = schedule.srcPosition ?: LatLng(location.latitude, location.longitude)
+                    schedule.srcPosition = schedule.srcPosition
                     schedule.srcAddress =
-                        geoCodingService.getAddress(schedule.srcPosition!!, context).toString()
+                        geoCodingService.getAddress(schedule.srcPosition, context).toString()
 
                     val markerSnippet = "위도:${location.latitude} 경도:${location.longitude}"
                     Log.d("googleMap example", "onLocationResult : $markerSnippet")
@@ -193,7 +202,7 @@ class SchedulePresenter {
                     if (schedule.srcPosition == null) {
                         schedule.srcPosition = LatLng(location.latitude, location.longitude)
                     }
-                    updateMarker(location, schedule.srcAddress!!, true)
+                    updateMarker(location, schedule.srcAddress, true)
                 }
             }
         }
@@ -203,20 +212,20 @@ class SchedulePresenter {
         GoogleDistanceMatrixService.execute {
             val costRequired = if (schedule.meansType == MeansType.PUBLIC) {
                 GoogleDistanceMatrixService.getTimeRequired(
-                    schedule.srcPosition!!,
-                    schedule.dstPosition!!,
-                    schedule.startLocalDateTime!!,
+                    schedule.srcPosition,
+                    schedule.dstPosition,
+                    schedule.startLocalDatetime,
                     schedule.meansType
                 )
             }else{
                 TMapDistanceMatrixService.getTimeRequired(
-                    schedule.srcPosition!!,
-                    schedule.dstPosition!!,
+                    schedule.srcPosition,
+                    schedule.dstPosition,
                     schedule.meansType)
             }
             schedule.cost = costRequired
-            schedule.departureLocalDateTime = schedule.startLocalDateTime!!.minusSeconds(costRequired.value.toLong())
-            view.showTimeRequired(costRequired.text, TimeInfo(schedule.departureLocalDateTime!!.hour, schedule.departureLocalDateTime!!.minute))
+            schedule.dptLocalDateTime = schedule.startLocalDatetime.minusSeconds(costRequired.value.toLong())
+            view.showTimeRequired(costRequired.text, TimeInfo(schedule.dptLocalDateTime.hour, schedule.dptLocalDateTime.minute))
         }
     }
 

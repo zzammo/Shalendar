@@ -6,8 +6,9 @@
     tools:context=".view.alarm_manager.AlarmManagerFragment">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id = "@+id/alarm_recycler_view"
+        android:id = "@+id/rv_alarm"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        tools:listitem="@layout/item_schedule_sliding_up"/>
 
 </FrameLayout>

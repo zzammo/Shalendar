@@ -3,6 +3,7 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'
     id 'com.google.gms.google-services'
+    id 'kotlin-kapt'
 }
 
 Properties properties = new Properties()
@@ -124,4 +125,7 @@ dependencies {
     //sliding up panel
     implementation 'com.github.hannesa2:AndroidSlidingUpPanel:4.2.1'
 
+    // room
+    implementation 'androidx.room:room-runtime:2.2.6'
+    kapt 'androidx.room:room-compiler:2.2.6'
 }

@@ -7,7 +7,7 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="red">#FFFF0000</color>
+    <color name="red">#DB4437</color>
     <color name="blue">#FF0000FF</color>
     <color name="transparent">#00000000</color>
     <color name="boundry">#FFDCDCDC</color>
@@ -23,4 +23,13 @@
     <color name="light_blue_A200">#FF40C4FF</color>
     <color name="light_blue_A400">#FF00B0FF</color>
     <color name="black_overlay">#66000000</color>
+
+    <color name="google_blue">#4285F4</color>
+
+    <color name="cat_0">#E9B9AA</color>
+    <color name="cat_1">#D98481</color>
+    <color name="cat_2">#7892B5</color>
+    <color name="cat_3">#8CB9C0</color>
+    <color name="cat_4">#91B5A9</color>
+    <color name="cat_5">#EDCA7F</color>
 </resources>

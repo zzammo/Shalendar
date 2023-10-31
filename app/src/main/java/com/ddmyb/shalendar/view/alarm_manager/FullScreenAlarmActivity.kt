@@ -1,4 +1,4 @@
-package com.ddmyb.shalendar.view.alarm
+package com.ddmyb.shalendar.view.alarm_manager
 
 import android.annotation.SuppressLint
 import android.app.KeyguardManager

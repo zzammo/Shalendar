@@ -1,13 +1,11 @@
 package com.ddmyb.shalendar
 
 import android.content.Context
-import android.content.Intent
 import android.os.Build
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import com.ddmyb.shalendar.domain.Alarm
 import com.ddmyb.shalendar.domain.Schedule
-import com.ddmyb.shalendar.domain.protoSchedule
-import com.ddmyb.shalendar.view.home.navidrawer.NaviDrawerActivity
 import com.ddmyb.shalendar.view.schedules.utils.MeansType
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.auth.FirebaseAuth
@@ -17,11 +15,10 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.Query
-import com.google.firebase.database.ValueEventListener
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import kotlin.random.Random
 
+@RequiresApi(Build.VERSION_CODES.O)
 class manageSchedule {
 
     private lateinit var mFirebaseAuth: FirebaseAuth
@@ -30,16 +27,16 @@ class manageSchedule {
 
         var List1 = arrayListOf<Schedule>()
         override fun onChildAdded(dataSnapshot: DataSnapshot, previousChildName: String?) {
-            val mSc: Schedule = Schedule()
-            mSc.scheduleId = dataSnapshot.child("scheduleId").getValue(String::class.java)
-            mSc.isPublic =
-                dataSnapshot.child("startLocalDateTime").getValue(Boolean::class.java) == true
-            mSc.userId = dataSnapshot.child("userId").getValue(Int::class.java)
-            mSc.startLocalDateTime = LocalDateTime.parse(
+            val mSc = Schedule()
+            mSc.scheduleId = dataSnapshot.child("scheduleId").getValue(String::class.java).toString()
+//            mSc.isPublic =
+//                dataSnapshot.child("startLocalDateTime").getValue(Boolean::class.java) == true
+            mSc.userId = dataSnapshot.child("userId").getValue(Int::class.java)!!
+            mSc.startLocalDatetime = LocalDateTime.parse(
                 dataSnapshot.child("startLocalDateTime").getValue(String::class.java),
                 DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS")
             )
-            mSc.endLocalDateTime = LocalDateTime.parse(
+            mSc.endLocalDatetime = LocalDateTime.parse(
                 dataSnapshot.child("endLocalDateTime").getValue(String::class.java),
                 DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS")
             )
@@ -50,19 +47,19 @@ class manageSchedule {
             mSc.meansType= dataSnapshot.child("meansType").getValue(String::class.java)
                 ?.let { MeansType.fromLabel(it) }!!
             mSc.srcPosition = dataSnapshot.child("srcPosition").getValue(String::class.java)
-                ?.let { parseLatLngFromString(it) }
+                ?.let { parseLatLngFromString(it) }!!
             mSc.dstPosition = dataSnapshot.child("dstPosition").getValue(String::class.java)
-                ?.let { parseLatLngFromString(it) }
-            mSc.srcAddress = dataSnapshot.child("dstAddress").getValue(String::class.java)
-            mSc.dstAddress = dataSnapshot.child("dstAddress").getValue(String::class.java)
+                ?.let { parseLatLngFromString(it) }!!
+            mSc.srcAddress = dataSnapshot.child("dstAddress").getValue(String::class.java)!!
+            mSc.dstAddress = dataSnapshot.child("dstAddress").getValue(String::class.java)!!
 
-            mSc.departureLocalDateTime = LocalDateTime.parse(
+            mSc.dptMills = LocalDateTime.parse(
                 dataSnapshot.child("departureLocalDateTime").getValue(String::class.java),
                 DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS")
             )
 
-            mSc.title = dataSnapshot.child("title").getValue(String::class.java)
-            mSc.memo = dataSnapshot.child("memo").getValue(String::class.java)
+            mSc.title = dataSnapshot.child("title").getValue(String::class.java)!!
+            mSc.memo = dataSnapshot.child("memo").getValue(String::class.java)!!
             List1.add(mSc)
         }
 
@@ -94,14 +91,14 @@ class manageSchedule {
                 }
             }
     }
-    fun saveSchedule(curSc : Schedule) {
+    fun saveSchedule(curSc : Alarm) {
         mFirebaseAuth = FirebaseAuth.getInstance()
         val currentUser = mFirebaseAuth.currentUser
         mDatabaseRef = FirebaseDatabase.getInstance().getReference("UsersSchedule").child(currentUser!!.uid)
         mDatabaseRef.push().setValue(curSc)
         return;
     }
-    fun loadSchedule(minValue:String,maxValue:String): List<Schedule> {
+    fun loadSchedule(minValue:String,maxValue:String): ArrayList<Schedule> {
         val currentUser = mFirebaseAuth.currentUser
         mDatabaseRef = FirebaseDatabase.getInstance().getReference("UsersSchedule").child(currentUser!!.uid)
         val query1: Query = mDatabaseRef!!.orderByChild("startLocalDateTime").startAt(minValue)
@@ -111,16 +108,16 @@ class manageSchedule {
 
             @RequiresApi(Build.VERSION_CODES.O)
             override fun onChildAdded(dataSnapshot: DataSnapshot, previousChildName: String?) {
-                val mSc: Schedule = Schedule()
-                mSc.scheduleId = dataSnapshot.child("scheduleId").getValue(String::class.java)
-                mSc.isPublic =
-                    dataSnapshot.child("startLocalDateTime").getValue(Boolean::class.java) == true
-                mSc.userId = dataSnapshot.child("userId").getValue(Int::class.java)
-                mSc.startLocalDateTime = LocalDateTime.parse(
+                val mSc =  Schedule()
+                mSc.scheduleId = dataSnapshot.child("scheduleId").getValue(String::class.java).toString()
+//                mSc.isPublic =
+//                    dataSnapshot.child("startLocalDateTime").getValue(Boolean::class.java) == true
+                mSc.userId = dataSnapshot.child("userId").getValue(Int::class.java)!!
+                mSc.startLocalDatetime = LocalDateTime.parse(
                     dataSnapshot.child("startLocalDateTime").getValue(String::class.java),
                     DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS")
                 )
-                mSc.endLocalDateTime = LocalDateTime.parse(
+                mSc.endLocalDatetime = LocalDateTime.parse(
                     dataSnapshot.child("endLocalDateTime").getValue(String::class.java),
                     DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS")
                 )
@@ -130,19 +127,19 @@ class manageSchedule {
                 mSc.cost!!.value =
                     dataSnapshot.child("cost").child("text").getValue(Int::class.java)!!
                 mSc.srcPosition = dataSnapshot.child("srcPosition").getValue(String::class.java)
-                    ?.let { parseLatLngFromString(it) }
+                    ?.let { parseLatLngFromString(it) }!!
                 mSc.dstPosition = dataSnapshot.child("dstPosition").getValue(String::class.java)
-                    ?.let { parseLatLngFromString(it) }
-                mSc.srcAddress = dataSnapshot.child("dstAddress").getValue(String::class.java)
-                mSc.dstAddress = dataSnapshot.child("dstAddress").getValue(String::class.java)
+                    ?.let { parseLatLngFromString(it) }!!
+                mSc.srcAddress = dataSnapshot.child("dstAddress").toString()
+                mSc.dstAddress = dataSnapshot.child("dstAddress").toString()
 
-                mSc.departureLocalDateTime = LocalDateTime.parse(
+                mSc.dptMills = LocalDateTime.parse(
                     dataSnapshot.child("departureLocalDateTime").getValue(String::class.java),
                     DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS")
                 )
 
-                mSc.title = dataSnapshot.child("title").getValue(String::class.java)
-                mSc.memo = dataSnapshot.child("memo").getValue(String::class.java)
+                mSc.title = dataSnapshot.child("title").toString()
+                mSc.memo = dataSnapshot.child("memo").toString()
                 List1.add(mSc)
             }
 

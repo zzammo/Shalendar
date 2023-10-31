@@ -40,7 +40,7 @@
             android:name=".view.test.FirebaseTestActivity"
             android:exported="false" />
         <activity
-            android:name=".view.alarm.FullScreenAlarmActivity"
+            android:name=".view.alarm_manager.FullScreenAlarmActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:exported="false"
             android:label="@string/title_activity_fullscreen_alarm"
