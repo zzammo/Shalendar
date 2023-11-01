@@ -79,7 +79,7 @@ class NaviDrawerActivity :AppCompatActivity() {
                 }
             }
         }
-
+        manageSchedule().readUserSchedule()
         binding.btnAddSc.setOnClickListener {
             val firebaseUser = mFirebaseAuth!!.currentUser
             if(firebaseUser!=null) {
@@ -91,9 +91,13 @@ class NaviDrawerActivity :AppCompatActivity() {
                 Toast.makeText(this@NaviDrawerActivity, "로그인 되어있지 않습니다", Toast.LENGTH_SHORT).show()
             }
         }
+
         binding.btnCheckSc.setOnClickListener {
             val mSc = ScheduleDto()
-            manageSchedule().crateGroupSchedule(mSc,"123")
+            //manageSchedule().createGroup("도전")
+            manageSchedule().createUserSchedule(mSc)
+            //manageSchedule().crateGroupSchedule(mSc,"-Ni8tG4kZmQCO1W0JBzk")
+//            manageSchedule().inviteGroup("-Ni8tG4kZmQCO1W0JBzk")
         }
         binding.btnLogin.setOnClickListener {
             Log.d("minseok", "loginbtn")

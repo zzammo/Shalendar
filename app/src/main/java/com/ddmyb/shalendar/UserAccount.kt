@@ -4,10 +4,13 @@ package com.ddmyb.shalendar
 class UserAccount {
     @JvmField
     var nickName: String? = null    //닉네임
+
     @JvmField
-    var idToken: String? = null //고유토큰
+    var userId: String? = null //고유토큰
+
     @JvmField
     var emailId: String? = null //이메일 아이디
+
     @JvmField
     var password: String? = null //패스워드
 }
