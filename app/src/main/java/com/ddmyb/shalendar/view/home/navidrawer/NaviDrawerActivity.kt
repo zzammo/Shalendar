@@ -94,7 +94,7 @@ class NaviDrawerActivity :AppCompatActivity() {
 
         binding.btnCheckSc.setOnClickListener {
             val mSc = ScheduleDto()
-            //manageSchedule().createGroup("도전")
+            manageSchedule().createGroup("도리맹돌의 수하물들")
             manageSchedule().createUserSchedule(mSc)
             //manageSchedule().crateGroupSchedule(mSc,"-Ni8tG4kZmQCO1W0JBzk")
 //            manageSchedule().inviteGroup("-Ni8tG4kZmQCO1W0JBzk")

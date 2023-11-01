@@ -110,26 +110,28 @@ class manageSchedule {
         val currentUser = mFirebaseAuth.currentUser
         mDatabaseRef =
             FirebaseDatabase.getInstance().getReference("UserAccount").child(currentUser!!.uid).child("Schedule")
-        //mDatabaseRef.addChildEventListener(listener)
-        //이거 아래 보고 따라하세요
         mDatabaseRef.addChildEventListener(object : ChildEventListener {
             override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
                 Log.e("dorimaengdol", "ChildEventListener-onChildAdded : ${snapshot.value}")
                 val scheduleId = snapshot.value.toString()
                 mChildbaseRef=FirebaseDatabase.getInstance().getReference("Schedule").child(scheduleId)
-                mChildbaseRef.addListenerForSingleValueEvent(object : ValueEventListener {
-                    override fun onDataChange(dataSnapshot: DataSnapshot) {
-                        if (dataSnapshot.exists()) {
-                            val data = dataSnapshot.getValue(ScheduleDto::class.java)
-                            if (data != null) {
-                                Log.d("dorimaengdol", data.scheduleId.toString())
+                if(true) {
+                    mChildbaseRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                        override fun onDataChange(dataSnapshot: DataSnapshot) {
+                            if (dataSnapshot.exists()) {
+                                val data = dataSnapshot.getValue(ScheduleDto::class.java)
+                                if (data != null) {
+                                    Log.d("dorimaengdol", data.scheduleId.toString())
+                                }
+                            } else {
                             }
-                        } else {
                         }
-                    }
-
-                    override fun onCancelled(databaseError: DatabaseError) {}
-                })
+                        override fun onCancelled(databaseError: DatabaseError) {}
+                    })
+                }
+                else{   //위에 보고 따라하기 가능
+                    //mChildbaseRef.addListenerForSingleValueEvent()
+                }
             }
             override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {}
 
@@ -142,6 +144,12 @@ class manageSchedule {
     }
 
     fun readGroupUser(groupId: String) {
+        mFirebaseAuth = FirebaseAuth.getInstance()
+        val currentUser = mFirebaseAuth.currentUser
+        mDatabaseRef =
+            FirebaseDatabase.getInstance().getReference("UserAccount").child(currentUser!!.uid)
+                .child("Schedule")
+        mDatabaseRef.get()
     }
     fun updateSchedule(scheduleId : String, curSc: ScheduleDto) {
 

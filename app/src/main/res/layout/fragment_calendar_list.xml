@@ -14,9 +14,12 @@
             android:id="@+id/fcl_search_sv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@drawable/dg_grey_btn"
             android:iconifiedByDefault="false"
-            android:paddingTop="5dp"
-            android:paddingBottom="5dp"
+            android:paddingVertical="5dp"
+            android:paddingStart="-5dp"
+            android:layout_marginHorizontal="10dp"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -24,35 +27,8 @@
             android:id="@+id/calendarlist_rv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_above="@+id/calendarlist_below_ll"
             android:layout_alignParentTop="true"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/fcl_search_sv">
-        </androidx.recyclerview.widget.RecyclerView>
-
-
-        <LinearLayout
-            android:id="@+id/calendarlist_below_ll"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:gravity="center"
-            android:orientation="horizontal"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent">
-
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/calendar_add_btn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp"
-                android:background="@drawable/dg_btnshape"
-                android:text="+ 팀 캘린더 추가하기"
-                android:textColor="@color/white"
-                android:textSize="20dp"
-                android:textStyle="bold" />
-        </LinearLayout>
+            app:layout_constraintTop_toBottomOf="@+id/fcl_search_sv" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>
