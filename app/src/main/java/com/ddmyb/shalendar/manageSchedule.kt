@@ -6,6 +6,7 @@ import android.widget.Toast
 import com.ddmyb.shalendar.domain.ScheduleDto
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -21,6 +22,13 @@ class manageSchedule {
     private lateinit var mGroupDatabaseRef: DatabaseReference //그룹 데이터베이스
     private lateinit var mChildbaseRef: DatabaseReference //그룹 데이터베이스
 
+    fun IsLoggined(user: FirebaseUser):Boolean{
+        mFirebaseAuth = FirebaseAuth.getInstance()
+        val currentUser = mFirebaseAuth!!.currentUser
+        if(currentUser!=null)
+            return true
+        else return false
+    }
     fun Login(strEmail: String, strPwd: String, context: Context) {
         mFirebaseAuth = FirebaseAuth.getInstance()
         mFirebaseAuth!!.signInWithEmailAndPassword(strEmail, strPwd)
