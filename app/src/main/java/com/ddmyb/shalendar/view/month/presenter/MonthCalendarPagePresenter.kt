@@ -2,6 +2,7 @@ package com.ddmyb.shalendar.view.month.presenter
 
 import android.graphics.Color
 import android.util.Log
+import com.ddmyb.shalendar.domain.ScheduleDto
 import com.ddmyb.shalendar.util.CalendarFunc
 import com.ddmyb.shalendar.util.HttpResult
 import com.ddmyb.shalendar.util.MutableLiveListData
@@ -38,7 +39,7 @@ class MonthCalendarPagePresenter(
                     month,
                     date,
                     false,
-                    LunarCalendar.LunarToSolar(dateToYYYYMMDD(year, month, date)).substring(4),
+                    toLunar(dateToYYYYMMDD(year, month, date)),
                     MutableLiveListData()
                 )
             )
@@ -54,7 +55,7 @@ class MonthCalendarPagePresenter(
                     month,
                     date,
                     false,
-                    LunarCalendar.LunarToSolar(dateToYYYYMMDD(year, month, date)).substring(4),
+                    toLunar(dateToYYYYMMDD(year, month, date)),
                     MutableLiveListData()
                 )
             )
@@ -70,7 +71,7 @@ class MonthCalendarPagePresenter(
                     month,
                     date,
                     false,
-                    LunarCalendar.SolarToLunar(dateToYYYYMMDD(year, month, date)).substring(4),
+                    toLunar(dateToYYYYMMDD(year, month, date)),
                     MutableLiveListData()
                 )
             )
@@ -91,22 +92,12 @@ class MonthCalendarPagePresenter(
 
     fun loadSchedule(idx: Int) {
         //TODO: load schedules
-//        pageData.calendarDateList[idx].scheduleList.add(
-//            ScheduleData(
-//                "n1",
-//                (1000 * 60 * 60) * 3L,
-//                (1000 * 60 * 60) * 4L,
-//                Color.BLUE
-//            )
-//        )
-//        pageData.calendarDateList[idx].scheduleList.add(
-//            ScheduleData(
-//                "n2",
-//                (1000 * 60 * 60) * 5L,
-//                (1000 * 60 * 60) * 10L,
-//                Color.RED
-//            )
-//        )
+        pageData.calendarDateList.value!![idx].scheduleList.add(
+            ScheduleDto(title="n1")
+        )
+        pageData.calendarDateList.value!![idx].scheduleList.add(
+            ScheduleDto(title="n2")
+        )
 //        pageData.calendarDateList[idx].scheduleList.add(
 //            ScheduleData(
 //                "n3",
@@ -188,6 +179,11 @@ class MonthCalendarPagePresenter(
             else -> "$date"
         }
         return "$yyyy$mm$dd"
+    }
+
+    fun toLunar(yyyymmdd: String): String {
+        val lunar = LunarCalendar.LunarToSolar(yyyymmdd)
+        return "${lunar.substring(4, 6)}/${lunar.substring(6, 8)}"
     }
 
 }

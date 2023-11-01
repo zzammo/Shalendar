@@ -126,7 +126,10 @@ class MutableLiveListData<T> : MutableLiveData<MutableList<T>>() {
     }
 
     fun clear() {
-        list.clear()
+        while(list.size != 0) {
+            removeAt(0)
+            removeObserver(0)
+        }
         value = list
     }
 

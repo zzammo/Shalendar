@@ -14,9 +14,12 @@ import com.ddmyb.shalendar.util.Logger
 import com.ddmyb.shalendar.view.month.adapter.MonthCalendarAdapter
 import com.ddmyb.shalendar.view.month.adapter.MonthCalendarFragmentAdapter
 import com.ddmyb.shalendar.view.month.adapter.MonthCalendarRecyclerViewAdapter
+import java.time.YearMonth
 import java.util.Calendar
 
 class MonthCalendarFragment(private val pageCount: Int) : Fragment() {
+
+    val pageIndex: MutableMap<Int, Int> = mutableMapOf()
 
     private val logger = Logger("MonthCalendarFragment", true)
 
@@ -40,7 +43,7 @@ class MonthCalendarFragment(private val pageCount: Int) : Fragment() {
             orientation = ViewPager2.ORIENTATION_HORIZONTAL
             adapter = (monthCalendarAdapter as RecyclerView.Adapter<*>)
             setCurrentItem(refList.size/2, false)
-            offscreenPageLimit = 2
+            offscreenPageLimit = 1
         }
 
         return binding.root
@@ -52,6 +55,7 @@ class MonthCalendarFragment(private val pageCount: Int) : Fragment() {
         cal.add(Calendar.MONTH, -count/2-1)
         for (i in -count/2..count/2) {
             cal.add(Calendar.MONTH, 1)
+            pageIndex[cal.get(Calendar.YEAR)*100+cal.get(Calendar.MONTH)+1] = i+count/2
             logger.logD("$i : ${cal.get(Calendar.YEAR)}.${cal.get(Calendar.MONTH)+1}.${cal.get(Calendar.DATE)}")
             list.add(cal.timeInMillis)
         }
