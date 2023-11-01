@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import com.ddmyb.shalendar.data.OwnedCalendar
 import com.ddmyb.shalendar.util.MutableLiveListData
 
-val list = (1..10).map { OwnedCalendar(it.toString()) }
+val list = (1..10).map { OwnedCalendar(it.toString(),it.toInt()) }
 
 class NaviViewModel: ViewModel() {
     val ownedCalendarList by lazy{

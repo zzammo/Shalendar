@@ -11,7 +11,7 @@ class OwnedCalendarAdapter (
 ): RecyclerView.Adapter<OwnedCalendarAdapter.MyViewHolder>(){
     class MyViewHolder(val binding: ItemOwnedCalendarBinding):RecyclerView.ViewHolder(binding.root) {
         fun bind(ownedCalendar: OwnedCalendar) {
-            binding.iocOwnerTv.text = ownedCalendar.name
+            binding.iocOwnerTv.text = ownedCalendar.text
             binding.iocCalendarIv.setImageResource(
                 R.drawable.ic_face
             )
