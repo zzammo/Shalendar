@@ -131,11 +131,6 @@ dependencies {
     kapt 'androidx.room:room-compiler:2.2.6'
     kapt 'org.xerial:sqlite-jdbc:3.34.0'
 
-    // room test
-    androidTestImplementation "org.mockito:mockito-core:2.25.0"
-    androidTestImplementation "androidx.room:room-testing:2.2.6"
-    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
-    androidTestImplementation "org.koin:koin-test:2.0.1"
 
     // slide delete
     implementation 'com.github.xabaras:RecyclerViewSwipeDecorator:1.4'

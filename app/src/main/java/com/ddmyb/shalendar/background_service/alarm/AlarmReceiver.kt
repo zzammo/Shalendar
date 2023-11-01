@@ -56,7 +56,7 @@ class AlarmReceiver: BroadcastReceiver() {
         val notification = builder
             .setContentTitle(title)
             .setContentText(memo)
-            .setSmallIcon(R.drawable._742a24a_eb45_401f_92bb_826e9aac0ceb)
+            .setSmallIcon(R.mipmap.ic_launcher)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setDefaults(NotificationCompat.DEFAULT_ALL)
             .setCategory(NotificationCompat.CATEGORY_ALARM)

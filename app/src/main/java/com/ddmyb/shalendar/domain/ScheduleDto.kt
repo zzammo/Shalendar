@@ -3,9 +3,6 @@ package com.ddmyb.shalendar.domain
 import android.os.Build
 import androidx.annotation.RequiresApi
 import com.ddmyb.shalendar.R
-import com.ddmyb.shalendar.view.schedules.model.dto.google_distance_matrix.utils.TextValueObject
-import com.ddmyb.shalendar.view.schedules.utils.MeansType
-import com.google.android.gms.maps.model.LatLng
 import java.time.ZoneId
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -48,8 +45,8 @@ data class ScheduleDto (
         this.startMills = schedule.startLocalDatetime.atZone(ZoneId.systemDefault()).toEpochSecond() * 1000
         this.endMills = schedule.endLocalDatetime.atZone(ZoneId.systemDefault()).toEpochSecond() * 1000
         this.meansType = schedule.meansType.toString()
-        this.costText = schedule.cost.getText()
-        this.costValue = schedule.cost.getValue()
+        this.costText = schedule.cost.getTexts()
+        this.costValue = schedule.cost.getValues()
         if (schedule.srcPosition != null){
             this.srcLat = schedule.srcPosition!!.latitude
             this.srcLon = schedule.srcPosition!!.longitude

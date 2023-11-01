@@ -4,10 +4,10 @@ data class TextValueObject(
     var text: String,
     var value: Int
 ){
-    fun getText(): String{
+    fun getTexts(): String{
         return this.text
     }
-    fun getValue(): Int{
+    fun getValues(): Int{
         return this.value
     }
 }

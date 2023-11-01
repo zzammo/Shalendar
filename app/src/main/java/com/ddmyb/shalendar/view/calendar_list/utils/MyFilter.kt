@@ -30,7 +30,7 @@ class MyFilter(private val originalList: MutableList<OwnedCalendar>, private val
         // Update the adapter with the filtered results
         if (results?.values is MutableList<*>) {
             val filteredList = results.values as MutableList<OwnedCalendar>
-            adapter.setItems(filteredList)
+            //adapter.setItems(filteredList)
         }
     }
 }
