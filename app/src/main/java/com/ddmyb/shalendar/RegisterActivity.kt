@@ -25,7 +25,7 @@ class RegisterActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         mFirebaseAuth = FirebaseAuth.getInstance() // 파이어베이스 데이터베이스 연동
-        mDatabaseRef = FirebaseDatabase.getInstance().getReference("UsersAccount")
+        mDatabaseRef = FirebaseDatabase.getInstance().getReference("UserAccount")
 
         binding.btnRegister.setOnClickListener(View.OnClickListener {
             //회원가입 처리 시작
@@ -39,7 +39,7 @@ class RegisterActivity : AppCompatActivity() {
                 if (task.isSuccessful) {
                     val firebaseUser = mFirebaseAuth!!.currentUser
                     val account = UserAccount().apply {
-                        idToken = firebaseUser!!.uid
+                        userId = firebaseUser!!.uid
                         emailId = firebaseUser.email
                         nickName = strNickname
                         password = strPwd
