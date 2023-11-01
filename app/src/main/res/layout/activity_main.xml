@@ -19,7 +19,8 @@
             android:layout_height="wrap_content"
             android:text="test"
             app:layout_constraintTop_toBottomOf="@+id/ll_fragment_title"
-            app:layout_constraintRight_toRightOf="parent"/>
+            app:layout_constraintRight_toRightOf="parent"
+            android:visibility="invisible"/>
 
         <Button
             android:id="@+id/schedules_button"
@@ -27,7 +28,8 @@
             android:layout_height="wrap_content"
             android:text="schedule"
             app:layout_constraintTop_toBottomOf="@+id/ll_fragment_title"
-            app:layout_constraintLeft_toLeftOf="parent"/>
+            app:layout_constraintLeft_toLeftOf="parent"
+            android:visibility="invisible"/>
 
         <Button
             android:id="@+id/map_test_button"
