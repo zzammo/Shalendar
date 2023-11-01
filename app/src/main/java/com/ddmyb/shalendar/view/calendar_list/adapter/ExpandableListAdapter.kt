@@ -1,5 +1,6 @@
 package com.ddmyb.shalendar.view.calendar_list.adapter
 import android.annotation.SuppressLint
+import android.opengl.Visibility
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -44,10 +45,14 @@ class ExpandableListAdapter(private val ownedCalendarList: MutableList<OwnedCale
                 val headerHolder = holder as ListHeaderViewHolder
                 headerHolder.refferalItem = item
                 headerHolder.bind(item)
+                if (headerHolder.headerTitle.text.contains("개인")) {
+                    headerHolder.addBtn.visibility = View.GONE
+                }
                 headerHolder.addBtn.setOnClickListener {
                     val context = headerHolder.itemView.context
                     CustomNewCalendarDialog().show((context as AppCompatActivity).supportFragmentManager, "")
                 }
+
                 headerHolder.btnExpandToggle.setOnClickListener {
                     if (item.invisibleChildren == null) {
                         item.invisibleChildren = mutableListOf()
@@ -99,9 +104,9 @@ class ExpandableListAdapter(private val ownedCalendarList: MutableList<OwnedCale
         notifyDataSetChanged()
     }*/
     inner class ListHeaderViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val headerTitle: TextView = itemView.findViewById(R.id.header_title)
+        val headerTitle: TextView = itemView.findViewById(R.id.header_title)
         val btnExpandToggle: ImageView = itemView.findViewById(R.id.btn_expand_toggle)
-        val addBtn: ImageView = itemView.findViewById(R.id.add_btn)
+        val addBtn : TextView = itemView.findViewById(R.id.add_calendar)
         var refferalItem: OwnedCalendar? = null
         fun bind(item: OwnedCalendar) {
             headerTitle.text = item.text
