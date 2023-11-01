@@ -25,7 +25,9 @@ class manageSchedule {
     fun IsLoggined(user: FirebaseUser):Boolean{
         mFirebaseAuth = FirebaseAuth.getInstance()
         val currentUser = mFirebaseAuth!!.currentUser
-        return currentUser!=null
+        if(currentUser!=null)
+            return true
+        else return false
     }
 
     fun getUserId():String{

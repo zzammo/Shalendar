@@ -8,6 +8,7 @@ import com.ddmyb.shalendar.R
 import com.ddmyb.shalendar.databinding.ActivityTestBinding
 import com.ddmyb.shalendar.view.home.navidrawer.NaviDrawerActivity
 import com.ddmyb.shalendar.view.month.MonthActivity
+import com.ddmyb.shalendar.view.month.MonthLibraryActivity
 import com.ddmyb.shalendar.view.weekly.WeeklyCalendarActivity
 
 class TestActivity : AppCompatActivity() {
@@ -50,6 +51,11 @@ class TestActivity : AppCompatActivity() {
 
         binding.firebaseTest.setOnClickListener {
             val intent = Intent(this, FirebaseTestActivity::class.java)
+            startActivity(intent)
+        }
+
+        binding.monthLibraryTest.setOnClickListener {
+            val intent = Intent(this, MonthLibraryActivity::class.java)
             startActivity(intent)
         }
     }
