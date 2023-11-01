@@ -105,7 +105,7 @@ class manageSchedule {
     }
     //listener : ChildEventListener
     val myList = ArrayList<ScheduleDto>()
-    fun readUserSchedule(Listener : ValueEventListener) {
+    fun readUserSchedule() {
         mFirebaseAuth = FirebaseAuth.getInstance()
         val currentUser = mFirebaseAuth.currentUser
         mDatabaseRef =
@@ -115,7 +115,7 @@ class manageSchedule {
                 Log.e("dorimaengdol", "ChildEventListener-onChildAdded : ${snapshot.value}")
                 val scheduleId = snapshot.value.toString()
                 mChildbaseRef=FirebaseDatabase.getInstance().getReference("Schedule").child(scheduleId)
-                if(Listener==null) {
+                if(true) {
                     mChildbaseRef.addListenerForSingleValueEvent(object : ValueEventListener {
                         override fun onDataChange(dataSnapshot: DataSnapshot) {
                             if (dataSnapshot.exists()) {
@@ -130,7 +130,7 @@ class manageSchedule {
                     })
                 }
                 else{   //위에 보고 따라하기 가능
-                    mChildbaseRef.addListenerForSingleValueEvent(Listener)
+                    //mChildbaseRef.addListenerForSingleValueEvent()
                 }
             }
             override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {}
