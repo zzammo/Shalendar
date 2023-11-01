@@ -38,6 +38,15 @@ class FirebaseRepository {
         val currentUser = mFirebaseAuth!!.currentUser
         return currentUser!=null
     }
+
+    fun getUserId():String{
+        mFirebaseAuth = FirebaseAuth.getInstance()
+        val currentUser = mFirebaseAuth!!.currentUser
+        if(currentUser!=null)
+            return currentUser.uid
+        else return "NULL"
+    }
+
     fun login(strEmail: String, strPwd: String, context: Context) {
         mFirebaseAuth = FirebaseAuth.getInstance()
         mFirebaseAuth!!.signInWithEmailAndPassword(strEmail, strPwd)
