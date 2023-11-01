@@ -24,7 +24,7 @@ class FirebaseTestActivity : AppCompatActivity() {
         binding.loginButton.setOnClickListener {
             val id = binding.idEditText.text.toString()
             val pw = binding.pwEditText.text.toString()
-            FirebaseRepository().login(id, pw, applicationContext)
+            FirebaseRepository().login(id, pw, applicationContext, this)
         }
 
         binding.saveScheduleButton.setOnClickListener {

@@ -3,6 +3,7 @@ package com.ddmyb.shalendar
 import android.content.Context
 import android.util.Log
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import com.ddmyb.shalendar.domain.ScheduleDto
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.auth.FirebaseAuth
@@ -28,9 +29,9 @@ class FirebaseRepository {
             if (instance == null){
                 synchronized(FirebaseRepository::class){
                     instance = FirebaseRepository()
+                    instance!!.logout()
                 }
             }
-            instance!!.logout()
             return instance
         }
     }
@@ -51,29 +52,34 @@ class FirebaseRepository {
         else return "NULL"
     }
 
-    fun login(strEmail: String, strPwd: String, context: Context) {
+    fun login(strEmail: String, strPwd: String, context: Context, activity: AppCompatActivity) {
         mFirebaseAuth!!.signInWithEmailAndPassword(strEmail, strPwd)
             .addOnCompleteListener() { task ->
                 if (task.isSuccessful) {
                     Toast.makeText(context, "로그인 성공", Toast.LENGTH_SHORT).show()
+                    activity.setResult(AppCompatActivity.RESULT_OK)
+                    activity.finish()
                 } else {
                     Toast.makeText(context, "로그인 실패", Toast.LENGTH_SHORT).show()
                 }
             }
     }
     //현재 로그인한 유저의 개인 스케줄 생성
-    fun createUserSchedule(curSc: ScheduleDto) {
+    fun createUserSchedule(scheduleDto: ScheduleDto) {
+        Log.d("createUserSchedule", "start")
         val currentUser = mFirebaseAuth.currentUser
         mScheduleDatabaseRef = FirebaseDatabase.getInstance().getReference("Schedule")
         val newChildRef = mScheduleDatabaseRef.push()
 
-        curSc.userId = currentUser!!.uid
-        newChildRef.setValue(curSc)
+        scheduleDto.userId = currentUser!!.uid
+        newChildRef.setValue(scheduleDto)
         val scheduleId = newChildRef.key
         newChildRef.child("scheduleId").setValue(scheduleId)
+        Log.d("createUserSchedule", "scheduleId: "+ scheduleId)
 
         mDatabaseRef = FirebaseDatabase.getInstance().getReference("UserAccount")
         mDatabaseRef.child(currentUser!!.uid).child("Schedule").push().setValue(scheduleId)
+        Log.d("createUserSchedule", "end")
     }
     //현재 로그인한 유저가 포함된 그룹 생성
     fun createGroup(gName: String) {

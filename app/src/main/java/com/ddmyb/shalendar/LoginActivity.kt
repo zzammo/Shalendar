@@ -21,12 +21,11 @@ class LoginActivity : AppCompatActivity() {
         setContentView(binding.root)
         binding.btnLogin.setOnClickListener {
             firebaseRepository!!.login(
-                binding.etEmail.text.toString(), binding.etPwd.text.toString(), applicationContext
+                binding.etEmail.text.toString(),
+                binding.etPwd.text.toString(),
+                applicationContext,
+                this
             )
-            if(firebaseRepository.checkLogin()){
-                setResult(RESULT_OK)
-                finish()
-            }
         }
 
         binding.btnRegister.setOnClickListener { //회원가입 화면으로 이동

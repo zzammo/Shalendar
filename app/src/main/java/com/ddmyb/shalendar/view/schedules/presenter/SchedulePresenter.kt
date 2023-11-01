@@ -158,9 +158,9 @@ class SchedulePresenter {
         val scheduleDto = ScheduleDto(schedule)
         val alarmService =  AlarmService(context)
 
-        if (alarmInfo.alarmType == AlarmInfo.AlarmType.NULL){
-            return
-        }
+//        if (alarmInfo.alarmType == AlarmInfo.AlarmType.NULL){
+//            return
+//        }
         if (view.isCheckedDepartureAlarmSwitch()){
             val seconds = schedule.dptLocalDateTime.atZone(ZoneId.systemDefault()).toEpochSecond() - alarmInfo.toSeconds()
             val newAlarm = Alarm(scheduleDto)
@@ -173,9 +173,10 @@ class SchedulePresenter {
 
         if (NetworkStatusService.isOnline(context)){
             if (schedule.groupId=="") {
-                firebaseRepository!!.createGroupSchedule(ScheduleDto(schedule), scheduleDto.groupId)
-            }else{
+                Log.d("createUserSchedule", "call")
                 firebaseRepository!!.createUserSchedule(ScheduleDto(schedule))
+            }else{
+                firebaseRepository!!.createGroupSchedule(ScheduleDto(schedule), scheduleDto.groupId)
             }
         }
     }
