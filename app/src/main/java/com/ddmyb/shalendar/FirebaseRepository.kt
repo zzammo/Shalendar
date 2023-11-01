@@ -6,7 +6,6 @@ import android.widget.Toast
 import com.ddmyb.shalendar.domain.ScheduleDto
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -14,7 +13,7 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 
-class manageSchedule {
+class FirebaseRepository {
 
     private lateinit var mFirebaseAuth: FirebaseAuth
     private lateinit var mDatabaseRef: DatabaseReference //실시간 데이터베이스
@@ -22,14 +21,24 @@ class manageSchedule {
     private lateinit var mGroupDatabaseRef: DatabaseReference //그룹 데이터베이스
     private lateinit var mChildbaseRef: DatabaseReference //그룹 데이터베이스
 
-    fun IsLoggined(user: FirebaseUser):Boolean{
+    companion object{
+        private var instance:FirebaseRepository? = null
+        @Synchronized
+        fun getInstance(): FirebaseRepository?{
+            if (instance == null){
+                synchronized(FirebaseRepository::class){
+                    instance = FirebaseRepository()
+                }
+            }
+            return instance
+        }
+    }
+    fun checkLogin():Boolean{
         mFirebaseAuth = FirebaseAuth.getInstance()
         val currentUser = mFirebaseAuth!!.currentUser
-        if(currentUser!=null)
-            return true
-        else return false
+        return currentUser!=null
     }
-    fun Login(strEmail: String, strPwd: String, context: Context) {
+    fun login(strEmail: String, strPwd: String, context: Context) {
         mFirebaseAuth = FirebaseAuth.getInstance()
         mFirebaseAuth!!.signInWithEmailAndPassword(strEmail, strPwd)
             .addOnCompleteListener() { task ->
@@ -93,7 +102,7 @@ class manageSchedule {
     }
 
     // 그룹 스케줄 생성, 그룹 아이디 받아와서 생성
-    fun crateGroupSchedule(curSc: ScheduleDto, groupId: String) {
+    fun createGroupSchedule(curSc: ScheduleDto, groupId: String) {
         mFirebaseAuth = FirebaseAuth.getInstance()
         val currentUser = mFirebaseAuth.currentUser
         mDatabaseRef = FirebaseDatabase.getInstance().getReference("Schedule")
