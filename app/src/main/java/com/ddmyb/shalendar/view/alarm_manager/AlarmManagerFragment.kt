@@ -83,11 +83,15 @@ class AlarmManagerFragment : Fragment() {
                     c, recyclerView, viewHolder,
                     dX, dY, actionState, isCurrentlyActive
                 )
-                    .addBackgroundColor(R.color.red)
-                    .addSwipeLeftBackgroundColor(R.color.red)
                     .addSwipeLeftActionIcon(R.drawable.baseline_delete_24)
                     .addSwipeLeftLabel("삭제")
                     .setSwipeLeftLabelColor(R.color.white)
+                    .setSwipeLeftActionIconTint(R.color.red)
+                    .addBackgroundColor(R.color.red)
+                    .addSwipeLeftBackgroundColor(R.color.red)
+                    .addSwipeRightBackgroundColor(R.color.red)
+                    .setSwipeRightLabelColor(R.color.red)
+                    .setActionIconTint(R.color.red)
                     .create()
                     .decorate()
                 super.onChildDraw(
