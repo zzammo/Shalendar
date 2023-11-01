@@ -12,6 +12,7 @@ properties.load(project.rootProject.file('local.properties').newDataInputStream(
 android {
     namespace 'com.ddmyb.shalendar'
     compileSdk 33
+    compileSdkVersion 34
 
     defaultConfig {
         applicationId "com.ddmyb.shalendar"
@@ -134,4 +135,7 @@ dependencies {
 
     // slide delete
     implementation 'com.github.xabaras:RecyclerViewSwipeDecorator:1.4'
+
+    // calendar
+    implementation 'com.kizitonwose.calendar:view:2.4.0'
 }

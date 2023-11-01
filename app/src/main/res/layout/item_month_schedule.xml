@@ -6,23 +6,26 @@
     <data>
         <variable
             name="schedule"
-            type="com.ddmyb.shalendar.view.month.data.ScheduleData" />
+            type="com.ddmyb.shalendar.domain.ScheduleDto" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/schedule_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@{schedule.color}">
+        android:layout_margin="1dp">
 
         <TextView
             android:id="@+id/schedule_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:breakStrategy="high_quality"
-            android:text="@{schedule.name}"
-            android:textSize="@dimen/D_third_text"
+            android:text="@{schedule.title}"
+            android:textSize="11sp"
+            android:textColor="@color/white"
+            android:gravity="center"
             app:layout_constraintTop_toTopOf="parent"
-            tools:text="test"/>
+            tools:text="test"
+            tools:background="#4285F4"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

@@ -17,6 +17,7 @@ import androidx.viewpager2.widget.ViewPager2
 import com.ddmyb.shalendar.R
 import com.ddmyb.shalendar.databinding.FragmentMonthCalendarPageBinding
 import com.ddmyb.shalendar.databinding.ItemMonthDateBinding
+import com.ddmyb.shalendar.domain.ScheduleDto
 import com.ddmyb.shalendar.util.HttpResult
 import com.ddmyb.shalendar.util.Logger
 import com.ddmyb.shalendar.util.MutableLiveListData
@@ -144,7 +145,7 @@ class MonthCalendarPageFragment(private val now: Long) : Fragment(R.layout.fragm
                         val end = cal.timeInMillis-1
 
                         dateData.scheduleList.add(
-                            ScheduleData(item.dateName, start, end, true, Color.RED)
+                            ScheduleDto(title=item.dateName)
                         )
 
                         presenter.pageData.calendarDateList.replaceAt(index, dateData)
@@ -159,6 +160,7 @@ class MonthCalendarPageFragment(private val now: Long) : Fragment(R.layout.fragm
             }
 
             override fun fail(throwable: Throwable) {
+                logger.logD("holiday ${throwable.message}")
             }
 
             override fun finally() {
@@ -182,7 +184,7 @@ class MonthCalendarPageFragment(private val now: Long) : Fragment(R.layout.fragm
                 requireActivity(),
                 TimeTableFragment(
                     listOf(
-                        TimeTableScheduleList("n1", date.scheduleList.list),
+//                        TimeTableScheduleList("n1", date.scheduleList.list),
                     ),
                     idxHeight = 50,
                     idxWidthPercentage = 0.5f

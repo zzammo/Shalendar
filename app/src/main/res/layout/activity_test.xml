@@ -67,5 +67,11 @@
             android:layout_height="wrap_content"
             android:text="firebase test"/>
 
+        <Button
+            android:id="@+id/month_library_test"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="month library"/>
+
     </LinearLayout>
 </layout>
