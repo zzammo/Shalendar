@@ -29,6 +29,14 @@ class manageSchedule {
             return true
         else return false
     }
+
+    fun getUserId():String{
+        mFirebaseAuth = FirebaseAuth.getInstance()
+        val currentUser = mFirebaseAuth!!.currentUser
+        if(currentUser!=null)
+            return currentUser.uid
+        else return "NULL"
+    }
     fun Login(strEmail: String, strPwd: String, context: Context) {
         mFirebaseAuth = FirebaseAuth.getInstance()
         mFirebaseAuth!!.signInWithEmailAndPassword(strEmail, strPwd)
