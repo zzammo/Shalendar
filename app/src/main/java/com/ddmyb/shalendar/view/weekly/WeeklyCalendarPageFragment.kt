@@ -19,6 +19,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.get
+import androidx.core.view.setMargins
 import androidx.core.view.setPadding
 import androidx.fragment.app.Fragment
 import com.ddmyb.shalendar.R
@@ -344,6 +345,7 @@ class WeeklyCalendarPageFragment(private val now: Long): Fragment() {
         holidayDrawable = ContextCompat.getDrawable(requireContext(), R.drawable.weekly_holiday) as GradientDrawable
         holidayDrawable.setColor(ContextCompat.getColor(requireContext(),R.color.red__33Alpha))
         holidayLayoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+        holidayLayoutParams.setMargins(1)
         holidayLayoutParams.gravity = Gravity.CENTER
 
         weeknumViews.clear()
