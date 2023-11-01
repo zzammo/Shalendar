@@ -32,8 +32,8 @@ class WeeklyCalendarFragment : Fragment() {
     ): View {
         binding = FragmentWeeklyCalendarBinding.inflate(layoutInflater)
 
-        binding.pager.adapter = WeeklyCalendarAdapter(getFirstDays(10),requireActivity())
-        binding.pager.setCurrentItem(10, false)
+        binding.pager.adapter = WeeklyCalendarAdapter(getFirstDays(100),requireActivity())
+        binding.pager.setCurrentItem(100, false)
 
         CoroutineScope(Dispatchers.IO).launch {
             val cal = Calendar.getInstance()

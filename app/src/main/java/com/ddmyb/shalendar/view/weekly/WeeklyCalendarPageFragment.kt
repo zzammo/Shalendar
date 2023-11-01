@@ -43,7 +43,7 @@ class WeeklyCalendarPageFragment(private val now: Long): Fragment() {
     var weeknum = 0
     val scheduleContainers = arrayListOf<ConstraintLayout>()
     val hours = arrayListOf<ArrayList<View>>()
-    val viewToScheduleMap = HashMap<Int, Schedule>()
+    val viewToScheduleMap = HashMap<Int, Schedule>() // HashMap<Int,Int> 변경 후 companion으로 Schedule ArrayList를 넣어놓을까..
     val weekCalList = ArrayList<Calendar>()
     val weeknumViews = ArrayList<TextView>()
     val weeknumLayouts = ArrayList<LinearLayout>()
@@ -82,7 +82,8 @@ class WeeklyCalendarPageFragment(private val now: Long): Fragment() {
             pixel_1minute = binding.clPlanSunday.height / 1440f
             Log.d(TAG, "ConstlaintLayout height: ${binding.clPlanSunday.height}")
             Log.d(TAG, "pixel 1minute: $pixel_1minute")
-            onResume()
+            if (hasFocus)
+                onResume()
         }
 
         return binding.root
@@ -144,7 +145,6 @@ class WeeklyCalendarPageFragment(private val now: Long): Fragment() {
         super.onResume()
 
         clearScheduleViews()
-
         displaySchedules(weeklyDates)
     }
 
@@ -180,10 +180,13 @@ class WeeklyCalendarPageFragment(private val now: Long): Fragment() {
     fun displaySchedules(weeklyDates: WeeklyDates) {
         // 테스트용 코드
         val cal1 = Calendar.getInstance()
+        cal1.set(Calendar.MONTH, 11)
+        cal1.set(Calendar.DATE,5)
         cal1.set(Calendar.HOUR_OF_DAY, 10)
         cal1.set(Calendar.MINUTE, 30)
         val cal2 = Calendar.getInstance()
-        cal2.add(Calendar.DAY_OF_MONTH, 1)
+        cal2.set(Calendar.MONTH, 11)
+        cal2.set(Calendar.DATE,5)
         cal2.set(Calendar.HOUR_OF_DAY, 14)
         cal2.set(Calendar.MINUTE, 10)
 
@@ -215,16 +218,6 @@ class WeeklyCalendarPageFragment(private val now: Long): Fragment() {
         val endCal = Calendar.getInstance()
         endCal.timeInMillis = schedule.endTime
 
-        val j1_2022 = Calendar.getInstance()
-        j1_2022.set(Calendar.YEAR, 2022)
-        j1_2022.set(Calendar.MONTH, 0)
-        j1_2022.set(Calendar.DATE, 1)
-        val j1_2023 = Calendar.getInstance()
-        j1_2023.set(Calendar.YEAR, 2023)
-        j1_2023.set(Calendar.MONTH, 0)
-        j1_2023.set(Calendar.DATE, 1)
-        Log.d(TAG, "${j1_2022.get(Calendar.WEEK_OF_YEAR)}, ${j1_2023.get(Calendar.WEEK_OF_YEAR)}")
-
         //이번주에 표시할 것이 아니면 리턴
         if(endCal.get(Calendar.WEEK_OF_YEAR) != weeknum || weeknum != startCal.get(Calendar.WEEK_OF_YEAR)) {
             Log.d(TAG, "this schedule is not this week")
@@ -244,7 +237,7 @@ class WeeklyCalendarPageFragment(private val now: Long): Fragment() {
 
 
         val dayOfWeek = startCal.get(Calendar.DAY_OF_WEEK) - 1
-        val scheduleView = LayoutInflater.from(this.requireContext())
+        val scheduleView = LayoutInflater.from(requireContext())
             .inflate(R.layout.custom_view_weekly_schedule, null)
         Log.d(TAG, "custom view created")
 
