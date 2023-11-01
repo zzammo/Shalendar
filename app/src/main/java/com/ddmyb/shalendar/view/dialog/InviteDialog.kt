@@ -4,6 +4,8 @@ import android.app.Dialog
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.Window
 import android.view.WindowManager
@@ -49,5 +51,6 @@ class InviteDialog : DialogFragment(){
             WindowManager.LayoutParams.WRAP_CONTENT
         )
         dialog?.setCancelable(true) // Close the dialog when clicking outside.
+        dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT));
     }
 }

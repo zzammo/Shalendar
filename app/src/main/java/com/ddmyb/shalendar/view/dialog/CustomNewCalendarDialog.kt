@@ -1,9 +1,12 @@
 package com.ddmyb.shalendar.view.dialog
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
@@ -34,7 +37,7 @@ class CustomNewCalendarDialog : DialogFragment() {
     ): View {
         binding = DialogNewCalendarBinding.inflate(inflater, container, false)
 
-        binding.dncEditProfileIv.setOnClickListener {
+        /*binding.dncEditProfileIv.setOnClickListener {
             val editDialog = EditProfileDIalog()
             editDialog.setClickListener(object : EditProfileDialogInterface {
                 override fun onCameraClicked() {
@@ -51,7 +54,7 @@ class CustomNewCalendarDialog : DialogFragment() {
                 }
             })
             editDialog.show(requireFragmentManager(), "EditProfileDialog")
-        }
+        }*/
 
         binding.dncOkBtn.setOnClickListener {
             Log.d("minseok", "ok")
@@ -72,8 +75,8 @@ class CustomNewCalendarDialog : DialogFragment() {
             WindowManager.LayoutParams.WRAP_CONTENT
         )
         dialog?.setCancelable(true) // Close the dialog when clicking outside.
+        dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT));
     }
-
     private fun openCamera() {
         val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         startActivityForResult(cameraIntent, CAMERA_REQUEST_CODE)
@@ -84,7 +87,7 @@ class CustomNewCalendarDialog : DialogFragment() {
         startActivityForResult(intent, ALBUM_REQUEST_CODE)
     }
 
-    @Deprecated("Deprecated in Java")
+    /*@Deprecated("Deprecated in Java")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK) {
@@ -111,7 +114,8 @@ class CustomNewCalendarDialog : DialogFragment() {
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes)
         val path = MediaStore.Images.Media.insertImage(context.contentResolver, bitmap, "Title", null)
         return Uri.parse(path)
-    }
+    }*/
+
     /*private fun deletePhotoFromStorage(photoUrl: String) {
         val storageRef = FirebaseStorage.getInstance().getReferenceFromUrl(photoUrl)
         storageRef.delete()

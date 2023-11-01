@@ -30,28 +30,28 @@ class CalendarListFragment : Fragment() {
         val binding: FragmentCalendarListBinding =
             FragmentCalendarListBinding.inflate(inflater)
 
-        val itemList = mutableListOf<OwnedCalendar>()
+        val origin = mutableListOf<OwnedCalendar>()
 
-        val teamCalendar = mutableListOf<OwnedCalendar>()
-        itemList.add(OwnedCalendar("개인 캘린더 (1)", HEADER))
-        itemList.add(OwnedCalendar("calendar 1", CHILD))
+        origin.add(OwnedCalendar("개인 캘린더 (1)", HEADER))
+        origin.add(OwnedCalendar("calendar 1", CHILD))
         //팀 캘린더 받기
-        var cnt = 0
+        val teamCalendar = mutableListOf<OwnedCalendar>()
         teamCalendar.add(OwnedCalendar("Child 12", CHILD))
-        cnt += 1
-        itemList.add(OwnedCalendar("팀 캘린더 ($cnt)", HEADER))
-        itemList.addAll(teamCalendar)
+        teamCalendar.add(OwnedCalendar("멘석", CHILD))
+        teamCalendar.add(OwnedCalendar("멘to석", CHILD))
+        teamCalendar.add(OwnedCalendar("멘멘석석", CHILD))
 
+        val cnt = teamCalendar.size
+        origin.add(OwnedCalendar("팀 캘린더 ($cnt)", HEADER))
+        origin.addAll(teamCalendar)
+        var itemList: MutableList<OwnedCalendar> = origin.map { it.clone() }.toMutableList()
         val mAdapter = ExpandableListAdapter(itemList)
         binding.calendarlistRv.setHasFixedSize(true)
         binding.calendarlistRv.adapter = mAdapter
+        itemList = origin.map { it.clone() }.toMutableList()
 
         val mLayoutManager = LinearLayoutManager(activity)
         binding.calendarlistRv.layoutManager = mLayoutManager
-
-        binding.calendarAddBtn.setOnClickListener(View.OnClickListener {
-            CustomNewCalendarDialog().show(childFragmentManager, "")
-        })
 
         val searchViewTextListener: SearchView.OnQueryTextListener =
             object : SearchView.OnQueryTextListener {
@@ -62,16 +62,13 @@ class CalendarListFragment : Fragment() {
 
                 //텍스트 입력/수정시에 호출
                 override fun onQueryTextChange(s: String): Boolean {
-                    if (s.isNotEmpty()) {
-                        search(s, itemList, binding.calendarlistRv)
-                        for (item in itemList) {
-                            Log.d("minseok",item.text)
-                        }
+                    if (s.isNotEmpty() && s!="") {
+                        search(s, origin, binding.calendarlistRv)
                         //Log.d("minseok", "SearchVies Text is changed : $s")
                     } else {
                         binding.calendarlistRv.adapter = ExpandableListAdapter(itemList)
+                        itemList = origin.map { it.clone() }.toMutableList()
                     }
-                    //Log.d("minseok", "SearchView Text is changed: $s")
                     return false
                 }
             }
@@ -90,6 +87,7 @@ class CalendarListFragment : Fragment() {
         registerForContextMenu(rv)
         //rv.adapter.setItem
         rv.adapter = ExpandableListAdapter(searchresult)
+
     }
 
     override fun onResume() {
