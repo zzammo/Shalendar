@@ -6,7 +6,6 @@ import com.ddmyb.shalendar.R
 import com.ddmyb.shalendar.view.schedules.model.dto.google_distance_matrix.utils.TextValueObject
 import com.ddmyb.shalendar.view.schedules.utils.MeansType
 import com.google.android.gms.maps.model.LatLng
-import java.time.LocalDateTime
 import java.time.ZoneId
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -25,17 +24,17 @@ data class ScheduleDto (
     var cost: TextValueObject = TextValueObject(text = "text",value = 10),
 
     // 출발 위치 + 도착 위치
-    var srcPosition: LatLng = LatLng(12.34,30.56),
-    var dstPosition: LatLng = LatLng(12.34,30.56),
+    var srcLat: Double = -1.0,
+    var srcLon: Double = -1.0,
+    var dstLat: Double = -1.0,
+    var dstLon: Double = -1.0,
     var srcAddress: String = "srcAddress",
     var dstAddress: String = "dstAddress",
 
     // 출발 예정 시각
     var dptMills: Long = 0L,
-
     // 제목
     var title: String = "title",
-
     // 메모
     var memo: String = "memo"
 
@@ -49,8 +48,14 @@ data class ScheduleDto (
         this.endMills = schedule.endLocalDatetime.atZone(ZoneId.systemDefault()).toEpochSecond() * 1000
         this.meansType = schedule.meansType
         this.cost = schedule.cost
-        this.srcPosition = schedule.srcPosition
-        this.dstPosition = schedule.dstPosition
+        if (schedule.srcPosition != null){
+            this.srcLat = schedule.srcPosition!!.latitude
+            this.srcLon = schedule.srcPosition!!.longitude
+        }
+        if (schedule.dstPosition != null){
+            this.dstLat = schedule.dstPosition!!.latitude
+            this.dstLon = schedule.dstPosition!!.longitude
+        }
         this.srcAddress = schedule.srcAddress
         this.dstAddress = schedule.dstAddress
         this.dptMills = schedule.dptLocalDateTime.atZone(ZoneId.systemDefault()).toEpochSecond() * 1000

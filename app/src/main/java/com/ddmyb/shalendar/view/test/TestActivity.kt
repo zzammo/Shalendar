@@ -8,7 +8,6 @@ import com.ddmyb.shalendar.R
 import com.ddmyb.shalendar.databinding.ActivityTestBinding
 import com.ddmyb.shalendar.view.month.MonthActivity
 import com.ddmyb.shalendar.view.weekly.WeeklyCalendarActivity
-import com.ddmyb.shalendar.view.weekly.WeeklyCalendarFragment
 
 class TestActivity : AppCompatActivity() {
 

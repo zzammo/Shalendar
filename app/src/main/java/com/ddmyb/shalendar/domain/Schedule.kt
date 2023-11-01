@@ -26,8 +26,8 @@ data class Schedule (
     var cost: TextValueObject = TextValueObject(text = "text",value = 10),
 
     // 출발 위치 + 도착 위치
-    var srcPosition: LatLng = LatLng(12.34,30.56),
-    var dstPosition: LatLng = LatLng(12.34,30.56),
+    var srcPosition: LatLng? = null,
+    var dstPosition: LatLng? = null,
     var srcAddress: String = "srcAddress",
     var dstAddress: String = "dstAddress",
 
@@ -49,8 +49,12 @@ data class Schedule (
         this.endLocalDatetime = Instant.ofEpochMilli(scheduleDto.endMills).atZone(ZoneId.systemDefault()).toLocalDateTime()
         this.meansType = scheduleDto.meansType
         this.cost = scheduleDto.cost
-        this.srcPosition = scheduleDto.srcPosition
-        this.dstPosition = scheduleDto.dstPosition
+        if (scheduleDto.srcLat > 0.0){
+            this.srcPosition = LatLng(scheduleDto.srcLat, scheduleDto.srcLon)
+        }
+        if (scheduleDto.dstLat > 0.0){
+            this.dstPosition = LatLng(scheduleDto.dstLat, scheduleDto.dstLon)
+        }
         this.srcAddress = scheduleDto.srcAddress
         this.dstAddress = scheduleDto.dstAddress
         this.dptLocalDateTime = Instant.ofEpochMilli(scheduleDto.dptMills).atZone(ZoneId.systemDefault()).toLocalDateTime()
