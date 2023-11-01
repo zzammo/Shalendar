@@ -64,7 +64,7 @@ class SlidingUpPanelAdapter(
             holder.iv_alarm.visibility = View.GONE
 
         val drawable = ContextCompat.getDrawable(context, R.drawable.round_boundry) as GradientDrawable
-        drawable.setColor(ContextCompat.getColor(context,R.color.transparent_blue))
+        drawable.setColor(ContextCompat.getColor(context,R.color.google_blue__33Alpha))
         holder.ll_schedule_color.background = drawable
     }
 
