@@ -19,7 +19,7 @@ class LoginActivity : AppCompatActivity() {
         setContentView(binding.root)
         binding.btnLogin.setOnClickListener {
             manageSchedule().Login(
-                binding.etEmail.getText().toString(), binding.etPwd.getText().toString(), applicationContext
+                binding.etEmail.text.toString(), binding.etPwd.getText().toString(), applicationContext
             )
         }
         binding.btnRegister.setOnClickListener { //회원가입 화면으로 이동
