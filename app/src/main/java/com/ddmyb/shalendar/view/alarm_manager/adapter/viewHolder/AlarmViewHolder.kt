@@ -9,8 +9,8 @@ import com.ddmyb.shalendar.R
 class AlarmViewHolder(
     itemView: View
 ):RecyclerView.ViewHolder(itemView) {
-    val tv_start_time = itemView.findViewById<TextView>(R.id.tv_start_time)
-    val tv_end_time = itemView.findViewById<TextView>(R.id.tv_end_time)
-    val ll_schedule_color = itemView.findViewById<LinearLayout>(R.id.ll_schedule_color)
-    val tv_name = itemView.findViewById<TextView>(R.id.tv_name)
+    val tv_date_alarm = itemView.findViewById<TextView>(R.id.tv_date_alarm)
+    val tv_time_alarm = itemView.findViewById<TextView>(R.id.tv_time_alarm)
+    val ll_alarm_color = itemView.findViewById<LinearLayout>(R.id.ll_alarm_color)
+    val tv_title_alarm_item = itemView.findViewById<TextView>(R.id.tv_title_alarm_item)
 }

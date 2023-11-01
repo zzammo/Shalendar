@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.res.ColorStateList
 import android.location.Location
 import android.location.LocationManager
 import android.os.Build
@@ -20,6 +21,7 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import com.ddmyb.shalendar.R
 import com.ddmyb.shalendar.databinding.ActivityScheduleBinding
 import com.ddmyb.shalendar.view.programmatic_autocomplete.ProgrammaticAutocompleteGeocodingActivity
@@ -72,11 +74,11 @@ class ScheduleActivity(
         setContentView(binding.root)
 
         val newScheduleDto = intent.getSerializableExtra("StartDateTimeDto") as? NewScheduleDto
-            ?: NewScheduleDto(scheduleId = "0", mills = LocalDateTime.now().atZone(ZoneId.systemDefault()).toEpochSecond() * 1000)
+            ?: NewScheduleDto(scheduleId = "", mills = LocalDateTime.now().atZone(ZoneId.systemDefault()).toEpochSecond() * 1000)
         Log.d("startDateTimeDto", newScheduleDto.toString())
         presenter = SchedulePresenter(this, newScheduleDto, this)
 
-        binding.map.layoutParams.height = resources.displayMetrics.widthPixels - 20
+        binding.map.layoutParams.height = resources.displayMetrics.widthPixels - 100
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
         Log.d("mapFragment", mapFragment.toString())
@@ -91,6 +93,7 @@ class ScheduleActivity(
         initTimeRequiredListener()
         initSaveCancelListener()
         initTitleMemoListener(binding.root)
+        initColorListener()
 
         getResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
             if (it.resultCode == RESULT_OK){
@@ -108,13 +111,49 @@ class ScheduleActivity(
         }
     }
 
+    private var isVisibleLLPalette = false
+    private fun initColorListener(){
+        binding.llColorCircleSchedule.setOnClickListener {
+            if (!isVisibleLLPalette)binding.llPalette.visibility = View.VISIBLE
+            else binding.llPalette.visibility = View.GONE
+            isVisibleLLPalette = !isVisibleLLPalette
+        }
+        val imArray = ArrayList<View>()
+        imArray.add(binding.ivCat0)
+        imArray.add(binding.ivCat1)
+        imArray.add(binding.ivCat2)
+        imArray.add(binding.ivCat3)
+        imArray.add(binding.ivCat4)
+        imArray.add(binding.ivCat5)
+
+        val colorIdList = ArrayList<Int>()
+        colorIdList.add(R.color.cat_0)
+        colorIdList.add(R.color.cat_1)
+        colorIdList.add(R.color.cat_2)
+        colorIdList.add(R.color.cat_3)
+        colorIdList.add(R.color.cat_4)
+        colorIdList.add(R.color.cat_5)
+
+        for ((i, v) in imArray.withIndex()) {
+            v.setOnClickListener {
+                binding.imColorCircleSchedule.backgroundTintList = ContextCompat.getColorStateList(applicationContext, colorIdList[i])
+                presenter.saveColorId(colorIdList[i])
+                isVisibleLLPalette = false
+                binding.llPalette.visibility = View.GONE
+            }
+        }
+    }
+    fun setColor(colorId: Int){
+        binding.imColorCircleSchedule.backgroundTintList = ContextCompat.getColorStateList(applicationContext, colorId)
+    }
+
     private fun processGetResultCallBack() {
         when (isSrcCallBack) {
             true -> {
                 presenter.getSchedule().srcPosition = resultLatLng
                 presenter.getSchedule().srcAddress = resultTitle
                 presenter.updateMarker(resultLocation, resultTitle, isSource = true)
-                binding.srcAddressText.text = resultTitle
+                binding.tvSrcAddress.text = resultTitle
             }
             false -> {
                 presenter.getSchedule().dstPosition = resultLatLng
@@ -553,7 +592,7 @@ class ScheduleActivity(
                 presenter.loadAddressInfo(isSource, applicationContext)
             }
         }
-        setAddressClickListener(binding.srcAddressText, true)
+        setAddressClickListener(binding.tvSrcAddress, true)
         setAddressClickListener(binding.dstAddressText, false)
     }
     fun launchAutocompleteGeocodingActivity(isSource: Boolean){

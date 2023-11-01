@@ -1,4 +1,5 @@
 plugins {
+    id 'kotlin-kapt'
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
     id 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'
@@ -32,11 +33,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility 1.8
-        targetCompatibility 1.8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = '1.8'
+        jvmTarget = '17'
     }
     buildFeatures {
         dataBinding true
@@ -46,6 +47,7 @@ android {
 }
 
 dependencies {
+
 
     implementation 'androidx.core:core-ktx:1.9.0'
     implementation 'androidx.appcompat:appcompat:1.6.1'
@@ -126,5 +128,15 @@ dependencies {
 
     // room
     implementation 'androidx.room:room-runtime:2.2.6'
-    annotationProcessor 'androidx.room:room-compiler:2.2.6'
+    kapt 'androidx.room:room-compiler:2.2.6'
+    kapt 'org.xerial:sqlite-jdbc:3.34.0'
+
+    // room test
+    androidTestImplementation "org.mockito:mockito-core:2.25.0"
+    androidTestImplementation "androidx.room:room-testing:2.2.6"
+    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
+    androidTestImplementation "org.koin:koin-test:2.0.1"
+
+    // slide delete
+    implementation 'com.github.xabaras:RecyclerViewSwipeDecorator:1.4'
 }

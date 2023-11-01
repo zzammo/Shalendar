@@ -1,15 +1,24 @@
 package com.ddmyb.shalendar.view.alarm_manager.adapter
 
+import android.content.Context
+import android.graphics.drawable.GradientDrawable
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.ddmyb.shalendar.R
 import com.ddmyb.shalendar.domain.Alarm
 import com.ddmyb.shalendar.view.alarm_manager.adapter.viewHolder.AlarmViewHolder
+import com.ddmyb.shalendar.view.schedules.utils.DateInfo
+import com.ddmyb.shalendar.view.schedules.utils.TimeInfo
+import java.time.Instant
+import java.time.ZoneId
 
-class AlarmRVAdapter(val itemList: ArrayList<Alarm>): RecyclerView.Adapter<AlarmViewHolder>() {
+class AlarmRVAdapter(private val itemList: ArrayList<Alarm>): RecyclerView.Adapter<AlarmViewHolder>() {
+    lateinit var context: Context
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AlarmViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_schedule_sliding_up, parent, false)
+        context = parent.context
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_alarm, parent, false)
         return AlarmViewHolder(view)
     }
 
@@ -18,8 +27,19 @@ class AlarmRVAdapter(val itemList: ArrayList<Alarm>): RecyclerView.Adapter<Alarm
     }
 
     override fun onBindViewHolder(holder: AlarmViewHolder, position: Int) {
-        holder.tv_name.text = itemList[position].name
-        holder.tv_start_time.text = itemList[position].mills.toString()
-        holder.tv_end_time.text = itemList[position].mills.toString()
+        val localDateTime = Instant.ofEpochMilli(itemList[position].mills).atZone(ZoneId.systemDefault()).toLocalDateTime()
+        holder.tv_title_alarm_item.text = itemList[position].name
+        holder.tv_date_alarm.text = DateInfo(localDateTime.monthValue, localDateTime.dayOfMonth, localDateTime.dayOfWeek.value).toString()
+        holder.tv_time_alarm.text = TimeInfo(localDateTime.hour, localDateTime.minute).toString()
+        val drawable = ContextCompat.getDrawable(context, R.drawable.round_boundry) as GradientDrawable
+        drawable.setColor(ContextCompat.getColor(context, itemList[position].color))
+        holder.ll_alarm_color.background = drawable
+    }
+
+    fun addItem(position: Int, item:Alarm){
+        itemList[position] = item
+    }
+    fun deleteItem(position: Int){
+        itemList.removeAt(position)
     }
 }

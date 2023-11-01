@@ -7,11 +7,14 @@ import android.content.Intent
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
+import com.ddmyb.shalendar.R
 import com.ddmyb.shalendar.domain.Alarm
 import com.ddmyb.shalendar.domain.repository.AlarmDatabase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.time.LocalDateTime
+import java.time.ZoneId
 
 class AlarmService {
 
@@ -22,6 +25,18 @@ class AlarmService {
         alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         db = AlarmDatabase.getInstance(context)!!
         this.context = context
+        db.alarmDao().deleteAll()
+        //test db
+        val itemList = ArrayList<Alarm>()
+
+        itemList.add(Alarm("응용 프로그래밍","월급 두배로 받는법", LocalDateTime.now().atZone(ZoneId.systemDefault()).toEpochSecond() * 1000, R.color.cat_0))
+        itemList.add(Alarm("운영체제","학점 A+ 받는 법", LocalDateTime.now().atZone(ZoneId.systemDefault()).toEpochSecond() * 1000, R.color.cat_1))
+        itemList.add(Alarm("클라우드 컴퓨팅","구글 면접 질문에 대답하는 법", LocalDateTime.now().atZone(ZoneId.systemDefault()).toEpochSecond() * 1000, R.color.cat_2))
+        itemList.add(Alarm("성격의 재발견","공부 잘하는 MBTI 순위", LocalDateTime.now().atZone(ZoneId.systemDefault()).toEpochSecond() * 1000, R.color.cat_3))
+
+        itemList.forEach { item ->
+            db.alarmDao().insert(item)
+        }
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -68,5 +83,9 @@ class AlarmService {
             PendingIntent.FLAG_IMMUTABLE)
 
         alarmManager.cancel(pendingIntent)
+    }
+
+    fun getAllAlarm(): List<Alarm>{
+        return db.alarmDao().getAll()
     }
 }

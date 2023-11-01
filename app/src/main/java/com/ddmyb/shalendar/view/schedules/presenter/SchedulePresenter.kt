@@ -53,7 +53,7 @@ class SchedulePresenter {
                 activity: Activity){
         this.view = view
         this.fusedLocationService = FusedLocationService(activity)
-        this.schedule = if (newScheduleDto.scheduleId.isNullOrEmpty()){
+        this.schedule = if (newScheduleDto.scheduleId == ""){
             val s = Schedule()
             s.startLocalDatetime = Instant.ofEpochMilli(newScheduleDto.mills).atZone(ZoneId.systemDefault()).toLocalDateTime()
             s.endLocalDatetime = s.startLocalDatetime.plusHours(1)
@@ -141,6 +141,10 @@ class SchedulePresenter {
         }
     }
 
+    fun saveColorId(colorId: Int){
+        schedule.color = colorId
+    }
+
     fun saveSchedule(context: Context) {
 
         schedule.title = view.readTitle()
@@ -196,9 +200,9 @@ class SchedulePresenter {
                 val locationList = locationResult.locations
                 if (locationList.isNotEmpty()) {
                     val location = locationList.last()
-                    schedule.srcPosition = schedule.srcPosition
+                    schedule.srcPosition = LatLng(location.latitude, location.longitude)
                     schedule.srcAddress =
-                        geoCodingService.getAddress(schedule.srcPosition, context).toString()
+                        geoCodingService.getAddress(schedule.srcPosition!!, context).toString()
 
                     val markerSnippet = "위도:${location.latitude} 경도:${location.longitude}"
                     Log.d("googleMap example", "onLocationResult : $markerSnippet")
@@ -216,15 +220,15 @@ class SchedulePresenter {
         GoogleDistanceMatrixService.execute {
             val costRequired = if (schedule.meansType == MeansType.PUBLIC) {
                 GoogleDistanceMatrixService.getTimeRequired(
-                    schedule.srcPosition,
-                    schedule.dstPosition,
+                    schedule.srcPosition!!,
+                    schedule.dstPosition!!,
                     schedule.startLocalDatetime,
                     schedule.meansType
                 )
             }else{
                 TMapDistanceMatrixService.getTimeRequired(
-                    schedule.srcPosition,
-                    schedule.dstPosition,
+                    schedule.srcPosition!!,
+                    schedule.dstPosition!!,
                     schedule.meansType)
             }
             schedule.cost = costRequired
