@@ -1,11 +1,13 @@
 package com.ddmyb.shalendar
 
 import android.content.Context
+import android.content.Intent
 import android.os.Build
 import android.widget.Toast
 import androidx.annotation.RequiresApi
-import com.ddmyb.shalendar.domain.Alarm
+import androidx.constraintlayout.widget.Group
 import com.ddmyb.shalendar.domain.Schedule
+import com.ddmyb.shalendar.domain.ScheduleDto
 import com.ddmyb.shalendar.view.schedules.utils.MeansType
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.auth.FirebaseAuth
@@ -15,70 +17,17 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.Query
+import com.google.firebase.database.ValueEventListener
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import kotlin.random.Random
 
-@RequiresApi(Build.VERSION_CODES.O)
 class manageSchedule {
 
     private lateinit var mFirebaseAuth: FirebaseAuth
     private lateinit var mDatabaseRef: DatabaseReference //실시간 데이터베이스
-    object mychildEventListener: ChildEventListener {
-
-        var List1 = arrayListOf<Schedule>()
-        override fun onChildAdded(dataSnapshot: DataSnapshot, previousChildName: String?) {
-            val mSc = Schedule()
-            mSc.scheduleId = dataSnapshot.child("scheduleId").getValue(String::class.java).toString()
-//            mSc.isPublic =
-//                dataSnapshot.child("startLocalDateTime").getValue(Boolean::class.java) == true
-            mSc.userId = dataSnapshot.child("userId").getValue(String::class.java)!!
-            mSc.startLocalDatetime = LocalDateTime.parse(
-                dataSnapshot.child("startLocalDateTime").getValue(String::class.java),
-                DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS")
-            )
-            mSc.endLocalDatetime = LocalDateTime.parse(
-                dataSnapshot.child("endLocalDateTime").getValue(String::class.java),
-                DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS")
-            )
-            mSc.cost?.text =
-                dataSnapshot.child("cost").child("text").getValue(String::class.java).toString()
-            mSc.cost!!.value =
-                dataSnapshot.child("cost").child("text").getValue(Int::class.java)!!
-            mSc.meansType= dataSnapshot.child("meansType").getValue(String::class.java)
-                ?.let { MeansType.fromLabel(it) }!!
-            mSc.srcPosition = dataSnapshot.child("srcPosition").getValue(String::class.java)
-                ?.let { parseLatLngFromString(it) }!!
-            mSc.dstPosition = dataSnapshot.child("dstPosition").getValue(String::class.java)
-                ?.let { parseLatLngFromString(it) }!!
-            mSc.srcAddress = dataSnapshot.child("dstAddress").getValue(String::class.java)!!
-            mSc.dstAddress = dataSnapshot.child("dstAddress").getValue(String::class.java)!!
-
-//            mSc.dptMills = LocalDateTime.parse(
-//                dataSnapshot.child("departureLocalDateTime").getValue(String::class.java),
-//                DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS")
-//            )
-
-            mSc.title = dataSnapshot.child("title").getValue(String::class.java)!!
-            mSc.memo = dataSnapshot.child("memo").getValue(String::class.java)!!
-            List1.add(mSc)
-        }
-
-        override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
-            TODO("Not yet implemented")
-        }
-
-        override fun onChildRemoved(snapshot: DataSnapshot) {
-            TODO("Not yet implemented")
-        }
-
-        override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
-            TODO("Not yet implemented")
-        }
-
-        override fun onCancelled(error: DatabaseError) {
-            TODO("Not yet implemented")
-        }
-    }
+    private lateinit var mScheduleDatabaseRef: DatabaseReference //스케줄 데이터베이스
+    private lateinit var mGroupDatabaseRef: DatabaseReference //그룹 데이터베이스
 
     fun Login(strEmail : String, strPwd : String, context: Context) {
         mFirebaseAuth = FirebaseAuth.getInstance()
@@ -91,75 +40,62 @@ class manageSchedule {
                 }
             }
     }
-    fun saveSchedule(curSc : Alarm) {
+    //현재 로그인한 유저의 개인 스케줄 생성
+    fun createUserSchedule(curSc : ScheduleDto) {
         mFirebaseAuth = FirebaseAuth.getInstance()
         val currentUser = mFirebaseAuth.currentUser
-        mDatabaseRef = FirebaseDatabase.getInstance().getReference("UsersSchedule").child(currentUser!!.uid)
-        mDatabaseRef.push().setValue(curSc)
-        return;
+        mScheduleDatabaseRef = FirebaseDatabase.getInstance().getReference("Schedules")
+        val newChildRef = mScheduleDatabaseRef.push()
+
+        curSc.userId = currentUser!!.uid
+        newChildRef.setValue(curSc)
+        val Schedule_Id = newChildRef.key
+        newChildRef.child("scheduleId").setValue(Schedule_Id)
+
+        mDatabaseRef = FirebaseDatabase.getInstance().getReference("UsersAccount")
+        mDatabaseRef.child(currentUser!!.uid).child("Schedules").push().setValue(Schedule_Id)
+        return
     }
-    fun loadSchedule(minValue:String,maxValue:String): ArrayList<Schedule> {
+    //현재 로그인한 유저가 포함된 그룹 생성
+    fun createGroup(gName:String) {
+        mFirebaseAuth = FirebaseAuth.getInstance()
         val currentUser = mFirebaseAuth.currentUser
-        mDatabaseRef = FirebaseDatabase.getInstance().getReference("UsersSchedule").child(currentUser!!.uid)
-        val query1: Query = mDatabaseRef!!.orderByChild("startLocalDateTime").startAt(minValue)
-        val query2: Query = query1.orderByChild("endLocalDateTime").endAt(maxValue)
-        var List1 = arrayListOf<Schedule>()
-        mDatabaseRef.child(currentUser.uid).addChildEventListener(object :ChildEventListener {
+        mGroupDatabaseRef = FirebaseDatabase.getInstance().getReference("Groups")
+        val newChildRef=mGroupDatabaseRef.push()
+        newChildRef.setValue(groupinit(gName))
+        val groupId = newChildRef.key.toString()
+        mGroupDatabaseRef.child(groupId).child("groupId").setValue(groupId)
+        mGroupDatabaseRef.child(groupId).child("userIds").push().setValue(currentUser!!.uid)
+        return
+    }
+    // ID를 기반으로 유저 초대
+    fun inviteGroup(){
 
-            @RequiresApi(Build.VERSION_CODES.O)
-            override fun onChildAdded(dataSnapshot: DataSnapshot, previousChildName: String?) {
-                val mSc =  Schedule()
-                mSc.scheduleId = dataSnapshot.child("scheduleId").getValue(String::class.java).toString()
-//                mSc.isPublic =
-//                    dataSnapshot.child("startLocalDateTime").getValue(Boolean::class.java) == true
-                mSc.userId = dataSnapshot.child("userId").getValue(String::class.java)!!
-                mSc.startLocalDatetime = LocalDateTime.parse(
-                    dataSnapshot.child("startLocalDateTime").getValue(String::class.java),
-                    DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS")
-                )
-                mSc.endLocalDatetime = LocalDateTime.parse(
-                    dataSnapshot.child("endLocalDateTime").getValue(String::class.java),
-                    DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS")
-                )
-                //mSc.meansType = MeansType.(dataSnapshot.child("meansType").getValue(Int::class.java))
-                mSc.cost?.text =
-                    dataSnapshot.child("cost").child("text").getValue(String::class.java).toString()
-                mSc.cost!!.value =
-                    dataSnapshot.child("cost").child("text").getValue(Int::class.java)!!
-                mSc.srcPosition = dataSnapshot.child("srcPosition").getValue(String::class.java)
-                    ?.let { parseLatLngFromString(it) }!!
-                mSc.dstPosition = dataSnapshot.child("dstPosition").getValue(String::class.java)
-                    ?.let { parseLatLngFromString(it) }!!
-                mSc.srcAddress = dataSnapshot.child("dstAddress").toString()
-                mSc.dstAddress = dataSnapshot.child("dstAddress").toString()
+    }
+    // 그룹 스케줄 생성, 원래 그룹 이름이나 아이디 받아서 와야함
+    fun crateGroupSchedule(curSc : ScheduleDto, groupId123: String) {
+        mFirebaseAuth = FirebaseAuth.getInstance()
+        val currentUser = mFirebaseAuth.currentUser
+        mDatabaseRef = FirebaseDatabase.getInstance().getReference("Schedules")
+        val newChildRef = mDatabaseRef.push()
 
-//                mSc.dptMills = LocalDateTime.parse(
-//                    dataSnapshot.child("departureLocalDateTime").getValue(String::class.java),
-//                    DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS")
-//                )
+        curSc.userId = currentUser!!.uid
+        newChildRef.setValue(curSc)
+        val Schedule_Id = newChildRef.key
+        newChildRef.child("scheduleId").setValue(Schedule_Id)
+        var groupId = "-Ni5KLKrA9_rDqow-Nku"
+        mDatabaseRef =
+            FirebaseDatabase.getInstance().getReference("Groups").child(groupId).child("Schedules")
+        val newChildRef2 = mDatabaseRef.push()
+        newChildRef2.setValue(Schedule_Id)
+        return
+    }
+    fun readSchedule(curSc : ScheduleDto){
+        return
 
-                mSc.title = dataSnapshot.child("title").toString()
-                mSc.memo = dataSnapshot.child("memo").toString()
-                List1.add(mSc)
-            }
+    }
+    fun updateSchedule(scheduleId : String, curSc: ScheduleDto) {
 
-            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
-                TODO("Not yet implemented")
-            }
-
-            override fun onChildRemoved(snapshot: DataSnapshot) {
-                TODO("Not yet implemented")
-            }
-
-            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
-                TODO("Not yet implemented")
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                TODO("Not yet implemented")
-            }
-        })
-        return List1
     }
 }
 fun parseLatLngFromString(str: String): LatLng? {
@@ -181,5 +117,6 @@ fun parseLatLngFromString(str: String): LatLng? {
     }
 }
 
-
-
+class groupinit(gnn:String) {
+    var gname: String = gnn
+}

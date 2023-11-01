@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="weekly_dayofweek_textsize">25sp</dimen>
+    <dimen name="weekly_dayofweek_textsize">12sp</dimen>
     <dimen name="weekly_day_textsize">15sp</dimen>
+    <dimen name="weekly_hour_textsize">12sp</dimen>
+    <dimen name="weekly_hour_selector_plus_length">15dp</dimen>
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>

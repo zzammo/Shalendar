@@ -81,7 +81,7 @@ class WeeklyCalendarFragment : Fragment() {
     }
 
     private fun getDateString(cal: Calendar): String {
-        val str = "${cal.get(Calendar.MONTH)}월 ${cal.get(Calendar.DATE)}일 "
+        val str = "${cal.get(Calendar.MONTH)+1}월 ${cal.get(Calendar.DATE)}일 "
         when (cal.get(Calendar.DAY_OF_WEEK)) {
             Calendar.SUNDAY -> return str + "일요일"
             Calendar.MONDAY -> return str + "월요일"

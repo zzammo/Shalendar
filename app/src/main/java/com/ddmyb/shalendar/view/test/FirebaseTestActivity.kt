@@ -29,7 +29,7 @@ class FirebaseTestActivity : AppCompatActivity() {
         }
 
         binding.saveScheduleButton.setOnClickListener {
-            manageSchedule().saveSchedule(Alarm())
+            //manageSchedule().saveSchedule(Alarm())
         }
 //        test(object: View.OnClickListener {
 //            override fun onClick(p0: View?) {

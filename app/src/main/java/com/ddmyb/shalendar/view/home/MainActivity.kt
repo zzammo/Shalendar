@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.ddmyb.shalendar.R
 import com.ddmyb.shalendar.databinding.ActivityMainBinding
+import com.ddmyb.shalendar.dummy_fragment.CalendarListFragment
 import com.ddmyb.shalendar.view.alarm_manager.AlarmManagerFragment
 import com.ddmyb.shalendar.dummy_fragment.GroupCalendarFragment
 import com.ddmyb.shalendar.dummy_fragment.PersonalCalendarFragment
@@ -42,10 +43,12 @@ class MainActivity : AppCompatActivity() {
             intent.putExtra("id", "dnaoidfnaodf")
             startActivity(intent)
         }
+
         /*            binding.dialogTestButton.setOnClickListener {
                         val intent = Intent(this, TestDialog::class.java)
                         startActivity(intent)
                     }*/
+
         binding.mapTestButton.setOnClickListener {
             val intent = Intent(this, MapActivity::class.java)
             startActivity(intent)
@@ -69,7 +72,7 @@ class MainActivity : AppCompatActivity() {
 
                 R.id.item_fragment2 -> {
                     supportFragmentManager.beginTransaction()
-                        .replace(R.id.main_frame, GroupCalendarFragment()).commit()
+                        .replace(R.id.main_frame, CalendarListFragment()).commit()
                     true
                 }
 
