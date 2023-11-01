@@ -69,12 +69,11 @@ class FirebaseRepository {
 
         curSc.userId = currentUser!!.uid
         newChildRef.setValue(curSc)
-        val Schedule_Id = newChildRef.key
-        newChildRef.child("scheduleId").setValue(Schedule_Id)
+        val scheduleId = newChildRef.key
+        newChildRef.child("scheduleId").setValue(scheduleId)
 
         mDatabaseRef = FirebaseDatabase.getInstance().getReference("UserAccount")
-        mDatabaseRef.child(currentUser!!.uid).child("Schedule").push().setValue(Schedule_Id)
-        return
+        mDatabaseRef.child(currentUser!!.uid).child("Schedule").push().setValue(scheduleId)
     }
     //현재 로그인한 유저가 포함된 그룹 생성
     fun createGroup(gName: String) {
