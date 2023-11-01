@@ -37,9 +37,11 @@ class MainActivity : AppCompatActivity() {
         binding = DataBindingUtil.setContentView(this@MainActivity, R.layout.activity_main)
 
         if (!firebaseRepository!!.checkLogin()){
+            Log.d("isLogin?","gogo")
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
         }
+
         binding.testButton.setOnClickListener {
             val intent = Intent(this, TestActivity::class.java)
             startActivity(intent)

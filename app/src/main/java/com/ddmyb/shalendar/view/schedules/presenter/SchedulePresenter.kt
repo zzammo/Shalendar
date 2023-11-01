@@ -59,6 +59,7 @@ class SchedulePresenter {
         this.schedule = if (newScheduleDto.scheduleId == ""){
             val s = Schedule()
             s.scheduleId = UUID.randomUUID().toString()
+            s.userId = firebaseRepository!!.getUserId()
             s.startLocalDatetime = Instant.ofEpochMilli(newScheduleDto.mills).atZone(ZoneId.systemDefault()).toLocalDateTime()
             s.endLocalDatetime = s.startLocalDatetime.plusHours(1)
             view.showStartTimeText(TimeInfo( s.startLocalDatetime.hour, s.startLocalDatetime.minute))
