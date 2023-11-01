@@ -20,8 +20,9 @@ data class ScheduleDto (
     var endMills: Long = 0L,
 
     // 소요 시간
-    var meansType: MeansType = MeansType.NULL,
-    var cost: TextValueObject = TextValueObject(text = "text",value = 10),
+    var meansType: String = "NULL",
+    var costText: String = "",
+    var costValue: Int = -1,
 
     // 출발 위치 + 도착 위치
     var srcLat: Double = -1.0,
@@ -46,8 +47,9 @@ data class ScheduleDto (
         this.color = schedule.color
         this.startMills = schedule.startLocalDatetime.atZone(ZoneId.systemDefault()).toEpochSecond() * 1000
         this.endMills = schedule.endLocalDatetime.atZone(ZoneId.systemDefault()).toEpochSecond() * 1000
-        this.meansType = schedule.meansType
-        this.cost = schedule.cost
+        this.meansType = schedule.meansType.toString()
+        this.costText = schedule.cost.getText()
+        this.costValue = schedule.cost.getValue()
         if (schedule.srcPosition != null){
             this.srcLat = schedule.srcPosition!!.latitude
             this.srcLon = schedule.srcPosition!!.longitude

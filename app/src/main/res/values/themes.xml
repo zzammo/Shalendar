@@ -1,32 +1,18 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Base.Theme.Shalendar" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+    <style name="Base.Theme.Shalendar" parent="Theme.AppCompat.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/google_blue</item>
+        <item name="colorPrimaryDark">@color/bg_white</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:navigationBarColor">@color/quantum_grey500</item>
+        <item name="colorAccent">@color/colorAccent</item>
     </style>
 
     <style name="Theme.Shalendar" parent="Base.Theme.Shalendar" />
-
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
-
-        <!-- 상태바까지 view를 보여줄 수 있다-->
-        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
-        <!-- 상태바 색상-->
-        <item name="android:statusBarColor">#33D59F9F</item>
     </style>
-
     <style name="Theme.Shalendar.Fullscreen" parent="Theme.Shalendar">
-        <item name="android:actionBarStyle">@style/Widget.Theme.Shalendar.ActionBar.Fullscreen
-        </item>
-        <item name="android:windowActionBarOverlay">true</item>
-        <item name="android:windowBackground">@null</item>
     </style>
-
     <style name="ThemeOverlay.Shalendar.FullscreenContainer" parent="">
-        <item name="fullscreenBackgroundColor">@color/light_blue_600</item>
-        <item name="fullscreenTextColor">@color/light_blue_A200</item>
     </style>
 </resources>

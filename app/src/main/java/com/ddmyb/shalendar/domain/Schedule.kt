@@ -47,8 +47,8 @@ data class Schedule (
         this.color = scheduleDto.color
         this.startLocalDatetime = Instant.ofEpochMilli(scheduleDto.startMills).atZone(ZoneId.systemDefault()).toLocalDateTime()
         this.endLocalDatetime = Instant.ofEpochMilli(scheduleDto.endMills).atZone(ZoneId.systemDefault()).toLocalDateTime()
-        this.meansType = scheduleDto.meansType
-        this.cost = scheduleDto.cost
+        this.meansType = MeansType.toMeansType(scheduleDto.meansType)
+        this.cost = TextValueObject(scheduleDto.costText, scheduleDto.costValue)
         if (scheduleDto.srcLat > 0.0){
             this.srcPosition = LatLng(scheduleDto.srcLat, scheduleDto.srcLon)
         }

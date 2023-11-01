@@ -1,10 +1,10 @@
 package com.ddmyb.shalendar.view.schedules.utils
 
-enum class MeansType(val label: String) {
-    WALK("pedestrian"),
-    PUBLIC("transit"),
-    CAR("car"),
-    NULL("NULL");
+enum class MeansType {
+    WALK,
+    PUBLIC,
+    CAR,
+    NULL;
 
     override fun toString(): String {
         return when (this) {
@@ -14,9 +14,15 @@ enum class MeansType(val label: String) {
             NULL -> "NULL"
         }
     }
+
     companion object {
-        fun fromLabel(label: String): MeansType? {
-            return values().find { it.label == label }
+        fun toMeansType(string: String): MeansType {
+            return when (string) {
+                "pedestrian" -> WALK
+                "transit" -> PUBLIC
+                "car" -> CAR
+                else -> NULL
+            }
         }
     }
 }

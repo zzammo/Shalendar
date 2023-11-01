@@ -21,17 +21,117 @@
             android:orientation="vertical">
 
 
-            <EditText
-                android:id="@+id/title"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <EditText
+                    android:id="@+id/title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="15sp"
+                    android:layout_marginVertical="5sp"
+                    android:layout_marginHorizontal="10sp"
+                    android:textColor="@color/text_white"
+                    android:background="@null"
+                    android:focusableInTouchMode="true"
+                    android:hint=" 제목"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"/>
+
+                <LinearLayout
+                    android:id="@+id/ll_color_circle_schedule"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:padding="15sp"
+                    android:layout_marginEnd="20sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent">
+                    <ImageView
+                        android:id="@+id/im_color_circle_schedule"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/baseline_circle_24"
+                        android:backgroundTint="@color/cat_0" />
+                </LinearLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/ll_palette"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="15sp"
-                android:layout_marginVertical="5sp"
-                android:layout_marginHorizontal="10sp"
-                android:textColor="@color/text_white"
-                android:background="@null"
-                android:focusableInTouchMode="true"
-                android:hint=" 제목"/>
+                android:padding="10sp"
+                android:visibility="gone">
+                <ImageView
+                    android:id="@+id/iv_cat_0"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/baseline_circle_24"
+                    android:backgroundTint="@color/cat_0"
+                    android:padding="15sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/iv_cat_1"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"/>
+                <ImageView
+                    android:id="@+id/iv_cat_1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/baseline_circle_24"
+                    android:backgroundTint="@color/cat_1"
+                    android:padding="15sp"
+                    app:layout_constraintStart_toEndOf="@id/iv_cat_0"
+                    app:layout_constraintEnd_toStartOf="@id/iv_cat_2"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"/>
+                <ImageView
+                    android:id="@+id/iv_cat_2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/baseline_circle_24"
+                    android:backgroundTint="@color/cat_2"
+                    android:padding="15sp"
+                    app:layout_constraintStart_toEndOf="@id/iv_cat_1"
+                    app:layout_constraintEnd_toStartOf="@id/iv_cat_3"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"/>
+                <ImageView
+                    android:id="@+id/iv_cat_3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/baseline_circle_24"
+                    android:backgroundTint="@color/cat_3"
+                    android:padding="15sp"
+                    app:layout_constraintStart_toEndOf="@id/iv_cat_2"
+                    app:layout_constraintEnd_toStartOf="@id/iv_cat_4"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"/>
+                <ImageView
+                    android:id="@+id/iv_cat_4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/baseline_circle_24"
+                    android:backgroundTint="@color/cat_4"
+                    android:padding="15sp"
+                    app:layout_constraintStart_toEndOf="@id/iv_cat_3"
+                    app:layout_constraintEnd_toStartOf="@+id/iv_cat_5"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"/>
+
+                <ImageView
+                    android:id="@+id/iv_cat_5"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/baseline_circle_24"
+                    android:backgroundTint="@color/cat_5"
+                    android:padding="15sp"
+                    app:layout_constraintStart_toEndOf="@id/iv_cat_4"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"/>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -197,7 +297,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:layout_margin="10sp"
+                android:layout_margin="20sp"
                 android:animateLayoutChanges="true"
                 android:visibility="gone">
                 <View
@@ -287,58 +387,6 @@
                     android:background="@color/line_white"
                     android:layout_marginVertical="3sp"/>
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:layout_margin="7sp"
-                    android:padding="7sp">
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical">
-                        <TextView
-                            android:id="@+id/src_address_text"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:background="@drawable/ed_text"
-                            android:layout_marginTop="10sp"
-                            android:textAlignment="center"
-                            android:text="현재 위치"
-                            android:textColor="@color/text_white"
-                            android:textSize="18sp"
-                            android:padding="5sp"/>
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10sp">
-                        <ImageView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:src="@drawable/ic_baseline_arrow_downward_24" />
-
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical">
-                        <TextView
-                            android:id="@+id/dst_address_text"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:textAlignment="center"
-                            android:background="@drawable/ed_text"
-                            android:layout_marginTop="10sp"
-                            android:text="도착지 검색"
-                            android:textColor="@color/text_white"
-                            android:textSize="18sp"
-                            android:padding="5sp"/>
-                    </LinearLayout>
-                </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -354,7 +402,7 @@
                         android:layout_weight="1"
                         android:textAlignment="center"
                         android:padding="7sp"
-                        android:textSize="16sp"
+                        android:textSize="20sp"
                         android:text="예상 출발 시각"/>
                     <TextView
                         android:id="@+id/time_requiered_textview"
@@ -364,9 +412,79 @@
                         android:layout_weight="1"
                         android:textAlignment="center"
                         android:padding="5sp"
-                        android:textSize="10sp"
+                        android:textSize="17sp"
                         android:text="예상 소요 시간"/>
                 </LinearLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="7sp"
+                    android:padding="7sp">
+
+                    <LinearLayout
+                        android:id = "@+id/ll_src_address"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/ll_arrow">
+                        <TextView
+                            android:id="@+id/tv_src_address"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/ed_text"
+                            android:textAlignment="center"
+                            android:text="현재 위치"
+                            android:textColor="@color/text_white"
+                            android:textSize="15sp"
+                            android:padding="5sp"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/ll_arrow"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="5sp"
+                        app:layout_constraintStart_toEndOf="@+id/ll_src_address"
+                        app:layout_constraintTop_toTopOf="@+id/ll_src_address"
+                        app:layout_constraintBottom_toBottomOf="@+id/ll_src_address"
+                        app:layout_constraintEnd_toStartOf="@+id/ll_dst_address">
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:src="@drawable/baseline_arrow_forward_24" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id = "@+id/ll_dst_address"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintStart_toEndOf="@+id/ll_arrow"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent">
+                        <TextView
+                            android:id="@+id/dst_address_text"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textAlignment="center"
+                            android:background="@drawable/ed_text"
+                            android:ellipsize="marquee"
+                            android:focusable="true"
+                            android:marqueeRepeatLimit="marquee_forever"
+                            android:singleLine="true"
+                            android:text="도착지 검색"
+                            android:textColor="@color/text_white"
+                            android:textSize="15sp"
+                            android:padding="5sp"/>
+                    </LinearLayout>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -386,7 +504,7 @@
                             android:text="도보"
                             android:textAlignment="center"
                             android:textColor="@color/text_white"
-                            android:layout_weight="1"/>
+                            android:layout_weight="1" />
                         <RadioButton
                             android:id="@+id/radiobutton_public"
                             android:layout_width="wrap_content"
@@ -488,7 +606,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginVertical="5sp"
-                            android:text="일정 시작시간"
+                            android:text="일정 시작 시간"
                             android:textColor="@color/text_white"
                             android:layout_weight="1"/>
                         <RadioButton
@@ -703,7 +821,7 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="60sp"/>
+                android:layout_height="200sp"/>
         </LinearLayout>
     </ScrollView>
 

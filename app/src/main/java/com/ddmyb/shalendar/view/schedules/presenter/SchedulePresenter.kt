@@ -141,6 +141,10 @@ class SchedulePresenter {
         }
     }
 
+    fun saveColorId(colorId: Int){
+        schedule.color = colorId
+    }
+
     fun saveSchedule(context: Context) {
 
         schedule.title = view.readTitle()
