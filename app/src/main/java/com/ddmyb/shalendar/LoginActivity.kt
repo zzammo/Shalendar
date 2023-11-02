@@ -10,6 +10,8 @@ import com.ddmyb.shalendar.databinding.ActivityLoginBinding
 
 class LoginActivity : AppCompatActivity() {
 
+    private val firebaseRepository = FirebaseRepository.getInstance()
+
     private val binding by lazy {
         ActivityLoginBinding.inflate(layoutInflater)
     }
@@ -18,10 +20,14 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
         binding.btnLogin.setOnClickListener {
-            manageSchedule().Login(
-                binding.etEmail.getText().toString(), binding.etPwd.getText().toString(), applicationContext
+            firebaseRepository!!.login(
+                binding.etEmail.text.toString(),
+                binding.etPwd.text.toString(),
+                applicationContext,
+                this
             )
         }
+
         binding.btnRegister.setOnClickListener { //회원가입 화면으로 이동
             val intent = Intent(this@LoginActivity, RegisterActivity::class.java)
             startActivity(intent)

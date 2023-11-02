@@ -5,8 +5,7 @@ import android.os.Bundle
 import androidx.databinding.DataBindingUtil
 import com.ddmyb.shalendar.R
 import com.ddmyb.shalendar.databinding.ActivityFirebaseTestBinding
-import com.ddmyb.shalendar.domain.Alarm
-import com.ddmyb.shalendar.manageSchedule
+import com.ddmyb.shalendar.FirebaseRepository
 
 class FirebaseTestActivity : AppCompatActivity() {
 
@@ -25,7 +24,7 @@ class FirebaseTestActivity : AppCompatActivity() {
         binding.loginButton.setOnClickListener {
             val id = binding.idEditText.text.toString()
             val pw = binding.pwEditText.text.toString()
-            manageSchedule().Login(id, pw, applicationContext)
+            FirebaseRepository().login(id, pw, applicationContext, this)
         }
 
         binding.saveScheduleButton.setOnClickListener {

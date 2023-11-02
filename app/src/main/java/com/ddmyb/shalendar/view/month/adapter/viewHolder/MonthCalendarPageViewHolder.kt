@@ -170,7 +170,7 @@ class MonthCalendarPageViewHolder(
                 activity,
                 TimeTableFragment(
                     listOf(
-                        TimeTableScheduleList("n1", date.scheduleList.list),
+//                        TimeTableScheduleList("n1", date.scheduleList.list),
                     ),
                     idxHeight = 50,
                     idxWidthPercentage = 0.5f

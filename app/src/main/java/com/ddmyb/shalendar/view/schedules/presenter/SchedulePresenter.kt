@@ -10,6 +10,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
+import com.ddmyb.shalendar.FirebaseRepository
 import com.ddmyb.shalendar.background_service.alarm.AlarmService
 import com.ddmyb.shalendar.domain.Alarm
 import com.ddmyb.shalendar.domain.Schedule
@@ -33,6 +34,7 @@ import com.google.android.gms.maps.model.LatLng
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
+import java.util.UUID
 
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -44,6 +46,7 @@ class SchedulePresenter {
     private val view: ScheduleActivity
 
     private val schedule: Schedule
+    private val firebaseRepository = FirebaseRepository.getInstance()
 
     private val alarmInfo: AlarmInfo = AlarmInfo()
     private var iterationType: IterationType = IterationType.NO_REPEAT
@@ -55,6 +58,8 @@ class SchedulePresenter {
         this.fusedLocationService = FusedLocationService(activity)
         this.schedule = if (newScheduleDto.scheduleId == ""){
             val s = Schedule()
+            s.scheduleId = UUID.randomUUID().toString()
+            s.userId = firebaseRepository!!.getUserId()
             s.startLocalDatetime = Instant.ofEpochMilli(newScheduleDto.mills).atZone(ZoneId.systemDefault()).toLocalDateTime()
             s.endLocalDatetime = s.startLocalDatetime.plusHours(1)
             view.showStartTimeText(TimeInfo( s.startLocalDatetime.hour, s.startLocalDatetime.minute))
@@ -153,9 +158,9 @@ class SchedulePresenter {
         val scheduleDto = ScheduleDto(schedule)
         val alarmService =  AlarmService(context)
 
-        if (alarmInfo.alarmType == AlarmInfo.AlarmType.NULL){
-            return
-        }
+//        if (alarmInfo.alarmType == AlarmInfo.AlarmType.NULL){
+//            return
+//        }
         if (view.isCheckedDepartureAlarmSwitch()){
             val seconds = schedule.dptLocalDateTime.atZone(ZoneId.systemDefault()).toEpochSecond() - alarmInfo.toSeconds()
             val newAlarm = Alarm(scheduleDto)
@@ -167,9 +172,13 @@ class SchedulePresenter {
         }
 
         if (NetworkStatusService.isOnline(context)){
-            // firebase repository 구현
+            if (schedule.groupId=="") {
+                Log.d("createUserSchedule", "call")
+                firebaseRepository!!.createUserSchedule(ScheduleDto(schedule))
+            }else{
+                firebaseRepository!!.createGroupSchedule(ScheduleDto(schedule), scheduleDto.groupId)
+            }
         }
-        // 내부 저장소
     }
 
     private fun updateDates(newDate: LocalDate) {

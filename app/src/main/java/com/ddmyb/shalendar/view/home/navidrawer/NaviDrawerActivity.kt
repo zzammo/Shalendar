@@ -17,9 +17,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.ddmyb.shalendar.LoginActivity
 import com.ddmyb.shalendar.databinding.NaviDrawerBinding
-import com.ddmyb.shalendar.domain.Schedule
 import com.ddmyb.shalendar.domain.ScheduleDto
-import com.ddmyb.shalendar.manageSchedule
+import com.ddmyb.shalendar.FirebaseRepository
 import com.ddmyb.shalendar.view.home.navidrawer.adapter.OwnedCalendarAdapter
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -28,7 +27,6 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
-import java.time.format.DateTimeFormatter
 
 class NaviDrawerActivity :AppCompatActivity() {
 
@@ -79,12 +77,12 @@ class NaviDrawerActivity :AppCompatActivity() {
                 }
             }
         }
-        manageSchedule().readUserSchedule()
+        FirebaseRepository().readUserSchedule()
         binding.btnAddSc.setOnClickListener {
             val firebaseUser = mFirebaseAuth!!.currentUser
             if(firebaseUser!=null) {
                 val mSc = ScheduleDto()
-                manageSchedule().createUserSchedule(mSc)
+                FirebaseRepository().createUserSchedule(mSc)
                 Toast.makeText(this@NaviDrawerActivity, "업로드 성공", Toast.LENGTH_SHORT).show()
             }
             else{
@@ -94,8 +92,8 @@ class NaviDrawerActivity :AppCompatActivity() {
 
         binding.btnCheckSc.setOnClickListener {
             val mSc = ScheduleDto()
-            //manageSchedule().createGroup("도전")
-            manageSchedule().createUserSchedule(mSc)
+            FirebaseRepository().createGroup("도리맹돌의 수하물들")
+            FirebaseRepository().createUserSchedule(mSc)
             //manageSchedule().crateGroupSchedule(mSc,"-Ni8tG4kZmQCO1W0JBzk")
 //            manageSchedule().inviteGroup("-Ni8tG4kZmQCO1W0JBzk")
         }

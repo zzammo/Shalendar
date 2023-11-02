@@ -3,6 +3,7 @@ package com.ddmyb.shalendar
 import android.content.Context
 import android.util.Log
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import com.ddmyb.shalendar.domain.ScheduleDto
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.auth.FirebaseAuth
@@ -13,44 +14,75 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 
-class manageSchedule {
+class FirebaseRepository {
 
-    private lateinit var mFirebaseAuth: FirebaseAuth
+    private val mFirebaseAuth = FirebaseAuth.getInstance()
     private lateinit var mDatabaseRef: DatabaseReference //실시간 데이터베이스
     private lateinit var mScheduleDatabaseRef: DatabaseReference //스케줄 데이터베이스
     private lateinit var mGroupDatabaseRef: DatabaseReference //그룹 데이터베이스
     private lateinit var mChildbaseRef: DatabaseReference //그룹 데이터베이스
 
-    fun Login(strEmail: String, strPwd: String, context: Context) {
-        mFirebaseAuth = FirebaseAuth.getInstance()
+    companion object{
+        private var instance:FirebaseRepository? = null
+        @Synchronized
+        fun getInstance(): FirebaseRepository?{
+            if (instance == null){
+                synchronized(FirebaseRepository::class){
+                    instance = FirebaseRepository()
+                    instance!!.logout()
+                }
+            }
+            return instance
+        }
+    }
+
+    fun logout(){
+        mFirebaseAuth.signOut()
+    }
+    fun checkLogin():Boolean{
+        val currentUser = mFirebaseAuth!!.currentUser
+        Log.d("checkLogin", currentUser.toString())
+        return currentUser!=null
+    }
+
+    fun getUserId():String{
+        val currentUser = mFirebaseAuth!!.currentUser
+        if(currentUser!=null)
+            return currentUser.uid
+        else return "NULL"
+    }
+
+    fun login(strEmail: String, strPwd: String, context: Context, activity: AppCompatActivity) {
         mFirebaseAuth!!.signInWithEmailAndPassword(strEmail, strPwd)
             .addOnCompleteListener() { task ->
                 if (task.isSuccessful) {
                     Toast.makeText(context, "로그인 성공", Toast.LENGTH_SHORT).show()
+                    activity.setResult(AppCompatActivity.RESULT_OK)
+                    activity.finish()
                 } else {
                     Toast.makeText(context, "로그인 실패", Toast.LENGTH_SHORT).show()
                 }
             }
     }
     //현재 로그인한 유저의 개인 스케줄 생성
-    fun createUserSchedule(curSc: ScheduleDto) {
-        mFirebaseAuth = FirebaseAuth.getInstance()
+    fun createUserSchedule(scheduleDto: ScheduleDto) {
+        Log.d("createUserSchedule", "start")
         val currentUser = mFirebaseAuth.currentUser
         mScheduleDatabaseRef = FirebaseDatabase.getInstance().getReference("Schedule")
         val newChildRef = mScheduleDatabaseRef.push()
 
-        curSc.userId = currentUser!!.uid
-        newChildRef.setValue(curSc)
-        val Schedule_Id = newChildRef.key
-        newChildRef.child("scheduleId").setValue(Schedule_Id)
+        scheduleDto.userId = currentUser!!.uid
+        newChildRef.setValue(scheduleDto)
+        val scheduleId = newChildRef.key
+        newChildRef.child("scheduleId").setValue(scheduleId)
+        Log.d("createUserSchedule", "scheduleId: "+ scheduleId)
 
         mDatabaseRef = FirebaseDatabase.getInstance().getReference("UserAccount")
-        mDatabaseRef.child(currentUser!!.uid).child("Schedule").push().setValue(Schedule_Id)
-        return
+        mDatabaseRef.child(currentUser!!.uid).child("Schedule").push().setValue(scheduleId)
+        Log.d("createUserSchedule", "end")
     }
     //현재 로그인한 유저가 포함된 그룹 생성
     fun createGroup(gName: String) {
-        mFirebaseAuth = FirebaseAuth.getInstance()
         val currentUser = mFirebaseAuth.currentUser
         mGroupDatabaseRef = FirebaseDatabase.getInstance().getReference("Group")
         val newChildRef = mGroupDatabaseRef.push()
@@ -71,7 +103,6 @@ class manageSchedule {
 
     // groupID를 기반으로 접속한 유저 초대
     fun inviteGroup(groupId: String) {
-        mFirebaseAuth = FirebaseAuth.getInstance()
         val currentUser = mFirebaseAuth.currentUser
         mGroupDatabaseRef =
             FirebaseDatabase.getInstance().getReference("Group").child(groupId).child("userId")
@@ -85,8 +116,7 @@ class manageSchedule {
     }
 
     // 그룹 스케줄 생성, 그룹 아이디 받아와서 생성
-    fun crateGroupSchedule(curSc: ScheduleDto, groupId: String) {
-        mFirebaseAuth = FirebaseAuth.getInstance()
+    fun createGroupSchedule(curSc: ScheduleDto, groupId: String) {
         val currentUser = mFirebaseAuth.currentUser
         mDatabaseRef = FirebaseDatabase.getInstance().getReference("Schedule")
         val newChildRef = mDatabaseRef.push()
@@ -106,30 +136,31 @@ class manageSchedule {
     //listener : ChildEventListener
     val myList = ArrayList<ScheduleDto>()
     fun readUserSchedule() {
-        mFirebaseAuth = FirebaseAuth.getInstance()
         val currentUser = mFirebaseAuth.currentUser
         mDatabaseRef =
             FirebaseDatabase.getInstance().getReference("UserAccount").child(currentUser!!.uid).child("Schedule")
-        //mDatabaseRef.addChildEventListener(listener)
-        //이거 아래 보고 따라하세요
         mDatabaseRef.addChildEventListener(object : ChildEventListener {
             override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
                 Log.e("dorimaengdol", "ChildEventListener-onChildAdded : ${snapshot.value}")
                 val scheduleId = snapshot.value.toString()
                 mChildbaseRef=FirebaseDatabase.getInstance().getReference("Schedule").child(scheduleId)
-                mChildbaseRef.addListenerForSingleValueEvent(object : ValueEventListener {
-                    override fun onDataChange(dataSnapshot: DataSnapshot) {
-                        if (dataSnapshot.exists()) {
-                            val data = dataSnapshot.getValue(ScheduleDto::class.java)
-                            if (data != null) {
-                                Log.d("dorimaengdol", data.scheduleId.toString())
+                if(true) {
+                    mChildbaseRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                        override fun onDataChange(dataSnapshot: DataSnapshot) {
+                            if (dataSnapshot.exists()) {
+                                val data = dataSnapshot.getValue(ScheduleDto::class.java)
+                                if (data != null) {
+                                    Log.d("dorimaengdol", data.scheduleId.toString())
+                                }
+                            } else {
                             }
-                        } else {
                         }
-                    }
-
-                    override fun onCancelled(databaseError: DatabaseError) {}
-                })
+                        override fun onCancelled(databaseError: DatabaseError) {}
+                    })
+                }
+                else{   //위에 보고 따라하기 가능
+                    //mChildbaseRef.addListenerForSingleValueEvent()
+                }
             }
             override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {}
 
@@ -142,6 +173,11 @@ class manageSchedule {
     }
 
     fun readGroupUser(groupId: String) {
+        val currentUser = mFirebaseAuth.currentUser
+        mDatabaseRef =
+            FirebaseDatabase.getInstance().getReference("UserAccount").child(currentUser!!.uid)
+                .child("Schedule")
+        mDatabaseRef.get()
     }
     fun updateSchedule(scheduleId : String, curSc: ScheduleDto) {
 
