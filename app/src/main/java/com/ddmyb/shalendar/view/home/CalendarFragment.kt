@@ -13,13 +13,14 @@ import com.ddmyb.shalendar.view.month.MonthCalendarFragment
 import com.ddmyb.shalendar.view.weekly.WeeklyCalendarFragment
 import com.ddmyb.shalendar.view.weekly.adapter.SlidingUpPanelAdapter
 import com.sothree.slidinguppanel.SlidingUpPanelLayout
+import okhttp3.internal.notify
 import java.util.Calendar
 
 class CalendarFragment: Fragment() {
     private lateinit var binding: FragmentCalendarBinding
-    var selectedDateCalendar = Calendar.getInstance()
+    var selectedDateCalendar: Calendar = Calendar.getInstance()
     private var fragmentNum = 0
-    val fragments = listOf(MonthCalendarFragment(10), WeeklyCalendarFragment())
+    private val fragments = arrayListOf(MonthCalendarFragment(10), WeeklyCalendarFragment(selectedDateCalendar))
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -34,19 +35,22 @@ class CalendarFragment: Fragment() {
             }
         }
 
-        binding.btnSelectWeek.setOnClickListener {
-            if (fragmentNum != 1) {
-                binding.pager.currentItem = 1
-                fragmentNum = 1
-            }
-        }
-
-        val calendarFragmentPageAdapter = CalendarFragmentPageAdapter(fragments, requireActivity())
+        var calendarFragmentPageAdapter = CalendarFragmentPageAdapter(fragments, requireActivity())
         binding.pager.apply {
             orientation = ViewPager2.ORIENTATION_HORIZONTAL
             adapter = calendarFragmentPageAdapter
             isUserInputEnabled = false
-            setCurrentItem(0)
+            currentItem = 0
+        }
+
+        binding.btnSelectWeek.setOnClickListener {
+            if (fragmentNum != 1) {
+                fragments[1] = WeeklyCalendarFragment(selectedDateCalendar)
+                calendarFragmentPageAdapter = CalendarFragmentPageAdapter(fragments, requireActivity())
+                binding.pager.adapter = calendarFragmentPageAdapter
+                binding.pager.currentItem = 1
+                fragmentNum = 1
+            }
         }
 
         return binding.root

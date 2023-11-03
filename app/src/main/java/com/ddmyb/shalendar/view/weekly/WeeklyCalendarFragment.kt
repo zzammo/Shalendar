@@ -6,11 +6,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.ddmyb.shalendar.databinding.FragmentWeeklyCalendarBinding
+import com.ddmyb.shalendar.view.home.CalendarFragment
 import com.ddmyb.shalendar.view.weekly.adapter.WeeklyCalendarAdapter
 import java.util.Calendar
 
-class WeeklyCalendarFragment : Fragment() {
-
+class WeeklyCalendarFragment(private val startCal: Calendar) : Fragment() {
     private lateinit var binding: FragmentWeeklyCalendarBinding
     val yearWeek2PageNum = HashMap<Int, Int>()
     private val TAG = "WeGlonD"
@@ -27,9 +27,14 @@ class WeeklyCalendarFragment : Fragment() {
         binding = FragmentWeeklyCalendarBinding.inflate(inflater)
 
         binding.pager.adapter = WeeklyCalendarAdapter(getFirstDays(100),requireActivity())
-        binding.pager.setCurrentItem(100, false)
+        convertPage(startCal)
+//        binding.pager.setCurrentItem(100, false)
 
         return binding.root
+    }
+
+    override fun onResume() {
+        super.onResume()
     }
 
     fun getFirstDays(radius: Int): MutableList<Long> {
@@ -47,10 +52,21 @@ class WeeklyCalendarFragment : Fragment() {
         cal.add(Calendar.DAY_OF_MONTH, -7*radius)
         for (i in 0..2*radius) {
             result.add(cal.timeInMillis)
-            yearWeek2PageNum.put(cal.get(Calendar.YEAR)*100+cal.get(Calendar.MONTH)+1, i)
+            yearWeek2PageNum[cal.get(Calendar.YEAR)*100+cal.get(Calendar.WEEK_OF_YEAR)] = i
             cal.add(Calendar.DAY_OF_MONTH, 7)
         }
 
         return result
+    }
+
+    private fun convertPage(cal: Calendar) {
+        val pageNum = yearWeek2PageNum[cal.get(Calendar.YEAR) * 100 + cal.get(Calendar.WEEK_OF_YEAR)]
+        if (pageNum != null)
+            binding.pager.setCurrentItem(pageNum, false)
+        else {
+            val nowCal = Calendar.getInstance()
+            binding.pager.setCurrentItem(yearWeek2PageNum[nowCal.get(Calendar.YEAR)*100+nowCal.get(Calendar.WEEK_OF_YEAR)]!!, false)
+        }
+
     }
 }
