@@ -157,8 +157,9 @@ class WeeklyCalendarPageFragment(private val now: Long): Fragment() {
 
     override fun onResume() {
         super.onResume()
-        clearScheduleViews()
-        displaySchedules(weeklyDates)
+        val cal = Calendar.getInstance()
+        cal.timeInMillis = now
+        (parentFragmentManager.findFragmentByTag(calendarHostTag) as CalendarFragment).selectedDateCalendar = cal
     }
 
     override fun onPause() {
