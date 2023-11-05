@@ -69,7 +69,7 @@ class MainActivity : AppCompatActivity() {
             when (menuItem.itemId) {
                 R.id.item_fragment1 -> {
                     supportFragmentManager.beginTransaction()
-                        .replace(R.id.main_frame, MonthCalendarFragment(10)).commit()
+                        .replace(R.id.main_frame, CalendarFragment(), "CalendarHostFragment").commit()
                     true
                 }
 

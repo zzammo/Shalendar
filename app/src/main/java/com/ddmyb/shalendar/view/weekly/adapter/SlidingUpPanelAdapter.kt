@@ -13,10 +13,11 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.ddmyb.shalendar.R
 import com.ddmyb.shalendar.data.Schedule
+import com.ddmyb.shalendar.domain.ScheduleDto
 import java.util.Calendar
 
 class SlidingUpPanelAdapter(
-    val scheduleList: ArrayList<Schedule>,
+    val scheduleList: ArrayList<ScheduleDto>,
     var selectedCal: Calendar,
     val context: Context
 ): RecyclerView.Adapter<SlidingUpPanelAdapter.ViewHolder>() {
@@ -46,15 +47,15 @@ class SlidingUpPanelAdapter(
         val schedule = scheduleList[position]
 
         val startCal = Calendar.getInstance()
-        startCal.timeInMillis = schedule.startTime
+        startCal.timeInMillis = schedule.startMills
         val startStr = calcDateString(startCal)
 
         val endCal = Calendar.getInstance()
-        endCal.timeInMillis = schedule.endTime
+        endCal.timeInMillis = schedule.endMills
         val endStr = calcDateString(endCal)
 
-        holder.tv_name.text = schedule.name
-        Log.d(TAG, "onBindViewHolder ${schedule.name}")
+        holder.tv_name.text = schedule.title
+        Log.d(TAG, "onBindViewHolder ${schedule.title}")
         holder.tv_start_time.text = startStr
         holder.tv_end_time.text = endStr
 

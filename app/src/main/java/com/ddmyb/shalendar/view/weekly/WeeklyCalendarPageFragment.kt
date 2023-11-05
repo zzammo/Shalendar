@@ -1,10 +1,9 @@
 package com.ddmyb.shalendar.view.weekly
 
+import android.content.Context
 import android.content.Intent
-import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.util.TypedValue
@@ -12,9 +11,10 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewTreeObserver
+import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.annotation.RequiresApi
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
@@ -23,19 +23,22 @@ import androidx.core.view.setMargins
 import androidx.core.view.setPadding
 import androidx.fragment.app.Fragment
 import com.ddmyb.shalendar.R
-import com.ddmyb.shalendar.data.Schedule
 import com.ddmyb.shalendar.databinding.FragmentWeeklyCalendarPageBinding
+import com.ddmyb.shalendar.domain.ScheduleDto
 import com.ddmyb.shalendar.util.HttpResult
 import com.ddmyb.shalendar.util.NewScheduleDto
 import com.ddmyb.shalendar.view.holiday.HolidayApi
 import com.ddmyb.shalendar.view.holiday.data.HolidayDTO
+import com.ddmyb.shalendar.view.home.CalendarFragment
 import com.ddmyb.shalendar.view.schedules.ScheduleActivity
 import com.ddmyb.shalendar.view.weekly.data.WeeklyDates
 import java.util.Calendar
 
-class WeeklyCalendarPageFragment(private val now: Long): Fragment() {
 
+class WeeklyCalendarPageFragment(private val now: Long): Fragment() {
     val TAG = "WeGlonD"
+    private val calendarHostTag = "CalendarHostFragment"
+    private lateinit var context: Context
     private lateinit var binding: FragmentWeeklyCalendarPageBinding
     private lateinit var drawable_unselect: Drawable
     private lateinit var drawable_onselect: Drawable
@@ -43,7 +46,7 @@ class WeeklyCalendarPageFragment(private val now: Long): Fragment() {
     var weeknum = 0
     val scheduleContainers = arrayListOf<ConstraintLayout>()
     val hours = arrayListOf<ArrayList<View>>()
-    val viewToScheduleMap = HashMap<Int, Schedule>() // HashMap<Int,Int> 변경 후 companion으로 Schedule ArrayList를 넣어놓을까..
+    val viewToScheduleMap = HashMap<Int, ScheduleDto>() // HashMap<Int,Int> 변경 후 companion으로 Schedule ArrayList를 넣어놓을까..
     val weekCalList = ArrayList<Calendar>()
     val weeknumViews = ArrayList<TextView>()
     val weeknumLayouts = ArrayList<LinearLayout>()
@@ -67,9 +70,10 @@ class WeeklyCalendarPageFragment(private val now: Long): Fragment() {
         binding = FragmentWeeklyCalendarPageBinding.inflate(inflater, container, false)
         val cal = Calendar.getInstance()
         cal.timeInMillis = now
+        (parentFragmentManager.findFragmentByTag(calendarHostTag) as CalendarFragment).selectedDateCalendar = cal
 
-        drawable_unselect = ContextCompat.getDrawable(requireContext(), R.drawable.weekly_boundry)!!
-        drawable_onselect = ContextCompat.getDrawable(requireContext(), R.drawable.weekly_hour_selector)!!
+        drawable_unselect = ContextCompat.getDrawable(context, R.drawable.weekly_boundry)!!
+        drawable_onselect = ContextCompat.getDrawable(context, R.drawable.weekly_hour_selector)!!
 
         weeknum = cal.get(Calendar.WEEK_OF_YEAR)
         weeklyDates = WeeklyDates(cal.get(Calendar.MONTH)+1, getWeekNums(cal), weeknum)
@@ -78,13 +82,18 @@ class WeeklyCalendarPageFragment(private val now: Long): Fragment() {
         createViewMap()
         holiday_setting()
 
-        binding.root.viewTreeObserver.addOnWindowFocusChangeListener { hasFocus ->
-            pixel_1minute = binding.clPlanSunday.height / 1440f
-            Log.d(TAG, "ConstlaintLayout height: ${binding.clPlanSunday.height}")
-            Log.d(TAG, "pixel 1minute: $pixel_1minute")
-            if (hasFocus)
-                onResume()
-        }
+        binding.root.viewTreeObserver.addOnGlobalLayoutListener(
+            object : ViewTreeObserver.OnGlobalLayoutListener {
+                override fun onGlobalLayout() {
+                    pixel_1minute = binding.clPlanSunday.height / 1440f
+                    Log.d(TAG, "ConstlaintLayout height: ${binding.clPlanSunday.height}")
+                    Log.d(TAG, "pixel 1minute: $pixel_1minute")
+                    onResume()
+                    // 1회성을 위해 Listener 제거
+                    binding.root.viewTreeObserver.removeOnGlobalLayoutListener(this)
+                }
+            }
+        )
 
         return binding.root
     }
@@ -100,9 +109,9 @@ class WeeklyCalendarPageFragment(private val now: Long): Fragment() {
 
                 val weekdaynum = isThisWeek(holidayCal)
                 if (weekdaynum != null) {
-                    weeknumViews[weekdaynum].setTextColor(ContextCompat.getColor(requireContext(), R.color.red))
+                    weeknumViews[weekdaynum].setTextColor(ContextCompat.getColor(context, R.color.red))
                     // 동적으로 TextView 만들고 weeknumLayouts[weekdaynum]에 넣기
-                    val textView = TextView(requireContext())
+                    val textView = TextView(context)
                     textView.text = holidayItem.dateName
                     textView.layoutParams = holidayLayoutParams
                     textView.background = holidayDrawable
@@ -141,11 +150,16 @@ class WeeklyCalendarPageFragment(private val now: Long): Fragment() {
         return null
     }
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        this.context = context
+    }
+
     override fun onResume() {
         super.onResume()
-
-        clearScheduleViews()
-        displaySchedules(weeklyDates)
+        val cal = Calendar.getInstance()
+        cal.timeInMillis = now
+        (parentFragmentManager.findFragmentByTag(calendarHostTag) as CalendarFragment).selectedDateCalendar = cal
     }
 
     override fun onPause() {
@@ -155,6 +169,9 @@ class WeeklyCalendarPageFragment(private val now: Long): Fragment() {
             selected_hour!!.background = drawable_unselect
             selected_hour = null
         }
+        val cal = Calendar.getInstance()
+        cal.timeInMillis = now
+        (parentFragmentManager.findFragmentByTag(calendarHostTag) as CalendarFragment).selectedDateCalendar = cal
     }
 
     private fun clearScheduleViews() {
@@ -197,14 +214,18 @@ class WeeklyCalendarPageFragment(private val now: Long): Fragment() {
         cal4.set(Calendar.HOUR_OF_DAY, 15)
         cal4.set(Calendar.MINUTE, 10)
 
-        displaySchedule(Schedule("test", cal1.timeInMillis, cal2.timeInMillis), cal1.timeInMillis)
-        displaySchedule(Schedule("text", cal3.timeInMillis, cal4.timeInMillis), cal3.timeInMillis)
+        val scheduleDto1 = ScheduleDto()
+        scheduleDto1.title="test";scheduleDto1.startMills=cal1.timeInMillis;scheduleDto1.endMills=cal2.timeInMillis
+        val scheduleDto2 = ScheduleDto()
+        scheduleDto2.title="text";scheduleDto2.startMills=cal3.timeInMillis;scheduleDto2.endMills=cal4.timeInMillis
+        displaySchedule(scheduleDto1, scheduleDto1.startMills)
+        displaySchedule(scheduleDto2, scheduleDto2.startMills)
 
         //db 구현 이후 할 일: 반복문 돌면서 일주일 간 각 날짜마다 띄워야할 schedule을 db에서 들고와서 띄우기 (now 변수 활용)
         //기간 쿼리 가능하면 그걸로 들고오자..
     }
 
-    private fun displaySchedule(schedule: Schedule, startMillis:Long) {
+    private fun displaySchedule(schedule: ScheduleDto, startMillis:Long) {
         Log.d(TAG, "displaySchedule Start")
         val zeroCal = Calendar.getInstance()
         zeroCal.timeInMillis = startMillis
@@ -216,7 +237,7 @@ class WeeklyCalendarPageFragment(private val now: Long): Fragment() {
         val startCal = Calendar.getInstance()
         startCal.timeInMillis = startMillis
         val endCal = Calendar.getInstance()
-        endCal.timeInMillis = schedule.endTime
+        endCal.timeInMillis = schedule.endMills
 
         //이번주에 표시할 것이 아니면 리턴
         if(endCal.get(Calendar.WEEK_OF_YEAR) != weeknum || weeknum != startCal.get(Calendar.WEEK_OF_YEAR)) {
@@ -237,7 +258,7 @@ class WeeklyCalendarPageFragment(private val now: Long): Fragment() {
 
 
         val dayOfWeek = startCal.get(Calendar.DAY_OF_WEEK) - 1
-        val scheduleView = LayoutInflater.from(requireContext())
+        val scheduleView = LayoutInflater.from(context)
             .inflate(R.layout.custom_view_weekly_schedule, null)
         Log.d(TAG, "custom view created")
 
@@ -272,19 +293,8 @@ class WeeklyCalendarPageFragment(private val now: Long): Fragment() {
         }
     }
 
-    fun blankOnLongClick(dayOfWeek: Int, hour: Int) {
-        val intent = Intent(this.requireContext(), ScheduleActivity::class.java)
-        val cal = Calendar.getInstance()
-        cal.timeInMillis = now
-        cal.add(Calendar.DATE, dayOfWeek)
-
-//        val startLocalDateTime = LocalDateTime.of(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH)+1, cal.get(Calendar.DATE), hour, 0, 0)
-//        intent.putExtra("StartDateTimeDto", NewScheduleDto("", startLocalDateTime))
-        startActivity(intent)
-    }
-
     fun blankOnClick(dayOfWeek: Int, hour: Int) {
-        val listOfSchedule = arrayListOf<Schedule>()
+        val listOfSchedule = arrayListOf<ScheduleDto>()
         val blankStartCal = weekCalList[dayOfWeek].clone() as Calendar
         blankStartCal.set(Calendar.HOUR_OF_DAY, hour)
         blankStartCal.set(Calendar.MINUTE, 0)
@@ -297,27 +307,27 @@ class WeeklyCalendarPageFragment(private val now: Long): Fragment() {
         blankStartCal.set(Calendar.MILLISECOND, 999)
 
         for (i in 24 until scheduleContainers[dayOfWeek].childCount) {
-            val schedule = viewToScheduleMap.get(scheduleContainers[dayOfWeek].get(i).id) as Schedule
+            val schedule = viewToScheduleMap.get(scheduleContainers[dayOfWeek].get(i).id) as ScheduleDto
 
-            if ((blankStartCal.timeInMillis <= schedule.endTime && schedule.startTime < blankEndCal.timeInMillis)
-                || (blankStartCal.timeInMillis <= schedule.startTime && schedule.endTime <= blankEndCal.timeInMillis)) {
+            if ((blankStartCal.timeInMillis <= schedule.endMills && schedule.startMills < blankEndCal.timeInMillis)
+                || (blankStartCal.timeInMillis <= schedule.startMills && schedule.endMills <= blankEndCal.timeInMillis)) {
                 listOfSchedule.add(schedule)
             }
         }
 
         for (s in listOfSchedule) {
-            Log.d(TAG,"schedule: ${s.name}")
+            Log.d(TAG,"schedule: ${s.title}")
         }
 
         if (!listOfSchedule.isEmpty()) {
 //            .openSlidingUpPanel(blankStartCal, listOfSchedule)
-            (parentFragmentManager.findFragmentByTag("week") as WeeklyCalendarFragment).openSlidingUpPanel(blankStartCal, listOfSchedule)
+            (parentFragmentManager.findFragmentByTag(calendarHostTag) as CalendarFragment).openSlidingUpPanel(blankStartCal, listOfSchedule)
         }
         else {
             if (selected_hour != null) {
                 if (selected_hour == hours[dayOfWeek][hour]) {
                     // 인텐트, 액티비티 이동 ScheduleActivity
-                    val intent = Intent(requireContext(), ScheduleActivity::class.java)
+                    val intent = Intent(context, ScheduleActivity::class.java)
                     intent.putExtra("NewSchedule", NewScheduleDto("", blankStartCal.timeInMillis))
                     startActivity(intent)
                 }
@@ -325,18 +335,20 @@ class WeeklyCalendarPageFragment(private val now: Long): Fragment() {
                     selected_hour!!.background = drawable_unselect
                     selected_hour = hours[dayOfWeek][hour]
                     selected_hour!!.background = drawable_onselect
+                    (parentFragmentManager.findFragmentByTag(calendarHostTag) as CalendarFragment).selectedDateCalendar = blankStartCal
                 }
             }
             else {
                 selected_hour = hours[dayOfWeek][hour]
                 selected_hour!!.background = drawable_onselect
+                (parentFragmentManager.findFragmentByTag(calendarHostTag) as CalendarFragment).selectedDateCalendar = blankStartCal
             }
         }
     }
 
     private fun createViewMap() {
-        holidayDrawable = ContextCompat.getDrawable(requireContext(), R.drawable.weekly_holiday) as GradientDrawable
-        holidayDrawable.setColor(ContextCompat.getColor(requireContext(),R.color.red__33Alpha))
+        holidayDrawable = ContextCompat.getDrawable(context, R.drawable.weekly_holiday) as GradientDrawable
+        holidayDrawable.setColor(ContextCompat.getColor(context,R.color.red__33Alpha))
         holidayLayoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
         holidayLayoutParams.setMargins(1)
         holidayLayoutParams.gravity = Gravity.CENTER
