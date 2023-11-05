@@ -69,7 +69,7 @@ object TMapDistanceMatrixService {
         val minutes = (seconds % 3600) / 60
         val remainingSeconds = seconds % 60
 
-        val hoursStr = if (hours > 0) "$hours 시 " else ""
+        val hoursStr = if (hours > 0) "$hours 시간 " else ""
         val minutesStr = if (minutes > 0) "$minutes 분 " else ""
         val secondsStr = "$remainingSeconds 초"
 

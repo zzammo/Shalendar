@@ -29,7 +29,6 @@ class FirebaseRepository {
             if (instance == null){
                 synchronized(FirebaseRepository::class){
                     instance = FirebaseRepository()
-                    instance!!.logout()
                 }
             }
             return instance

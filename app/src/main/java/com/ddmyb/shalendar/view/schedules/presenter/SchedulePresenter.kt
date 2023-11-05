@@ -33,6 +33,7 @@ import com.google.android.gms.location.LocationResult
 import com.google.android.gms.maps.model.LatLng
 import java.time.Instant
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.ZoneId
 import java.util.UUID
 
@@ -90,7 +91,7 @@ class SchedulePresenter {
     fun setAlarmInfo(type: AlarmInfo.AlarmType){
         alarmInfo.alarmType = type
     }
-    fun setAlarmInfo(value: Int, index: Int){
+    fun setAlarmInfo(value: Int, index: Int) {
         alarmInfo.updateCustomTime(value, index)
     }
 
@@ -155,28 +156,89 @@ class SchedulePresenter {
         schedule.title = view.readTitle()
         schedule.memo = view.readMemo()
 
-        val scheduleDto = ScheduleDto(schedule)
-        val alarmService =  AlarmService(context)
-
-//        if (alarmInfo.alarmType == AlarmInfo.AlarmType.NULL){
-//            return
-//        }
-        if (view.isCheckedDepartureAlarmSwitch()){
-            val seconds = schedule.dptLocalDateTime.atZone(ZoneId.systemDefault()).toEpochSecond() - alarmInfo.toSeconds()
-            val newAlarm = Alarm(scheduleDto)
-            alarmService.setAlarmWithTime(seconds, newAlarm)
-        }else{
-            val seconds = schedule.startLocalDatetime.atZone(ZoneId.systemDefault()).toEpochSecond() - alarmInfo.toSeconds()
-            val newAlarm = Alarm(scheduleDto)
-            alarmService.setAlarmWithTime(seconds, newAlarm)
+        if (view.isCheckedAllDaySwitch()){
+            schedule.startLocalDatetime.withHour(0)
+            schedule.startLocalDatetime.withMonth(0)
+            schedule.startLocalDatetime.withSecond(1)
+            schedule.endLocalDatetime.withHour(23)
+            schedule.endLocalDatetime.withMinute(59)
+            schedule.endLocalDatetime.withSecond(59)
         }
 
-        if (NetworkStatusService.isOnline(context)){
-            if (schedule.groupId=="") {
+        when(this.iterationType){
+            IterationType.NO_REPEAT ->{
+                val newStartDatetime = schedule.startLocalDatetime
+                val newEndDatetime = schedule.endLocalDatetime
+                val newDptDatetime = schedule.dptLocalDateTime
+                saveDistinctSchedule(newStartDatetime, newEndDatetime, newDptDatetime, context)
+            }
+            IterationType.EVERY_DAY ->{
+                for (i in 0..30){
+                    val newStartDatetime = schedule.startLocalDatetime.plusDays(i.toLong())
+                    val newEndDatetime = schedule.endLocalDatetime.plusDays(i.toLong())
+                    val newDptDatetime = schedule.dptLocalDateTime.plusDays(i.toLong())
+                    saveDistinctSchedule(newStartDatetime, newEndDatetime, newDptDatetime, context)
+                }
+            }
+            IterationType.EVERY_WEEK ->{
+                for (i in 0..30){
+                    val newStartDatetime = schedule.startLocalDatetime.plusWeeks(i.toLong())
+                    val newEndDatetime = schedule.endLocalDatetime.plusWeeks(i.toLong())
+                    val newDptDatetime = schedule.dptLocalDateTime.plusWeeks(i.toLong())
+                    saveDistinctSchedule(newStartDatetime, newEndDatetime, newDptDatetime, context)
+                }
+            }
+            IterationType.EVERY_MONTH ->{
+                for (i in 0..12){
+                    val newStartDatetime = schedule.startLocalDatetime.plusMonths(i.toLong())
+                    val newEndDatetime = schedule.endLocalDatetime.plusMonths(i.toLong())
+                    val newDptDatetime = schedule.dptLocalDateTime.plusMonths(i.toLong())
+                    saveDistinctSchedule(newStartDatetime, newEndDatetime, newDptDatetime, context)
+                }
+            }
+            IterationType.EVERY_YEAR ->{
+                for (i in 0..3){
+                    val newStartDatetime = schedule.startLocalDatetime.plusYears(i.toLong())
+                    val newEndDatetime = schedule.endLocalDatetime.plusYears(i.toLong())
+                    val newDptDatetime = schedule.dptLocalDateTime.plusYears(i.toLong())
+                    saveDistinctSchedule(newStartDatetime, newEndDatetime, newDptDatetime, context)
+                }
+            }
+        }
+    }
+
+    private fun saveDistinctSchedule(
+        newStartDatetime: LocalDateTime,
+        newEndDatetime: LocalDateTime,
+        newDptDatetime: LocalDateTime,
+        context: Context
+    ) {
+        val s = schedule.copy()
+        s.startLocalDatetime = newStartDatetime
+        s.endLocalDatetime = newEndDatetime
+        s.dptLocalDateTime = newDptDatetime
+        val scheduleDto = ScheduleDto(s)
+        val alarmService = AlarmService(context)
+        if (alarmInfo.alarmType != AlarmInfo.AlarmType.NULL) {
+            Log.d("saveSchedule", "alarm seconds: " + alarmInfo.toSeconds().toString())
+            if (view.isCheckedDepartureAlarmSwitch()) {
+                val seconds = s.dptLocalDateTime.atZone(ZoneId.systemDefault())
+                    .toEpochSecond() - alarmInfo.toSeconds()
+                val newAlarm = Alarm(scheduleDto)
+                alarmService.setAlarmWithTime(seconds, newAlarm)
+            } else {
+                val seconds = s.startLocalDatetime.atZone(ZoneId.systemDefault())
+                    .toEpochSecond() - alarmInfo.toSeconds()
+                val newAlarm = Alarm(scheduleDto)
+                alarmService.setAlarmWithTime(seconds, newAlarm)
+            }
+        }
+        if (NetworkStatusService.isOnline(context)) {
+            if (s.groupId == "") {
                 Log.d("createUserSchedule", "call")
-                firebaseRepository!!.createUserSchedule(ScheduleDto(schedule))
-            }else{
-                firebaseRepository!!.createGroupSchedule(ScheduleDto(schedule), scheduleDto.groupId)
+                firebaseRepository!!.createUserSchedule(scheduleDto)
+            } else {
+                firebaseRepository!!.createGroupSchedule(scheduleDto, scheduleDto.groupId)
             }
         }
     }

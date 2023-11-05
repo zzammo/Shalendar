@@ -1,6 +1,7 @@
 package com.ddmyb.shalendar.view.schedules.utils
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import com.ddmyb.shalendar.view.schedules.utils.AlarmInfo.AlarmType.*
 import java.time.LocalDateTime
@@ -10,7 +11,7 @@ import java.time.ZoneOffset
 class AlarmInfo {
 
     var alarmType = NULL
-    private var customSeconds: Long = 0
+    private var customSeconds: Long = -1
     enum class AlarmType {
         START_TIME, TEN_MIN_AGO, HOUR_AGO, DAY_AGO, CUSTOM, NULL
     }
@@ -30,9 +31,9 @@ class AlarmInfo {
         return when (alarmType) {
             NULL -> 0
             START_TIME -> 0
-            TEN_MIN_AGO -> LocalDateTime.of(0, 0, 0, 0, 10, 0).toEpochSecond(ZoneOffset.UTC)
-            HOUR_AGO -> LocalDateTime.of(0, 0, 0, 1, 0, 0).toEpochSecond(ZoneOffset.UTC)
-            DAY_AGO -> LocalDateTime.of(0, 0, 1, 0, 0, 0).toEpochSecond(ZoneOffset.UTC)
+            TEN_MIN_AGO -> 10*60
+            HOUR_AGO -> 60*60
+            DAY_AGO -> 60*60*24
             CUSTOM -> customSeconds
         }
     }
@@ -50,13 +51,12 @@ class AlarmInfo {
     }
 
     fun updateCustomTime(value: Int, index: Int){
-        val localDateTime =when(index) {
-            0 -> LocalDateTime.of(0, 0, 0, 0, value, 0)
-            1 -> LocalDateTime.of(0, 0, 0, value, 0, 0)
-            2 -> LocalDateTime.of(0, 0, value, 0, 0, 0)
-            3 -> LocalDateTime.of(0, 0, value * 7, 0, 0, 0)
-            else -> LocalDateTime.of(0, 0, 0, 0, 0, 0)
+        customSeconds = when(index) {
+            0 -> (value * 60).toLong()
+            1 -> (value*60*60).toLong()
+            2 -> (value*60*60*24).toLong()
+            3 -> (value*60*60*24*7).toLong()
+            else -> -1
         }
-        customSeconds =  localDateTime.toEpochSecond(ZoneOffset.UTC)
     }
 }

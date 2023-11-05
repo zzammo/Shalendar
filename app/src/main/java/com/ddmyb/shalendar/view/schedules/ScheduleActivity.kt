@@ -147,6 +147,10 @@ class ScheduleActivity(
         binding.imColorCircleSchedule.backgroundTintList = ContextCompat.getColorStateList(applicationContext, colorId)
     }
 
+    fun isCheckedAllDaySwitch():Boolean{
+        return binding.alldaySwitch.isChecked
+    }
+
     private fun processGetResultCallBack() {
         when (isSrcCallBack) {
             true -> {
@@ -470,14 +474,14 @@ class ScheduleActivity(
         binding.charpicker.wrapSelectorWheel = false
 
         binding.customAlarmBtn.setOnClickListener{
-            binding.customAlarmLayout.visibility = View.VISIBLE
+            binding.llCustomAlarm.visibility = View.VISIBLE
             setNumPicker(customIndex)
             binding.numpicker.value = customVal
             binding.charpicker.value = customIndex
 
             showCustomCheckBox()
 
-            binding.numpickerLayout.visibility = View.VISIBLE
+            binding.checkboxCustom.visibility = View.VISIBLE
             binding.customAlarmBtn.isClickable = true
             presenter.setAlarmInfo(CUSTOM)
         }
@@ -487,10 +491,10 @@ class ScheduleActivity(
                 setNumPicker(customIndex)
                 binding.numpicker.value = customVal
                 binding.charpicker.value = customIndex
-                binding.numpickerLayout.visibility = View.VISIBLE
+                binding.llCustomAlarm.visibility = View.VISIBLE
                 presenter.setAlarmInfo(customVal, customIndex)
             } else {
-                binding.numpickerLayout.visibility = View.GONE
+                binding.llCustomAlarm.visibility = View.GONE
             }
             presenter.setAlarmInfo(CUSTOM)
         }
@@ -502,6 +506,7 @@ class ScheduleActivity(
 
         binding.charpicker.setOnValueChangedListener{ _, _, index ->
             customIndex = index
+            setNumPicker(index)
             showCustomCheckBox()
         }
     }
