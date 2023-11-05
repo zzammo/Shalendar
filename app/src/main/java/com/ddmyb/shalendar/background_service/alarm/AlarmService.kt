@@ -9,7 +9,7 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import com.ddmyb.shalendar.R
 import com.ddmyb.shalendar.domain.Alarm
-import com.ddmyb.shalendar.domain.repository.AlarmDatabase
+import com.ddmyb.shalendar.domain.repository.Alarm.AlarmDatabase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

@@ -1,14 +1,11 @@
 package com.ddmyb.shalendar.view.month.adapter.viewHolder
 
 import android.graphics.drawable.GradientDrawable
-import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.ddmyb.shalendar.R
-import com.ddmyb.shalendar.databinding.ItemMonthLibraryDayBinding
 import com.ddmyb.shalendar.databinding.ItemMonthScheduleBinding
-import com.ddmyb.shalendar.domain.ScheduleDto
-import com.ddmyb.shalendar.view.month.data.ScheduleData
+import com.ddmyb.shalendar.domain.schedules.repository.ScheduleDto
 
 class MonthCalendarDateScheduleViewHolder(
     val binding: ItemMonthScheduleBinding

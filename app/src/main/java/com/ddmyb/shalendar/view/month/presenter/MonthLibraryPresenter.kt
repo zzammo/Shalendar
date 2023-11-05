@@ -1,7 +1,6 @@
 package com.ddmyb.shalendar.view.month.presenter
 
-import android.util.Log
-import com.ddmyb.shalendar.domain.ScheduleDto
+import com.ddmyb.shalendar.domain.schedules.repository.ScheduleDto
 import com.ddmyb.shalendar.util.HttpResult
 import com.ddmyb.shalendar.util.Logger
 import com.ddmyb.shalendar.util.MutableLiveListData

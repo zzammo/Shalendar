@@ -3,9 +3,7 @@ package com.ddmyb.shalendar.view.month
 import android.graphics.Color
 import android.os.Bundle
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.view.children
@@ -13,10 +11,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.ddmyb.shalendar.R
 import com.ddmyb.shalendar.databinding.FragmentMonthLibraryBinding
-import com.ddmyb.shalendar.domain.ScheduleDto
+import com.ddmyb.shalendar.domain.schedules.repository.ScheduleDto
 import com.ddmyb.shalendar.util.Logger
 import com.ddmyb.shalendar.util.MutableLiveListData
-import com.ddmyb.shalendar.view.holiday.data.HolidayDTO
 import com.ddmyb.shalendar.view.month.adapter.MonthCalendarDateScheduleRVAdapter
 import com.ddmyb.shalendar.view.month.presenter.MonthLibraryPresenter
 import com.kizitonwose.calendar.core.CalendarDay

@@ -6,7 +6,7 @@
     <data>
         <variable
             name="schedule"
-            type="com.ddmyb.shalendar.domain.ScheduleDto" />
+            type="com.ddmyb.shalendar.domain.schedules.repository.ScheduleDto" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

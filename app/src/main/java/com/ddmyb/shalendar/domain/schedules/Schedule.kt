@@ -1,8 +1,9 @@
-package com.ddmyb.shalendar.domain
+package com.ddmyb.shalendar.domain.schedules
 
 import android.os.Build
 import androidx.annotation.RequiresApi
 import com.ddmyb.shalendar.R
+import com.ddmyb.shalendar.domain.schedules.repository.ScheduleDto
 import com.ddmyb.shalendar.view.schedules.model.dto.google_distance_matrix.utils.TextValueObject
 import com.ddmyb.shalendar.view.schedules.utils.MeansType
 import com.google.android.gms.maps.model.LatLng

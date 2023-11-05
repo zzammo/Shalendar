@@ -2,8 +2,8 @@ package com.ddmyb.shalendar.domain.repository
 
 import androidx.room.Room
 import androidx.test.platform.app.InstrumentationRegistry
+import com.ddmyb.shalendar.domain.repository.Alarm.AlarmDatabase
 import org.junit.After
-import org.junit.Assert.*
 import org.junit.Before
 
 class AlarmDatabaseTest{

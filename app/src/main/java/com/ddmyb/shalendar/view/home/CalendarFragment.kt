@@ -5,15 +5,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.ddmyb.shalendar.databinding.FragmentCalendarBinding
-import com.ddmyb.shalendar.domain.ScheduleDto
+import com.ddmyb.shalendar.domain.schedules.repository.ScheduleDto
 import com.ddmyb.shalendar.view.month.MonthCalendarFragment
 import com.ddmyb.shalendar.view.weekly.WeeklyCalendarFragment
 import com.ddmyb.shalendar.view.weekly.adapter.SlidingUpPanelAdapter
 import com.sothree.slidinguppanel.SlidingUpPanelLayout
-import okhttp3.internal.notify
 import java.util.Calendar
 
 class CalendarFragment: Fragment() {

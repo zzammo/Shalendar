@@ -1,8 +1,9 @@
-package com.ddmyb.shalendar.domain
+package com.ddmyb.shalendar.domain.schedules.repository
 
 import android.os.Build
 import androidx.annotation.RequiresApi
 import com.ddmyb.shalendar.R
+import com.ddmyb.shalendar.domain.schedules.Schedule
 import java.time.ZoneId
 
 @RequiresApi(Build.VERSION_CODES.O)

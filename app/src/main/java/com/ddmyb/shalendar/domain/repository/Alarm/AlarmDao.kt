@@ -1,4 +1,4 @@
-package com.ddmyb.shalendar.domain.repository
+package com.ddmyb.shalendar.domain.repository.Alarm
 
 import androidx.room.Dao
 import androidx.room.Delete

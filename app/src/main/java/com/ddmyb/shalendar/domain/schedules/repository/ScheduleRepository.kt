@@ -1,10 +1,8 @@
-package com.ddmyb.shalendar
+package com.ddmyb.shalendar.domain.schedules.repository
 
 import android.content.Context
 import android.util.Log
 import android.widget.Toast
-import com.ddmyb.shalendar.domain.schedules.repository.ScheduleDto
-import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
@@ -13,7 +11,7 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 
-class FirebaseRepository {
+class ScheduleRepository {
 
     private val mFirebaseAuth = FirebaseAuth.getInstance()
     private lateinit var mDatabaseRef: DatabaseReference //실시간 데이터베이스
@@ -22,12 +20,12 @@ class FirebaseRepository {
     private lateinit var mChildbaseRef: DatabaseReference //그룹 데이터베이스
 
     companion object{
-        private var instance:FirebaseRepository? = null
+        private var instance: ScheduleRepository? = null
         @Synchronized
-        fun getInstance(): FirebaseRepository? {
+        fun getInstance(): ScheduleRepository? {
             if (instance == null) {
-                synchronized(FirebaseRepository::class) {
-                    instance = FirebaseRepository()
+                synchronized(ScheduleRepository::class) {
+                    instance = ScheduleRepository()
                 }
             }
             return instance
@@ -218,26 +216,23 @@ class FirebaseRepository {
     fun deleteEntireGroup(groupId: String) {
 
     }
-}
-fun parseLatLngFromString(str: String): LatLng? {
-    try {
-        // "lat/lng: (12.34,30.56)"와 같은 문자열을 파싱
-        val startIndex = str.indexOf("(") + 1
-        val endIndex = str.indexOf(")")
-        val latLngStr = str.substring(startIndex, endIndex)
-        val latLngParts = latLngStr.split(",")
 
-        // 위도 및 경도 추출 및 LatLng 객체 생성
-        val latitude = latLngParts[0].toDouble()
-        val longitude = latLngParts[1].toDouble()
-
-        return LatLng(latitude, longitude)
-    } catch (e: Exception) {
-        // 변환에 실패하면 null 반환
-        return null
-    }
-}
-
-class groupinit(gnn:String) {
-    var groupName: String = gnn
+//    fun parseLatLngFromString(str: String): LatLng? {
+//        try {
+//            // "lat/lng: (12.34,30.56)"와 같은 문자열을 파싱
+//            val startIndex = str.indexOf("(") + 1
+//            val endIndex = str.indexOf(")")
+//            val latLngStr = str.substring(startIndex, endIndex)
+//            val latLngParts = latLngStr.split(",")
+//
+//            // 위도 및 경도 추출 및 LatLng 객체 생성
+//            val latitude = latLngParts[0].toDouble()
+//            val longitude = latLngParts[1].toDouble()
+//
+//            return LatLng(latitude, longitude)
+//        } catch (e: Exception) {
+//            // 변환에 실패하면 null 반환
+//            return null
+//        }
+//    }
 }

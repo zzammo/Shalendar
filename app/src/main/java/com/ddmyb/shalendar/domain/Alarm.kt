@@ -4,6 +4,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.ddmyb.shalendar.domain.schedules.repository.ScheduleDto
 
 @Entity
 @RequiresApi(Build.VERSION_CODES.O)

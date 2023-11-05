@@ -1,7 +1,7 @@
 package com.ddmyb.shalendar.view.month.data
 
 import android.graphics.Color
-import com.ddmyb.shalendar.domain.ScheduleDto
+import com.ddmyb.shalendar.domain.schedules.repository.ScheduleDto
 import com.ddmyb.shalendar.util.MutableLiveListData
 import java.util.Calendar
 

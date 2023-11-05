@@ -1,7 +1,6 @@
 package com.ddmyb.shalendar.view.month
 
 import android.app.Dialog
-import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.View
@@ -17,7 +16,7 @@ import androidx.viewpager2.widget.ViewPager2
 import com.ddmyb.shalendar.R
 import com.ddmyb.shalendar.databinding.FragmentMonthCalendarPageBinding
 import com.ddmyb.shalendar.databinding.ItemMonthDateBinding
-import com.ddmyb.shalendar.domain.ScheduleDto
+import com.ddmyb.shalendar.domain.schedules.repository.ScheduleDto
 import com.ddmyb.shalendar.util.HttpResult
 import com.ddmyb.shalendar.util.Logger
 import com.ddmyb.shalendar.util.MutableLiveListData
@@ -26,8 +25,6 @@ import com.ddmyb.shalendar.view.month.adapter.MonthCalendarDateScheduleRVAdapter
 import com.ddmyb.shalendar.view.month.adapter.MonthDateDetailAdapter
 import com.ddmyb.shalendar.view.month.data.MonthCalendarDateData
 import com.ddmyb.shalendar.view.month.data.MonthPageData
-import com.ddmyb.shalendar.view.month.data.ScheduleData
-import com.ddmyb.shalendar.view.month.data.TimeTableScheduleList
 import com.ddmyb.shalendar.view.month.presenter.MonthCalendarPagePresenter
 import java.util.Calendar
 

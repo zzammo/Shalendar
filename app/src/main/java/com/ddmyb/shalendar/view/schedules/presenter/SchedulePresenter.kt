@@ -13,8 +13,8 @@ import androidx.core.content.ContextCompat
 import com.ddmyb.shalendar.FirebaseRepository
 import com.ddmyb.shalendar.background_service.alarm.AlarmService
 import com.ddmyb.shalendar.domain.Alarm
-import com.ddmyb.shalendar.domain.Schedule
-import com.ddmyb.shalendar.domain.ScheduleDto
+import com.ddmyb.shalendar.domain.schedules.Schedule
+import com.ddmyb.shalendar.domain.schedules.repository.ScheduleDto
 import com.ddmyb.shalendar.view.schedules.ScheduleActivity
 import com.ddmyb.shalendar.view.schedules.model.service.GeoCodingService
 import com.ddmyb.shalendar.view.schedules.model.service.NetworkStatusService
