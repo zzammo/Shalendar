@@ -46,7 +46,7 @@ class MonthLibraryActivity : AppCompatActivity() {
         binding = DataBindingUtil.setContentView(this@MonthLibraryActivity, R.layout.activity_month_library)
 
         supportFragmentManager.commit {
-            add(R.id.calendar_fragment, MonthLibraryFragment())
+            add(R.id.calendar_fragment, MonthLibraryFragment(Calendar.getInstance()))
             setReorderingAllowed(true)
         }
     }

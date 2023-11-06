@@ -28,7 +28,8 @@ import com.ddmyb.shalendar.view.month.data.MonthPageData
 import com.ddmyb.shalendar.view.month.presenter.MonthCalendarPagePresenter
 import java.util.Calendar
 
-class MonthCalendarPageFragment(private val now: Long) : Fragment(R.layout.fragment_month_calendar_page) {
+class MonthCalendarPageFragment(private val now: Long, private val groupId: String?) : Fragment(R.layout
+    .fragment_month_calendar_page) {
 
     private val logger = Logger("MonthCalendarPageFragment", true)
 
@@ -87,7 +88,10 @@ class MonthCalendarPageFragment(private val now: Long) : Fragment(R.layout.fragm
                     itemBinding.schedules.adapter!!.notifyItemRemoved(it)
                 }
             }
-            presenter.loadSchedule(i)
+            if (groupId == null)
+                presenter.loadSchedule(i)
+            else
+                presenter.loadGroupSchedule(i, groupId)
 
             itemBinding.root.setOnClickListener {
                 val selectedIdx = presenter.selectDate(i)
