@@ -54,7 +54,7 @@ class CalendarFragment: Fragment() {
         return binding.root
     }
 
-    public fun openSlidingUpPanel(cal:Calendar, scheduleList: ArrayList<ScheduleDto>) {
+    fun openSlidingUpPanel(cal:Calendar, scheduleList: ArrayList<ScheduleDto>) {
         binding.tvToday.text = getDateString(cal)
         val slidingUpPanelAdapter = SlidingUpPanelAdapter(scheduleList, cal, requireContext())
         binding.planRecyclerView.adapter = slidingUpPanelAdapter
