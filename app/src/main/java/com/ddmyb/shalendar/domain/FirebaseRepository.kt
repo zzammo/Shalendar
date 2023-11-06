@@ -74,25 +74,25 @@ class FirebaseRepository {
         return
     }
     //현재 로그인한 유저가 포함된 그룹 생성
-//    fun createGroup(gName: String) {
-//        val currentUser = mFirebaseAuth.currentUser
-//        mGroupDatabaseRef = FirebaseDatabase.getInstance().getReference("Group")
-//        val newChildRef = mGroupDatabaseRef.push()
-//        //group생성
-//        newChildRef.setValue(groupinit(gName))
-//        val groupId = newChildRef.key.toString()
-//        //그룹에 groupId넣기
-//        mGroupDatabaseRef.child(groupId).child("groupId").setValue(groupId)
-//        //그룹에 userId넣기
-//        mGroupDatabaseRef.child(groupId).child("userId").child(currentUser!!.uid)
-//            .setValue(currentUser!!.uid)
-//        //user에 groupId 넣기
-//        mDatabaseRef =
-//            FirebaseDatabase.getInstance().getReference("UserAccount").child(currentUser!!.uid)
-//                .child("groupId")
-//        mDatabaseRef.setValue(newChildRef.key.toString())
-//        return
-//    }
+    fun createGroup(gName: String) {
+        val currentUser = mFirebaseAuth.currentUser
+        mGroupDatabaseRef = FirebaseDatabase.getInstance().getReference("Group")
+        val newChildRef = mGroupDatabaseRef.push()
+        //group생성
+        val groupId = newChildRef.key.toString()
+        mGroupDatabaseRef.child(groupId).child("groupName").setValue(gName);
+        //그룹에 groupId넣기
+        mGroupDatabaseRef.child(groupId).child("groupId").setValue(groupId)
+        //그룹에 userId넣기
+        mGroupDatabaseRef.child(groupId).child("userId").child(currentUser!!.uid)
+            .setValue(currentUser!!.uid)
+        //user에 groupId 넣기
+        mDatabaseRef =
+            FirebaseDatabase.getInstance().getReference("UserAccount").child(currentUser!!.uid)
+                .child("groupId")
+        mDatabaseRef.setValue(newChildRef.key.toString())
+        return
+    }
 
     // groupID를 기반으로 접속한 유저 초대
     fun inviteGroup(groupId: String) {
@@ -209,6 +209,38 @@ class FirebaseRepository {
             FirebaseDatabase.getInstance().getReference("UserAccount").child(currentUser!!.uid)
                 .child("Schedule")
         mDatabaseRef.get()
+    }
+
+    fun readGroup(){
+        val currentUser = mFirebaseAuth.currentUser
+        mDatabaseRef = FirebaseDatabase.getInstance().getReference("UserAccount").child(currentUser!!.uid).child("groupId")
+        mDatabaseRef.addChildEventListener(object : ChildEventListener {
+            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+                Log.e("dorimaengdol", "ChildEventListener-onChildAdded : ${snapshot.value}")
+                mChildbaseRef = FirebaseDatabase.getInstance().getReference("Group")
+                    .child(snapshot.value.toString()).child("groupName")
+                mChildbaseRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onDataChange(dataSnapshot: DataSnapshot) {
+                        if (dataSnapshot.exists()) {
+                            val data = dataSnapshot.getValue(String::class.java)
+                            if (data != null) {
+                                Log.d("dorimaengdol", data)
+                            }
+                        } else {
+                        }
+                    }
+                    override fun onCancelled(databaseError: DatabaseError) {}
+                })
+            }
+
+            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {}
+
+            override fun onChildRemoved(snapshot: DataSnapshot) {}
+
+            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {}
+
+            override fun onCancelled(error: DatabaseError) {}
+        })
     }
 
     fun deleteGroup(groupId: String) {
