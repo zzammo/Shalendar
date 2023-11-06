@@ -74,7 +74,7 @@ class FirebaseRepository {
         return
     }
     //현재 로그인한 유저가 포함된 그룹 생성
-    fun createGroup(gName: String) {
+    fun createGroup(gName: String): String {
         val currentUser = mFirebaseAuth.currentUser
         mGroupDatabaseRef = FirebaseDatabase.getInstance().getReference("Group")
         val newChildRef = mGroupDatabaseRef.push()
@@ -91,7 +91,7 @@ class FirebaseRepository {
             FirebaseDatabase.getInstance().getReference("UserAccount").child(currentUser!!.uid)
                 .child("groupId")
         mDatabaseRef.setValue(newChildRef.key.toString())
-        return
+        return groupId
     }
 
     // groupID를 기반으로 접속한 유저 초대
