@@ -17,14 +17,12 @@ class OwnedCalendarAdapter (
             )
         }
     }
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         return MyViewHolder(ItemOwnedCalendarBinding.bind(LayoutInflater.from(parent.context).inflate(R.layout.item_owned_calendar,parent,false)))
     }
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         holder.bind(ownedCalendarList[position])
     }
-
     override fun getItemCount(): Int {
         return ownedCalendarList.size
     }
