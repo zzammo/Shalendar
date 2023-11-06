@@ -10,7 +10,7 @@ import com.ddmyb.shalendar.domain.Alarms.Alarm
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.internal.synchronized
 
-@Database(entities = [Alarm::class], version = 1)
+@Database(entities = [Alarm::class], version = 2)
 abstract class AlarmDatabase:RoomDatabase() {
     abstract fun alarmDao(): AlarmDao
 
@@ -31,7 +31,7 @@ abstract class AlarmDatabase:RoomDatabase() {
                     instance = Room.databaseBuilder(
                         context.applicationContext,
                         AlarmDatabase::class.java,
-                        "alarm-database"
+                        "alarm-database2"
                     ).addMigrations(MIGRATION_1_2)
                         .allowMainThreadQueries()
                         .build()
