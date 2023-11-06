@@ -14,7 +14,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.ddmyb.shalendar.LoginActivity
+import com.ddmyb.shalendar.view.login.LoginActivity
 import com.ddmyb.shalendar.R
 import com.ddmyb.shalendar.databinding.NaviDrawerBinding
 import com.ddmyb.shalendar.databinding.NaviDrawerTestPageBinding

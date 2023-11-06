@@ -1,9 +1,9 @@
-package com.ddmyb.shalendar.view.programmatic_autocomplete
+package com.ddmyb.shalendar.view.search_place
 
 import android.content.Intent
 import com.ddmyb.shalendar.R
-import com.ddmyb.shalendar.view.programmatic_autocomplete.adapter.LatLngAdapter
-import com.ddmyb.shalendar.view.programmatic_autocomplete.adapter.PlacePredictionAdapter
+import com.ddmyb.shalendar.view.search_place.adapter.LatLngAdapter
+import com.ddmyb.shalendar.view.search_place.adapter.PlacePredictionAdapter
 
 // Copyright 2020 Google LLC
 //
@@ -39,7 +39,7 @@ import com.android.volley.RequestQueue
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
 import com.ddmyb.shalendar.BuildConfig.*
-import com.ddmyb.shalendar.view.programmatic_autocomplete.model.GeocodingResult
+import com.ddmyb.shalendar.view.search_place.model.GeocodingResult
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.libraries.places.api.Places

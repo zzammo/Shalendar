@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.ddmyb.shalendar.R
-import com.ddmyb.shalendar.domain.Alarm
+import com.ddmyb.shalendar.domain.Alarms.Alarm
 import com.ddmyb.shalendar.view.alarm_manager.adapter.viewHolder.AlarmViewHolder
 import com.ddmyb.shalendar.view.schedules.utils.DateInfo
 import com.ddmyb.shalendar.view.schedules.utils.TimeInfo
@@ -36,7 +36,7 @@ class AlarmRVAdapter(private val itemList: ArrayList<Alarm>): RecyclerView.Adapt
         holder.ll_alarm_color.background = drawable
     }
 
-    fun addItem(position: Int, item:Alarm){
+    fun addItem(position: Int, item: Alarm){
         itemList[position] = item
     }
     fun deleteItem(position: Int){

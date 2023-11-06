@@ -1,8 +1,9 @@
-package com.ddmyb.shalendar.domain.schedules.repository
+package com.ddmyb.shalendar.domain
 
 import android.content.Context
 import android.util.Log
 import android.widget.Toast
+import com.ddmyb.shalendar.domain.schedules.repository.ScheduleDto
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
@@ -11,7 +12,7 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 
-class ScheduleRepository {
+class FirebaseRepository {
 
     private val mFirebaseAuth = FirebaseAuth.getInstance()
     private lateinit var mDatabaseRef: DatabaseReference //실시간 데이터베이스
@@ -20,12 +21,12 @@ class ScheduleRepository {
     private lateinit var mChildbaseRef: DatabaseReference //그룹 데이터베이스
 
     companion object{
-        private var instance: ScheduleRepository? = null
+        private var instance: FirebaseRepository? = null
         @Synchronized
-        fun getInstance(): ScheduleRepository? {
+        fun getInstance(): FirebaseRepository? {
             if (instance == null) {
-                synchronized(ScheduleRepository::class) {
-                    instance = ScheduleRepository()
+                synchronized(FirebaseRepository::class) {
+                    instance = FirebaseRepository()
                 }
             }
             return instance
@@ -73,25 +74,25 @@ class ScheduleRepository {
         return
     }
     //현재 로그인한 유저가 포함된 그룹 생성
-    fun createGroup(gName: String) {
-        val currentUser = mFirebaseAuth.currentUser
-        mGroupDatabaseRef = FirebaseDatabase.getInstance().getReference("Group")
-        val newChildRef = mGroupDatabaseRef.push()
-        //group생성
-        newChildRef.setValue(groupinit(gName))
-        val groupId = newChildRef.key.toString()
-        //그룹에 groupId넣기
-        mGroupDatabaseRef.child(groupId).child("groupId").setValue(groupId)
-        //그룹에 userId넣기
-        mGroupDatabaseRef.child(groupId).child("userId").child(currentUser!!.uid)
-            .setValue(currentUser!!.uid)
-        //user에 groupId 넣기
-        mDatabaseRef =
-            FirebaseDatabase.getInstance().getReference("UserAccount").child(currentUser!!.uid)
-                .child("groupId")
-        mDatabaseRef.setValue(newChildRef.key.toString())
-        return
-    }
+//    fun createGroup(gName: String) {
+//        val currentUser = mFirebaseAuth.currentUser
+//        mGroupDatabaseRef = FirebaseDatabase.getInstance().getReference("Group")
+//        val newChildRef = mGroupDatabaseRef.push()
+//        //group생성
+//        newChildRef.setValue(groupinit(gName))
+//        val groupId = newChildRef.key.toString()
+//        //그룹에 groupId넣기
+//        mGroupDatabaseRef.child(groupId).child("groupId").setValue(groupId)
+//        //그룹에 userId넣기
+//        mGroupDatabaseRef.child(groupId).child("userId").child(currentUser!!.uid)
+//            .setValue(currentUser!!.uid)
+//        //user에 groupId 넣기
+//        mDatabaseRef =
+//            FirebaseDatabase.getInstance().getReference("UserAccount").child(currentUser!!.uid)
+//                .child("groupId")
+//        mDatabaseRef.setValue(newChildRef.key.toString())
+//        return
+//    }
 
     // groupID를 기반으로 접속한 유저 초대
     fun inviteGroup(groupId: String) {

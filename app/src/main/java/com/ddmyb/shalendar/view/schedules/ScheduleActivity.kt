@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.content.res.ColorStateList
 import android.location.Location
 import android.location.LocationManager
 import android.os.Build
@@ -21,10 +20,9 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.view.isVisible
 import com.ddmyb.shalendar.R
 import com.ddmyb.shalendar.databinding.ActivityScheduleBinding
-import com.ddmyb.shalendar.view.programmatic_autocomplete.ProgrammaticAutocompleteGeocodingActivity
+import com.ddmyb.shalendar.view.search_place.ProgrammaticAutocompleteGeocodingActivity
 import com.ddmyb.shalendar.view.schedules.presenter.SchedulePresenter
 import com.ddmyb.shalendar.view.schedules.utils.AlarmInfo
 import com.ddmyb.shalendar.view.schedules.utils.AlarmInfo.AlarmType.*

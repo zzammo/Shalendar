@@ -14,9 +14,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.ddmyb.shalendar.R
 import com.ddmyb.shalendar.background_service.alarm.AlarmService
-import com.ddmyb.shalendar.domain.Alarm
+import com.ddmyb.shalendar.domain.Alarms.Alarm
 import com.ddmyb.shalendar.view.alarm_manager.adapter.AlarmRVAdapter
-import com.google.android.material.snackbar.Snackbar
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
 
 

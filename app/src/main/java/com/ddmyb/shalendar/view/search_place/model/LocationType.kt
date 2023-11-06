@@ -1,4 +1,4 @@
-package com.ddmyb.shalendar.view.programmatic_autocomplete.model
+package com.ddmyb.shalendar.view.search_place.model
 // Copyright 2020 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");

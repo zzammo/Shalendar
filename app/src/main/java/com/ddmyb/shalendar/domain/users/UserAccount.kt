@@ -1,4 +1,4 @@
-package com.ddmyb.shalendar
+package com.ddmyb.shalendar.domain.users
 
 //사용자 계정 정보 모델 클라스
 class UserAccount {

@@ -1,12 +1,11 @@
-package com.ddmyb.shalendar.domain.repository.Alarm
+package com.ddmyb.shalendar.domain.Alarms.repository
 
 import androidx.room.Dao
-import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
-import com.ddmyb.shalendar.domain.Alarm
+import com.ddmyb.shalendar.domain.Alarms.Alarm
 
 @Dao
 interface AlarmDao {

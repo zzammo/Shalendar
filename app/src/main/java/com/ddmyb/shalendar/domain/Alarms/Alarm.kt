@@ -1,4 +1,4 @@
-package com.ddmyb.shalendar.domain
+package com.ddmyb.shalendar.domain.Alarms
 
 import android.os.Build
 import androidx.annotation.RequiresApi

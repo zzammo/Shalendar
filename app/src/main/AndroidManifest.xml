@@ -74,7 +74,7 @@
              "YOUR_API_KEY" string in this file with "${MAPS_API_KEY}".
         -->
         <activity
-            android:name=".view.programmatic_autocomplete.ProgrammaticAutocompleteGeocodingActivity"
+            android:name=".view.search_place.ProgrammaticAutocompleteGeocodingActivity"
             android:exported="false"
             android:label="@string/title_activity_place" />
 
@@ -95,10 +95,10 @@
             android:name=".view.home.navidrawer.TestNaviDrawer"
             android:exported="false" />
         <activity
-            android:name=".RegisterActivity"
+            android:name=".view.login.SignUpActivity"
             android:exported="false" />
         <activity
-            android:name=".LoginActivity"
+            android:name=".view.login.LoginActivity"
             android:exported="false" />
         <activity
             android:name=".view.test.TestActivity"

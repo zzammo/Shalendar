@@ -8,8 +8,8 @@ import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
 import com.ddmyb.shalendar.R
-import com.ddmyb.shalendar.domain.Alarm
-import com.ddmyb.shalendar.domain.repository.Alarm.AlarmDatabase
+import com.ddmyb.shalendar.domain.Alarms.Alarm
+import com.ddmyb.shalendar.domain.Alarms.repository.AlarmDatabase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

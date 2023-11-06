@@ -1,4 +1,4 @@
-package com.ddmyb.shalendar.view.programmatic_autocomplete.adapter
+package com.ddmyb.shalendar.view.search_place.adapter
 
 // Copyright 2020 Google LLC
 //

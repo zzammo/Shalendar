@@ -1,4 +1,4 @@
-package com.ddmyb.shalendar.domain.repository.Alarm
+package com.ddmyb.shalendar.domain.Alarms.repository
 
 import android.content.Context
 import androidx.room.Database
@@ -6,7 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
-import com.ddmyb.shalendar.domain.Alarm
+import com.ddmyb.shalendar.domain.Alarms.Alarm
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.internal.synchronized
 

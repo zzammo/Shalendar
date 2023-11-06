@@ -15,10 +15,10 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.ddmyb.shalendar.LoginActivity
+import com.ddmyb.shalendar.view.login.LoginActivity
 import com.ddmyb.shalendar.databinding.NaviDrawerBinding
+import com.ddmyb.shalendar.domain.FirebaseRepository
 import com.ddmyb.shalendar.domain.schedules.repository.ScheduleDto
-import com.ddmyb.shalendar.FirebaseRepository
 import com.ddmyb.shalendar.view.home.navidrawer.adapter.OwnedCalendarAdapter
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -92,7 +92,7 @@ class NaviDrawerActivity :AppCompatActivity() {
 
         binding.btnCheckSc.setOnClickListener {
             val mSc = ScheduleDto()
-            FirebaseRepository().createGroup("도리맹돌의 수하물들")
+//            FirebaseRepository().createGroup("도리맹돌의 수하물들")
             FirebaseRepository().createUserSchedule(mSc)
             //manageSchedule().crateGroupSchedule(mSc,"-Ni8tG4kZmQCO1W0JBzk")
 //            manageSchedule().inviteGroup("-Ni8tG4kZmQCO1W0JBzk")

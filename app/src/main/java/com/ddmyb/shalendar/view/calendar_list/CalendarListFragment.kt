@@ -95,5 +95,3 @@ class CalendarListFragment : Fragment() {
     }
 
 }
-
-
