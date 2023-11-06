@@ -12,9 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".view.home.MainActivity">
-
-
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/ll_fragment_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -27,8 +25,22 @@
                 android:layout_marginLeft="10sp"
                 android:text="캘린더"
                 android:textSize="20sp"
-                android:textStyle="bold"/>
-        </LinearLayout>
+                android:textStyle="bold"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"/>
+            <ImageView
+                android:id = "@+id/iv_group_add"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/baseline_group_add_24"
+                android:padding="18sp"
+                android:layout_marginEnd="10sp"
+                android:visibility="gone"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"/>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <Button
             android:id="@+id/test_button"

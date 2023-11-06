@@ -6,6 +6,7 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -61,6 +62,7 @@ class MainActivity : AppCompatActivity() {
                 R.id.item_fragment1 -> {
                     supportFragmentManager.beginTransaction()
                         .replace(R.id.main_frame, CalendarFragment(), "CalendarHostFragment").commit()
+                    binding.ivGroupAdd.visibility = View.GONE
                     binding.tvFragmentTitle.text = "개인 캘린더"
                     true
                 }
@@ -70,6 +72,7 @@ class MainActivity : AppCompatActivity() {
                     supportFragmentManager.beginTransaction()
                         .replace(R.id.main_frame, CalendarListFragment()).commit()
                     binding.tvFragmentTitle.text = "그룹 관리"
+                    binding.ivGroupAdd.visibility = View.VISIBLE
                     true
                 }
 
@@ -84,6 +87,7 @@ class MainActivity : AppCompatActivity() {
                     supportFragmentManager.beginTransaction()
                         .replace(R.id.main_frame, AlarmManagerFragment()).commit()
                     binding.tvFragmentTitle.text = "알람 관리"
+                    binding.ivGroupAdd.visibility = View.GONE
                     true
                 }
 
@@ -91,12 +95,20 @@ class MainActivity : AppCompatActivity() {
 //                    supportFragmentManager.beginTransaction()
 //                        .replace(R.id.main_frame, ProflieFragment()).commit()
 //                    binding.tvFragmentTitle.text = "내 정보"
+//                    binding.ivGroupAdd.visibility = View.GONE
 //                    true
 //                }
 
                 else -> false
             }
         }
+
+        binding.ivGroupAdd.setOnClickListener {
+
+            binding.ivGroupAdd.visibility = View.GONE
+        }
+
+
         HolidayApi.getHolidays(
             year = 2023,
             month = 12,
