@@ -11,6 +11,8 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import java.time.LocalDateTime
+import java.time.ZoneId
 
 class FirebaseRepository {
 
@@ -110,6 +112,7 @@ class FirebaseRepository {
 
     // 그룹 스케줄 생성, 그룹 아이디 받아와서 생성, 그룹아이디 필요한지 고민해봐야할듯
     fun createGroupSchedule(curSc: ScheduleDto, groupId: String) {
+        val updateTime : Long= LocalDateTime.now().atZone(ZoneId.systemDefault()).toEpochSecond() * 1000
         val currentUser = mFirebaseAuth.currentUser
         mDatabaseRef = FirebaseDatabase.getInstance().getReference("Schedule")
         val newChildRef = mDatabaseRef.push()
@@ -120,10 +123,9 @@ class FirebaseRepository {
         val Schedule_Id = newChildRef.key.toString()
         mDatabaseRef.child(Schedule_Id).child("scheduleId").setValue(Schedule_Id)
         //그룹에 스케줄아이디 생성
-        mDatabaseRef =
-            FirebaseDatabase.getInstance().getReference("Group").child(groupId)
-                .child("Schedule")
-        mDatabaseRef.child(Schedule_Id).setValue(Schedule_Id)
+        mDatabaseRef = FirebaseDatabase.getInstance().getReference("Group").child(groupId)
+        mDatabaseRef.child("updateTime").setValue(updateTime)
+        mDatabaseRef.child("Schedule").child(Schedule_Id).setValue(Schedule_Id)
         return
     }
     //listener : ChildEventListener
@@ -195,6 +197,7 @@ class FirebaseRepository {
         mDatabaseRef.child(curSc.scheduleId).removeValue()
     }
     fun deleteGroupSchedule(curSc: ScheduleDto) {
+
         val currentUser = mFirebaseAuth.currentUser
         mDatabaseRef = FirebaseDatabase.getInstance().getReference("Group").child(curSc.groupId).child("Schedule")
             .child(curSc.scheduleId)
