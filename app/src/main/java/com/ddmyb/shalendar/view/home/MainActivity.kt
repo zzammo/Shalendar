@@ -17,6 +17,7 @@ import com.ddmyb.shalendar.domain.FirebaseRepository
 import com.ddmyb.shalendar.view.calendar_list.CalendarListFragment
 import com.ddmyb.shalendar.view.alarm_manager.AlarmManagerFragment
 import com.ddmyb.shalendar.util.HttpResult
+import com.ddmyb.shalendar.view.dialog.CustomNewCalendarDialog
 import com.ddmyb.shalendar.view.holiday.HolidayApi
 import com.ddmyb.shalendar.view.holiday.data.HolidayDTO
 import com.ddmyb.shalendar.view.test.TestActivity
@@ -111,7 +112,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.ivGroupAdd.setOnClickListener {
-
+            CustomNewCalendarDialog().show(this@MainActivity.supportFragmentManager, "")
         }
 
         binding.swCalendarOption.setOnCheckedChangeListener { _, b ->
@@ -121,7 +122,6 @@ class MainActivity : AppCompatActivity() {
 
             }
         }
-
 
         HolidayApi.getHolidays(
             year = 2023,

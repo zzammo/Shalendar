@@ -1,5 +1,6 @@
 package com.ddmyb.shalendar.view.month.presenter
 
+import com.ddmyb.shalendar.R
 import com.ddmyb.shalendar.domain.schedules.repository.ScheduleDto
 import com.ddmyb.shalendar.util.HttpResult
 import com.ddmyb.shalendar.util.Logger
@@ -22,7 +23,7 @@ class MonthLibraryPresenter {
 
     private val logger = Logger("MonthLibraryPresenter", true)
 
-    fun loadHoliday(year: Int, month: Int, afterEnd: () -> Unit = {}) {
+    fun loadHoliday(year: Int, month: Int, afterSuccess: () -> Unit = {}) {
         HolidayApi.getHolidays(
             year,
             month,
@@ -33,23 +34,24 @@ class MonthLibraryPresenter {
                         if (holidayList[LocalDate.of(year, month, day)] == null)
                             holidayList[LocalDate.of(year, month, day)] = MutableLiveListData()
                         for (item in data) {
-                            if (item.locdate/100 == day)
+                            if (item.locdate%100 == day)
                                 holidayList[LocalDate.of(year, month, day)]!!.add(item)
                         }
-
+                        logger.logD("loadHoliday ${holidayList[LocalDate.of(year, month, day)]?.list}")
                     }
+                    afterSuccess()
                 }
 
                 override fun appFail() {
-
+                    logger.logD("loadHoliday appFail")
                 }
 
                 override fun fail(throwable: Throwable) {
-
+                    logger.logD("loadHoliday fail\n${throwable.message}")
                 }
 
                 override fun finally() {
-                    afterEnd()
+
                 }
             }
         )
@@ -61,10 +63,17 @@ class MonthLibraryPresenter {
         if (scheduleList[LocalDate.of(year, month, day)] == null)
             scheduleList[LocalDate.of(year, month, day)] = MutableLiveListData()
 
+        scheduleList[LocalDate.of(year, month, day)]!!.clear()
+
         scheduleList[LocalDate.of(year, month, day)]!!.addAll(
-            mutableListOf(ScheduleDto(title="test1"), ScheduleDto(title="test2")))
+            mutableListOf(ScheduleDto(title="test1", color = R.color.cat_3),
+                ScheduleDto(title="test2", color = R.color.cat_5)))
 
         afterEnd()
+    }
+
+    fun loadGroupSchedule(groupId: String) {
+
     }
 
     fun loadData(startMonth: YearMonth,
@@ -126,7 +135,7 @@ class MonthLibraryPresenter {
     fun holidayListToScheduleList(holidayList: List<HolidayDTO.HolidayItem>): List<ScheduleDto> {
         val sList = mutableListOf<ScheduleDto>()
         for (holiday in holidayList) {
-            sList.add(ScheduleDto(title = holiday.dateName))
+            sList.add(ScheduleDto(title = holiday.dateName, color = R.color.cat_1))
         }
         return sList
     }

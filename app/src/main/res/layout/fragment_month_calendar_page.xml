@@ -62,7 +62,7 @@
                     android:layout_height="wrap_content"
                     android:text="일"
                     android:textSize="8sp"
-                    android:textColor="#838383"
+                    android:textColor="#C54F4F"
                     android:gravity="center"
                     android:layout_weight="1"/>
                 <TextView
@@ -110,7 +110,7 @@
                     android:layout_height="wrap_content"
                     android:text="토"
                     android:textSize="8sp"
-                    android:textColor="#838383"
+                    android:textColor="#5574B3"
                     android:gravity="center"
                     android:layout_weight="1"/>
 
