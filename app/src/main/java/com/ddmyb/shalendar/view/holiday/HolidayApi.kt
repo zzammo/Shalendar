@@ -29,22 +29,30 @@ class HolidayApi {
             month: Int,
             httpResult: HttpResult<List<HolidayDTO.HolidayItem>>
         ) {
+            Log.d(TAG, "HolidayApi - getHolidays $year.$month")
             service.getHolidays(key, 1, 100, year.toString(), String.format("%02d", month), "json")
                 .enqueue(object : Callback<HolidayDTO.Result> {
                     override fun onResponse(call: Call<HolidayDTO.Result>, response: Response<HolidayDTO.Result>) {
+                        Log.d(TAG, "getHolidays - onResponse")
                         if (response.isSuccessful) {
+                            Log.d(TAG, "getHolidays - response isSuccessful")
                             val result = response.body()
                             Log.d(TAG, response.toString())
                             if (result != null) {
-                                val holidayItems = result.response.body.items.item
+                                val holidayItems = result.response.body.items
                                 val gson = Gson()
                                 Log.d("minseok",holidayItems.toString())
 
-
-                                val holidayList: List<HolidayDTO.HolidayItem> = when (result.response.body.totalCount) {
-                                    0 -> emptyList()
-                                    1 -> listOf(gson.fromJson(gson.toJson(holidayItems), HolidayDTO.HolidayItem::class.java))
-                                    else -> gson.fromJson(gson.toJson(holidayItems), object : TypeToken<List<HolidayDTO.HolidayItem>>() {}.type)
+                                val holidayList: List<HolidayDTO.HolidayItem> = when (holidayItems) {
+                                    "" -> emptyList()
+                                    else -> {
+                                        val holidayListRealItem = gson.fromJson(gson.toJson(holidayItems),HolidayDTO.HolidayItems::class.java)
+                                        when(result.response.body.totalCount) {
+                                            0 -> emptyList()
+                                            1 -> listOf(gson.fromJson(gson.toJson(holidayListRealItem.item), HolidayDTO.HolidayItem::class.java))
+                                            else -> gson.fromJson(gson.toJson(holidayListRealItem.item), object : TypeToken<List<HolidayDTO.HolidayItem>>() {}.type)
+                                        }
+                                    }
                                 }
 
                                 httpResult.success(holidayList)
@@ -57,6 +65,7 @@ class HolidayApi {
                         httpResult.finally()
                     }
                     override fun onFailure(call: Call<HolidayDTO.Result>, t: Throwable) {
+                        Log.d(TAG, "getHolidays - onFailure")
                         httpResult.fail(t)
                         httpResult.finally()
                     }

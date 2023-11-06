@@ -14,7 +14,7 @@ import com.ddmyb.shalendar.view.login.LoginActivity
 import com.ddmyb.shalendar.R
 import com.ddmyb.shalendar.databinding.ActivityMainBinding
 import com.ddmyb.shalendar.domain.FirebaseRepository
-import com.ddmyb.shalendar.dummy_fragment.CalendarListFragment
+import com.ddmyb.shalendar.view.calendar_list.CalendarListFragment
 import com.ddmyb.shalendar.view.alarm_manager.AlarmManagerFragment
 import com.ddmyb.shalendar.util.HttpResult
 import com.ddmyb.shalendar.view.holiday.HolidayApi
