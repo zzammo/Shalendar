@@ -1,7 +1,6 @@
-package com.ddmyb.shalendar.dummy_fragment
+package com.ddmyb.shalendar.view.calendar_list
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,13 +8,9 @@ import android.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.ddmyb.shalendar.data.OwnedCalendar
+import com.ddmyb.shalendar.data.Calendar
 import com.ddmyb.shalendar.databinding.FragmentCalendarListBinding
-import com.ddmyb.shalendar.view.calendar_list.adapter.ExpandableListAdapter
-import com.ddmyb.shalendar.view.calendar_list.adapter.ExpandableListAdapter.Companion.CHILD
-import com.ddmyb.shalendar.view.calendar_list.adapter.ExpandableListAdapter.Companion.HEADER
-import com.ddmyb.shalendar.view.calendar_list.adapter.SearchAdapter
-import com.ddmyb.shalendar.view.dialog.CustomNewCalendarDialog
+import com.ddmyb.shalendar.view.calendar_list.adapter.CalendarAdapter
 
 
 class CalendarListFragment : Fragment() {
@@ -30,28 +25,17 @@ class CalendarListFragment : Fragment() {
         val binding: FragmentCalendarListBinding =
             FragmentCalendarListBinding.inflate(inflater)
 
-        val origin = mutableListOf<OwnedCalendar>()
+        val origin = mutableListOf<Calendar>()
 
-        origin.add(OwnedCalendar("개인 캘린더 (1)", HEADER))
-        origin.add(OwnedCalendar("calendar 1", CHILD))
-        //팀 캘린더 받기
-        val teamCalendar = mutableListOf<OwnedCalendar>()
-        teamCalendar.add(OwnedCalendar("Child 12", CHILD))
-        teamCalendar.add(OwnedCalendar("멘석", CHILD))
-        teamCalendar.add(OwnedCalendar("멘to석", CHILD))
-        teamCalendar.add(OwnedCalendar("멘멘석석", CHILD))
+        origin.add(Calendar("Project"))
+        origin.add(Calendar("개인 캘린더"))
+        origin.add(Calendar("모바일 공학과"))
 
-        val cnt = teamCalendar.size
-        origin.add(OwnedCalendar("팀 캘린더 ($cnt)", HEADER))
-        origin.addAll(teamCalendar)
-        var itemList: MutableList<OwnedCalendar> = origin.map { it.clone() }.toMutableList()
-        val mAdapter = ExpandableListAdapter(itemList)
         binding.calendarlistRv.setHasFixedSize(true)
-        binding.calendarlistRv.adapter = mAdapter
-        itemList = origin.map { it.clone() }.toMutableList()
+        binding.calendarlistRv.adapter = CalendarAdapter(origin)
+        binding.calendarlistRv.layoutManager = LinearLayoutManager(activity)
 
-        val mLayoutManager = LinearLayoutManager(activity)
-        binding.calendarlistRv.layoutManager = mLayoutManager
+
 
         val searchViewTextListener: SearchView.OnQueryTextListener =
             object : SearchView.OnQueryTextListener {
@@ -62,13 +46,13 @@ class CalendarListFragment : Fragment() {
 
                 //텍스트 입력/수정시에 호출
                 override fun onQueryTextChange(s: String): Boolean {
-                    if (s.isNotEmpty() && s!="") {
+                    search(s, origin, binding.calendarlistRv)
+                    /*if (s.isNotEmpty() && s!="") {
                         search(s, origin, binding.calendarlistRv)
                         //Log.d("minseok", "SearchVies Text is changed : $s")
                     } else {
-                        binding.calendarlistRv.adapter = ExpandableListAdapter(itemList)
-                        itemList = origin.map { it.clone() }.toMutableList()
-                    }
+                        binding.calendarlistRv.adapter = CalendarAdapter(origin)
+                    }*/
                     return false
                 }
             }
@@ -77,16 +61,16 @@ class CalendarListFragment : Fragment() {
         return binding.root
     }
 
-    private fun search(keyword: String, itemList: MutableList<OwnedCalendar>, rv: RecyclerView) {
-        val searchresult = mutableListOf<OwnedCalendar>()
+    private fun search(keyword: String, itemList: MutableList<Calendar>, rv: RecyclerView) {
+        val searchresult = mutableListOf<Calendar>()
         for (item in itemList) {
-            if (item.type==CHILD && item.text.toLowerCase().contains(keyword.toLowerCase())) {
+            if (item.text.toLowerCase().contains(keyword.toLowerCase())) {
                 searchresult.add(item)
             }
         }
         registerForContextMenu(rv)
         //rv.adapter.setItem
-        rv.adapter = ExpandableListAdapter(searchresult)
+        rv.adapter = CalendarAdapter(searchresult)
 
     }
 

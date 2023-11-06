@@ -1,7 +1,6 @@
 import android.widget.Filter
 import com.ddmyb.shalendar.data.OwnedCalendar
 import com.ddmyb.shalendar.view.calendar_list.adapter.ExpandableListAdapter
-import com.ddmyb.shalendar.view.calendar_list.adapter.SearchAdapter
 
 class MyFilter(private val originalList: MutableList<OwnedCalendar>, private val adapter: ExpandableListAdapter) : Filter() {
     override fun performFiltering(constraint: CharSequence?): FilterResults {

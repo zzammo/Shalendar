@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/ic_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:minWidth="375dp"
+        android:minHeight="90dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+
+        <TextView
+            android:id="@+id/calendar_name"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="15dp"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Project" />
+
+        <LinearLayout
+            android:id="@+id/teammember_cnt_border"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginStart="10dp"
+            android:background="@drawable/circle"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="@+id/calendar_name"
+            app:layout_constraintStart_toEndOf="@+id/calendar_name"
+            app:layout_constraintTop_toTopOf="@+id/calendar_name" />
+
+        <TextView
+            android:id="@+id/teammember_cnt"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:gravity="center"
+            android:text="5"
+            android:textSize="20sp"
+            app:layout_constraintBottom_toBottomOf="@+id/teammember_cnt_border"
+            app:layout_constraintEnd_toEndOf="@+id/teammember_cnt_border"
+            app:layout_constraintStart_toStartOf="@id/teammember_cnt_border"
+            app:layout_constraintTop_toTopOf="@+id/teammember_cnt_border" />
+
+        <TextView
+            android:id="@+id/teammate_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:paddingStart="10dp"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:text="멘석, 멘석, 멘석, 멘석, 멘석, 민석"
+            app:layout_constraintTop_toBottomOf="@+id/calendar_name" />
+
+        <TextView
+            android:id="@+id/write_time"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="15dp"
+            android:textColor="@color/quantum_grey"
+            android:textSize="15sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="오전 3:00" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
