@@ -49,7 +49,7 @@ class CalendarFragment(private val groupId: String? = null): Fragment() {
         binding = FragmentCalendarBinding.inflate(inflater)
 
 
-        var calendarFragmentPageAdapter = CalendarFragmentPageAdapter(fragments, requireActivity())
+        val calendarFragmentPageAdapter = CalendarFragmentPageAdapter(fragments, requireActivity())
         binding.pager.apply {
             orientation = ViewPager2.ORIENTATION_HORIZONTAL
             adapter = calendarFragmentPageAdapter
@@ -60,14 +60,13 @@ class CalendarFragment(private val groupId: String? = null): Fragment() {
         binding.swCalendarOption.setOnCheckedChangeListener { _, b ->
             if (b){
                 fragments[1] = WeeklyCalendarFragment(selectedDateCalendar)
-                calendarFragmentPageAdapter = CalendarFragmentPageAdapter(fragments, requireActivity())
-                binding.pager.adapter = calendarFragmentPageAdapter
+                binding.pager.adapter!!.notifyItemChanged(1)
                 binding.pager.currentItem = 1
                 fragmentNum = 1
                 Log.d("CalendarFragment", "$selectedDateCalendar")
             }
             else{
-                 fragments[0] = MonthLibraryFragment(
+                fragments[0] = MonthLibraryFragment(
                     selectedDateCalendar,
                     groupId,
                     object : MonthLibraryDayClickListener {
@@ -83,6 +82,7 @@ class CalendarFragment(private val groupId: String? = null): Fragment() {
                             selectedDateCalendar.set(year, month-1, day)
                         }
                     })
+                binding.pager.adapter!!.notifyItemChanged(0)
                 binding.pager.currentItem = 0
                 fragmentNum = 0
                 Log.d("CalendarFragment", "$selectedDateCalendar")

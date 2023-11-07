@@ -7,6 +7,7 @@ import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.ContextCompat
 import androidx.core.view.children
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -16,6 +17,7 @@ import com.ddmyb.shalendar.databinding.FragmentMonthLibraryBinding
 import com.ddmyb.shalendar.domain.schedules.repository.ScheduleDto
 import com.ddmyb.shalendar.util.Logger
 import com.ddmyb.shalendar.util.MutableLiveListData
+import com.ddmyb.shalendar.view.home.CalendarFragment
 import com.ddmyb.shalendar.view.month.adapter.MonthCalendarDateScheduleRVAdapter
 import com.ddmyb.shalendar.view.month.presenter.MonthLibraryPresenter
 import com.kizitonwose.calendar.core.CalendarDay
@@ -24,6 +26,7 @@ import com.kizitonwose.calendar.core.DayPosition
 import com.kizitonwose.calendar.core.daysOfWeek
 import com.kizitonwose.calendar.view.MonthDayBinder
 import com.kizitonwose.calendar.view.MonthHeaderFooterBinder
+import com.kizitonwose.calendar.view.MonthScrollListener
 import com.kizitonwose.calendar.view.ViewContainer
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -145,6 +148,15 @@ class MonthLibraryFragment(
 
         binding.calendarView.setup(startMonth, endMonth, firstDayOfWeek)
         binding.calendarView.scrollToMonth(currentMonth)
+
+        binding.calendarView.monthScrollListener = {
+            val year = it.yearMonth.year
+            val month = it.yearMonth.monthValue-1
+            val cal = Calendar.getInstance()
+            cal.set(year, month, 1)
+            (parentFragmentManager.findFragmentByTag("CalendarHostFragment") as CalendarFragment).selectedDateCalendar = cal
+        }
+
 
 //        presenter.loadData(startMonth, endMonth, currentMonth) {
 //            binding.calendarView.notifyMonthChanged(it)
