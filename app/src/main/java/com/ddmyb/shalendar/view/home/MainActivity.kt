@@ -57,7 +57,6 @@ class MainActivity : AppCompatActivity() {
 
         supportFragmentManager.beginTransaction()
             .replace(R.id.main_frame, CalendarFragment(), "CalendarHostFragment").commit()
-        binding.llCalendarOption.visibility = View.VISIBLE
 
         binding.bottomNav.setOnItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
@@ -65,7 +64,6 @@ class MainActivity : AppCompatActivity() {
                     supportFragmentManager.beginTransaction()
                         .replace(R.id.main_frame, CalendarFragment(), "CalendarHostFragment").commit()
                     binding.ivGroupAdd.visibility = View.GONE
-                    binding.llCalendarOption.visibility = View.VISIBLE
                     binding.tvFragmentTitle.text = "개인 캘린더"
                     true
                 }
@@ -76,7 +74,6 @@ class MainActivity : AppCompatActivity() {
                         .replace(R.id.main_frame, CalendarListFragment()).commit()
                     binding.tvFragmentTitle.text = "그룹 관리"
                     binding.ivGroupAdd.visibility = View.VISIBLE
-                    binding.llCalendarOption.visibility = View.GONE
                     true
                 }
 
@@ -92,8 +89,6 @@ class MainActivity : AppCompatActivity() {
                         .replace(R.id.main_frame, AlarmManagerFragment()).commit()
                     binding.tvFragmentTitle.text = "알람 관리"
                     binding.ivGroupAdd.visibility = View.GONE
-                    binding.llCalendarOption.visibility = View.GONE
-
                     true
                 }
 
@@ -113,14 +108,6 @@ class MainActivity : AppCompatActivity() {
 
         binding.ivGroupAdd.setOnClickListener {
             CustomNewCalendarDialog().show(this@MainActivity.supportFragmentManager, "")
-        }
-
-        binding.swCalendarOption.setOnCheckedChangeListener { _, b ->
-            if (b){
-
-            }else{
-
-            }
         }
 
         HolidayApi.getHolidays(

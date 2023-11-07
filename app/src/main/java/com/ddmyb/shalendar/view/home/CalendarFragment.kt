@@ -48,9 +48,26 @@ class CalendarFragment(private val groupId: String? = null): Fragment() {
     ): View? {
         binding = FragmentCalendarBinding.inflate(inflater)
 
-        binding.btnSelectMonth.setOnClickListener {
-            if (fragmentNum != 0) {
-                fragments[0] = MonthLibraryFragment(
+
+        var calendarFragmentPageAdapter = CalendarFragmentPageAdapter(fragments, requireActivity())
+        binding.pager.apply {
+            orientation = ViewPager2.ORIENTATION_HORIZONTAL
+            adapter = calendarFragmentPageAdapter
+            isUserInputEnabled = false
+            currentItem = 0
+        }
+
+        binding.swCalendarOption.setOnCheckedChangeListener { _, b ->
+            if (b){
+                fragments[1] = WeeklyCalendarFragment(selectedDateCalendar)
+                calendarFragmentPageAdapter = CalendarFragmentPageAdapter(fragments, requireActivity())
+                binding.pager.adapter = calendarFragmentPageAdapter
+                binding.pager.currentItem = 1
+                fragmentNum = 1
+                Log.d("CalendarFragment", "$selectedDateCalendar")
+            }
+            else{
+                 fragments[0] = MonthLibraryFragment(
                     selectedDateCalendar,
                     groupId,
                     object : MonthLibraryDayClickListener {
@@ -68,25 +85,6 @@ class CalendarFragment(private val groupId: String? = null): Fragment() {
                     })
                 binding.pager.currentItem = 0
                 fragmentNum = 0
-                Log.d("CalendarFragment", "$selectedDateCalendar")
-            }
-        }
-
-        var calendarFragmentPageAdapter = CalendarFragmentPageAdapter(fragments, requireActivity())
-        binding.pager.apply {
-            orientation = ViewPager2.ORIENTATION_HORIZONTAL
-            adapter = calendarFragmentPageAdapter
-            isUserInputEnabled = false
-            currentItem = 0
-        }
-
-        binding.btnSelectWeek.setOnClickListener {
-            if (fragmentNum != 1) {
-                fragments[1] = WeeklyCalendarFragment(selectedDateCalendar)
-                calendarFragmentPageAdapter = CalendarFragmentPageAdapter(fragments, requireActivity())
-                binding.pager.adapter = calendarFragmentPageAdapter
-                binding.pager.currentItem = 1
-                fragmentNum = 1
                 Log.d("CalendarFragment", "$selectedDateCalendar")
             }
         }
