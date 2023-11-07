@@ -5,7 +5,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.coroutines.tasks.await
 
-object FBTest {
+object FBTest: DBRepository {
 
     private const val SCHEDULE_REF = "Schedule"
     private const val GROUP_REF = "Group"
@@ -16,11 +16,11 @@ object FBTest {
     private val groupRef = FirebaseDatabase.getInstance().getReference(GROUP_REF)
     private val userRef = FirebaseDatabase.getInstance().getReference(USER_REF)
 
-    fun getCurrentUserUid(): String? {
+    override fun getCurrentUserUid(): String? {
         return firebaseAuth.currentUser?.uid
     }
 
-    suspend fun readUserSchedules(uid: String): List<ScheduleDto> {
+    override suspend fun readUserSchedule(uid: String): List<ScheduleDto> {
         val currentUserUid = firebaseAuth.currentUser?.uid ?: return listOf()
 
         val scheduleIdListSS = userRef.child(uid).child("Schedule")
@@ -37,7 +37,7 @@ object FBTest {
         return scheduleList
     }
 
-    suspend fun readGroupSchedule(groupId: String): List<ScheduleDto> {
+    override suspend fun readGroupSchedule(groupId: String): List<ScheduleDto> {
         val scheduleList = mutableListOf<ScheduleDto>()
         for (scheduleId in groupRef.child(groupId).child("Schedule").get().await().children) {
             scheduleList.add(scheduleRef.child(scheduleId.key!!).get().await().getValue(ScheduleDto::class.java)!!)

@@ -100,7 +100,7 @@ class NaviDrawerActivity :AppCompatActivity() {
 //            FirebaseRepository().createGroup("도리맹돌의 수하물들")
 //            FirebaseRepository().createUserSchedule(mSc)
             CoroutineScope(Dispatchers.IO).launch {
-                val scheduleList = FBTest.readUserSchedules(FBTest.getCurrentUserUid()!!)
+                val scheduleList = FBTest.readUserSchedule(FBTest.getCurrentUserUid()!!)
                 for (schedule in scheduleList) {
                     Log.d("Dirtfy Test", schedule.scheduleId)
                 }
