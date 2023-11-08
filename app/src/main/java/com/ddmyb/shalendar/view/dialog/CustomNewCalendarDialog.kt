@@ -15,6 +15,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import com.bumptech.glide.Glide
 import com.ddmyb.shalendar.R
@@ -64,10 +65,18 @@ class CustomNewCalendarDialog : DialogFragment() {
 
         binding.dncOkBtn.setOnClickListener {
             val calendarName = binding.dncNameEt.text.toString()
-            val code = GroupRepository().createGroup(calendarName)
-            val inviteDialog = InviteDialog(code)
-            inviteDialog.show(requireFragmentManager(),"")
-            dismiss()
+            if(calendarName==""){
+                Toast.makeText(requireContext(),"입력해주세요",Toast.LENGTH_SHORT).show()
+            }
+            else if(calendarName=="개인 캘린더"){
+                Toast.makeText(requireContext(),"이 이름은 사용 불가합니다",Toast.LENGTH_SHORT).show()
+            }
+            else{
+                val code = GroupRepository().createGroup(calendarName)
+                val inviteDialog = InviteDialog(code)
+                inviteDialog.show(requireFragmentManager(),"")
+                dismiss()
+            }
         }
         binding.dncCancelBtn.setOnClickListener {
             dismiss()
