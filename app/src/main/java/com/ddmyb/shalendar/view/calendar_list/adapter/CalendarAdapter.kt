@@ -21,7 +21,7 @@ class CalendarAdapter (
         fun bind(calendar: Calendar) {
             var changeDate:LocalDateTime = LocalDateTime.now()
             binding.calendarName.text = calendar.Name
-            var teamMate: String = ""
+            var teamMate: String = "팀원: "
             for(i in calendar.userIds){
                 Log.d("oz","Adapter $i")
                 teamMate += "$i "
