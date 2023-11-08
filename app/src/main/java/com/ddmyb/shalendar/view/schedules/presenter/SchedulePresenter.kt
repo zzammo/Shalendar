@@ -234,6 +234,9 @@ class SchedulePresenter {
                 alarmService.setAlarmWithTime(newAlarm)
             }
         }
+        if (!view.isCheckedDepartureAlarmSwitch()) {
+            scheduleDto.dptMills=-1
+        }
         if (NetworkStatusService.isOnline(context)) {
             if (s.groupId == "") {
                 Log.d("createUserSchedule", "call")

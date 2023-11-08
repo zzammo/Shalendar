@@ -2,11 +2,14 @@ package com.ddmyb.shalendar.view.home
 
 //import com.ddmyb.shalendar.view.dialog.TestDialog
 
+import android.app.Dialog
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.view.Window
+import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -18,6 +21,7 @@ import com.ddmyb.shalendar.view.calendar_list.CalendarListFragment
 import com.ddmyb.shalendar.view.alarm_manager.AlarmManagerFragment
 import com.ddmyb.shalendar.util.HttpResult
 import com.ddmyb.shalendar.view.dialog.CustomNewCalendarDialog
+import com.ddmyb.shalendar.view.dialog.ParticipateTeamMateDialog
 import com.ddmyb.shalendar.view.holiday.HolidayApi
 import com.ddmyb.shalendar.view.holiday.data.HolidayDTO
 import com.ddmyb.shalendar.view.test.TestActivity
@@ -107,7 +111,21 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.ivGroupAdd.setOnClickListener {
-            CustomNewCalendarDialog().show(this@MainActivity.supportFragmentManager, "")
+            val dialog = Dialog(this)
+            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+            dialog.setContentView(R.layout.dialog_invite_or_participate)
+            val inviteBtn : TextView = dialog.findViewById<TextView>(R.id.invite_teammate)
+            val participateBtn : TextView = dialog.findViewById<TextView>(R.id.participate_group)
+            inviteBtn.setOnClickListener {
+                CustomNewCalendarDialog().show(this@MainActivity.supportFragmentManager, "")
+                dialog.dismiss()
+            }
+            participateBtn.setOnClickListener{
+                ParticipateTeamMateDialog().show(this@MainActivity.supportFragmentManager, "")
+                dialog.dismiss()
+            }
+            dialog.show()
+
         }
 
         HolidayApi.getHolidays(
