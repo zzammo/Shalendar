@@ -39,7 +39,7 @@ object FBTest: DBRepository {
 
     override suspend fun readGroupSchedule(groupId: String): List<ScheduleDto> {
         val scheduleList = mutableListOf<ScheduleDto>()
-        for (scheduleId in groupRef.child(groupId).child("Schedule").get().await().children) {
+        for (scheduleId in groupRef.child(groupId).child("scheduleId").get().await().children) {
             scheduleList.add(scheduleRef.child(scheduleId.key!!).get().await().getValue(ScheduleDto::class.java)!!)
         }
         return scheduleList

@@ -122,10 +122,10 @@ class ScheduleRepository {
     fun deleteSchedule(curSc: ScheduleDto) {
         scheduleRef.child(curSc.scheduleId).removeValue()
         if (curSc.groupId == "") {
-            userRef.child(curSc.userId).child("Schedule").child(curSc.scheduleId).removeValue()
+            userRef.child(curSc.userId).child("scheduleId").child(curSc.scheduleId).removeValue()
         } else {
             groupRef.child(curSc.groupId).child("latestUpdateMills").setValue(LocalDateTime.now().atZone(ZoneId.systemDefault()).toEpochSecond() * 1000)
-            groupRef.child(curSc.groupId).child("Schedule").child(curSc.scheduleId).removeValue()
+            groupRef.child(curSc.groupId).child("scheduleId").child(curSc.scheduleId).removeValue()
         }
     }
 
