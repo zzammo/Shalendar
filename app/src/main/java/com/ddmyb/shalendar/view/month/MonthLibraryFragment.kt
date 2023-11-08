@@ -198,7 +198,7 @@ class MonthLibraryFragment(
                     clickListener.doubleClick(
                         year,
                         month,
-                        1,
+                        day,
                         (scheduleListView.adapter!! as
                             MonthCalendarDateScheduleRVAdapter).scheduleList.list
                     )

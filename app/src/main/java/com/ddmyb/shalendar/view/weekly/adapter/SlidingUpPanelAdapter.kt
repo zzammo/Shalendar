@@ -55,8 +55,15 @@ class SlidingUpPanelAdapter(
 
         holder.tv_name.text = schedule.title
         Log.d(TAG, "onBindViewHolder ${schedule.title}")
-        holder.tv_start_time.text = startStr
-        holder.tv_end_time.text = endStr
+
+        if (schedule.startMills == 0L && schedule.endMills == 0L) {
+            holder.tv_start_time.text = "하루종일"
+            holder.tv_end_time.visibility = View.GONE
+        }
+        else {
+            holder.tv_start_time.text = startStr
+            holder.tv_end_time.text = endStr
+        }
 
         if( true /* alarm set */ )
             holder.iv_alarm.visibility = View.VISIBLE
