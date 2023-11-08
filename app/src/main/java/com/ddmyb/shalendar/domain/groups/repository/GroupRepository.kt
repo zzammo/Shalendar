@@ -45,6 +45,7 @@ class GroupRepository {
             curGroup.groupId = groupId
             curGroup.groupName = groupRef.child(groupId).child("groupName").get().await().getValue(String::class.java).toString()
             curGroup.memberCnt = groupRef.child(groupId).child("memberCnt").get().await().getValue(Int::class.java)!!.toInt()
+            curGroup.latestUpdateMills= groupRef.child(groupId).child("latestUpdateMills").get().await().getValue(Long::class.java)!!.toLong()
 
             for (curUserId1 in groupRef.child(groupId).child("userId").get().await().children) {
                 var curUserId = curUserId1.key.toString()
