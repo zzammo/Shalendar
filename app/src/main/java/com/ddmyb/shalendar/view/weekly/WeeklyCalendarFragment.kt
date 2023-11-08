@@ -63,12 +63,19 @@ class WeeklyCalendarFragment(private val startCal: Calendar) : Fragment() {
     }
 
     private fun convertPage(cal: Calendar) {
-        val pageNum = yearWeek2PageNum[cal.get(Calendar.YEAR) * 100 + cal.get(Calendar.WEEK_OF_YEAR)]
-        if (pageNum != null)
+        val yearWeekNum = cal.get(Calendar.YEAR) * 100 + cal.get(Calendar.WEEK_OF_YEAR)
+        val pageNum = yearWeek2PageNum[yearWeekNum]
+        Log.d(TAG, "year-week: $yearWeekNum, page: $pageNum")
+        if (pageNum != null) {
             binding.pager.setCurrentItem(pageNum, false)
+            Log.d(TAG, "changed page: $pageNum")
+        }
         else {
             val nowCal = Calendar.getInstance()
-            binding.pager.setCurrentItem(yearWeek2PageNum[nowCal.get(Calendar.YEAR)*100+nowCal.get(Calendar.WEEK_OF_YEAR)]!!, false)
+            val nowYearWeekNum = nowCal.get(Calendar.YEAR)*100+nowCal.get(Calendar.WEEK_OF_YEAR)
+            val nowPageNum = yearWeek2PageNum[nowYearWeekNum]
+            binding.pager.setCurrentItem(nowPageNum!!, false)
+            Log.d(TAG, "changed page: $nowPageNum")
         }
 
     }

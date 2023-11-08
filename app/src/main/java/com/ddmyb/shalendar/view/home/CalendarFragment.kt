@@ -1,5 +1,6 @@
 package com.ddmyb.shalendar.view.home
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -10,9 +11,11 @@ import androidx.fragment.app.Fragment
 import androidx.viewpager2.widget.ViewPager2
 import com.ddmyb.shalendar.databinding.FragmentCalendarBinding
 import com.ddmyb.shalendar.domain.schedules.repository.ScheduleDto
+import com.ddmyb.shalendar.util.NewScheduleDto
 import com.ddmyb.shalendar.view.month.MonthCalendarFragment
 import com.ddmyb.shalendar.view.month.MonthLibraryDayClickListener
 import com.ddmyb.shalendar.view.month.MonthLibraryFragment
+import com.ddmyb.shalendar.view.schedules.ScheduleActivity
 import com.ddmyb.shalendar.view.weekly.WeeklyCalendarFragment
 import com.ddmyb.shalendar.view.weekly.adapter.SlidingUpPanelAdapter
 import com.sothree.slidinguppanel.SlidingUpPanelLayout
@@ -22,23 +25,26 @@ class CalendarFragment(private val groupId: String? = null): Fragment() {
     private lateinit var binding: FragmentCalendarBinding
     var selectedDateCalendar: Calendar = Calendar.getInstance()
     private var fragmentNum = 0
+    private val monthLibraryDayClickListener =
+        object : MonthLibraryDayClickListener {
+            override fun click(year: Int, month: Int, day: Int, scheduleList: MutableList<ScheduleDto>) {
+                Log.d("CalendarFragment", "clicked $year/$month/$day\"")
+                selectedDateCalendar.set(year, month-1, day)
+            }
+
+            override fun doubleClick(year: Int, month: Int, day: Int, scheduleList: MutableList<ScheduleDto>) {
+                Log.d("CalendarFragment", "double clicked $year/$month/$day")
+                selectedDateCalendar.set(year, month-1, 1)
+                val cal = Calendar.getInstance()
+                cal.set(year, month-1, day)
+                openSlidingUpPanel(cal, ArrayList(scheduleList))
+            }
+        }
     private val fragments = arrayListOf(
         MonthLibraryFragment(
             selectedDateCalendar,
             groupId,
-            object : MonthLibraryDayClickListener {
-                override fun click(year: Int, month: Int, day: Int, scheduleList: MutableList<ScheduleDto>) {
-                    Toast.makeText(requireContext(), "clicked $year/$month/$day", Toast.LENGTH_SHORT).show()
-                    Log.d("CalendarFragment", scheduleList.toString())
-                    selectedDateCalendar.set(year, month-1, day)
-                }
-
-                override fun doubleClick(year: Int, month: Int, day: Int, scheduleList: MutableList<ScheduleDto>) {
-                    Toast.makeText(requireContext(), "double clicked $year/$month/$day", Toast.LENGTH_SHORT).show()
-                    Log.d("CalendarFragment", scheduleList.toString())
-                    selectedDateCalendar.set(year, month-1, day)
-                }
-            }),
+            monthLibraryDayClickListener),
         WeeklyCalendarFragment(selectedDateCalendar)
     )
     override fun onCreateView(
@@ -49,7 +55,7 @@ class CalendarFragment(private val groupId: String? = null): Fragment() {
         binding = FragmentCalendarBinding.inflate(inflater)
 
 
-        val calendarFragmentPageAdapter = CalendarFragmentPageAdapter(fragments, requireActivity())
+        var calendarFragmentPageAdapter = CalendarFragmentPageAdapter(fragments, requireActivity())
         binding.pager.apply {
             orientation = ViewPager2.ORIENTATION_HORIZONTAL
             adapter = calendarFragmentPageAdapter
@@ -60,7 +66,8 @@ class CalendarFragment(private val groupId: String? = null): Fragment() {
         binding.swCalendarOption.setOnCheckedChangeListener { _, b ->
             if (b){
                 fragments[1] = WeeklyCalendarFragment(selectedDateCalendar)
-                binding.pager.adapter!!.notifyItemChanged(1)
+                calendarFragmentPageAdapter = CalendarFragmentPageAdapter(fragments,requireActivity())
+                binding.pager.adapter = calendarFragmentPageAdapter
                 binding.pager.currentItem = 1
                 fragmentNum = 1
                 Log.d("CalendarFragment", "$selectedDateCalendar")
@@ -69,19 +76,7 @@ class CalendarFragment(private val groupId: String? = null): Fragment() {
                 fragments[0] = MonthLibraryFragment(
                     selectedDateCalendar,
                     groupId,
-                    object : MonthLibraryDayClickListener {
-                        override fun click(year: Int, month: Int, day: Int, scheduleList: MutableList<ScheduleDto>) {
-                            Toast.makeText(requireContext(), "clicked $year/$month/$day", Toast.LENGTH_SHORT).show()
-                            Log.d("CalendarFragment", scheduleList.toString())
-                            selectedDateCalendar.set(year, month-1, day)
-                        }
-
-                        override fun doubleClick(year: Int, month: Int, day: Int, scheduleList: MutableList<ScheduleDto>) {
-                            Toast.makeText(requireContext(), "double clicked $year/$month/$day", Toast.LENGTH_SHORT).show()
-                            Log.d("CalendarFragment", scheduleList.toString())
-                            selectedDateCalendar.set(year, month-1, day)
-                        }
-                    })
+                    monthLibraryDayClickListener)
                 binding.pager.adapter!!.notifyItemChanged(0)
                 binding.pager.currentItem = 0
                 fragmentNum = 0
@@ -98,6 +93,12 @@ class CalendarFragment(private val groupId: String? = null): Fragment() {
         binding.planRecyclerView.adapter = slidingUpPanelAdapter
         slidingUpPanelAdapter.notifyDataSetChanged()
         binding.slidingMainFrame.panelState = SlidingUpPanelLayout.PanelState.ANCHORED
+        binding.btnAdd.setOnClickListener {
+            val intent = Intent(requireContext(), ScheduleActivity::class.java)
+            intent.putExtra("NewSchedule", NewScheduleDto("", cal.timeInMillis))
+            startActivity(intent)
+            binding.slidingMainFrame.panelState = SlidingUpPanelLayout.PanelState.COLLAPSED
+        }
     }
 
     private fun getDateString(cal: Calendar): String {
