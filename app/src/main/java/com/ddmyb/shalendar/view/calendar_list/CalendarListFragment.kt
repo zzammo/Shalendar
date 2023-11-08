@@ -30,8 +30,7 @@ class CalendarListFragment : Fragment() {
     ): View {
         val binding: FragmentCalendarListBinding =
             FragmentCalendarListBinding.inflate(inflater)
-
-        val origin = mutableListOf<Calendar>()
+        val origin = mutableListOf<Calendar>(Calendar("개인 캘린더", mutableListOf<String>(),1,0))
 
         binding.calendarlistRv.setHasFixedSize(true)
         binding.calendarlistRv.adapter = CalendarAdapter(origin)
@@ -40,7 +39,6 @@ class CalendarListFragment : Fragment() {
         CoroutineScope(Dispatchers.Main).launch{
             val groupList = GroupRepository().readUsersGroup()
             for (i in groupList){
-                Log.d("oz","${i.groupId} ${i.groupName} ${i.userId} ${i.memberCnt} ${i.latestUpdateMills} ${i.groupId}")
                 origin.add(Calendar(i.groupName, i.userId,i.memberCnt,i.latestUpdateMills))
             }
             binding.calendarlistRv.adapter = CalendarAdapter(origin)
