@@ -77,12 +77,34 @@ class GroupRepository {
         userRef.child(uID).child("groupId").child(groupId).setValue(groupId) //user에 groupId추가
     }
 
-    fun deleteGroup(groupId: String) {
+    suspend fun withdrawGroup(groupId: String) {
+        val uID = firebaseAuth.currentUser!!.uid
+        groupRef.child(groupId).child(uID).removeValue()
 
+        var memberCnt = groupRef.child(groupId).child("memberCnt").get().await().getValue(Int::class.java)?.plus(-1)
+        groupRef.child(groupId).child("memberCnt").setValue(memberCnt)
+
+        userRef.child(uID).child("groupId").child(groupId).removeValue()
     }
 
-    fun deleteEntireGroup(groupId: String) {
+    suspend fun deleteGroup(groupId: String) {
+        val uID = firebaseAuth.currentUser!!.uid
+        val userIdList: MutableList<String> = mutableListOf()
+        val scheduleIdList: MutableList<String> = mutableListOf()
+        groupRef.child(groupId).child(uID).removeValue()
 
+        for (curUserId in groupRef.child(groupId).child("userId").get().await().children) {
+            userIdList.add(curUserId.key.toString())
+        }
+        for (userId in userIdList) {
+            userRef.child(userId).child("groupId").child(groupId).removeValue()
+        }
+        for (curScheduleId in groupRef.child(groupId).child("scheduleId").get().await().children) {
+            scheduleIdList.add(curScheduleId.key.toString())
+        }
+        for (curScheduleId in scheduleIdList) {
+            scheduleRef.child(curScheduleId).removeValue()
+        }
+        groupRef.child(groupId).removeValue()
     }
-
 }

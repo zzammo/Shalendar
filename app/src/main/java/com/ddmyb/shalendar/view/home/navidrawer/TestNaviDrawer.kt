@@ -54,8 +54,8 @@ class TestNaviDrawer : AppCompatActivity(), NavigationView.OnNavigationItemSelec
         binding.ndtpNavView.setNavigationItemSelectedListener(this) //navigation 리스너
 
         mtvName = naviBinding.tvName
-        //mFirebaseAuth = FirebaseAuth.getInstance()
-        //val currentUser = mFirebaseAuth!!.currentUser
+        mFirebaseAuth = FirebaseAuth.getInstance()
+        val currentUser = mFirebaseAuth!!.currentUser
 
         viewModel.loadAllCalendar{
             naviBinding.ndTeamcalendarRv.apply{
@@ -76,7 +76,7 @@ class TestNaviDrawer : AppCompatActivity(), NavigationView.OnNavigationItemSelec
             }
         }
 
-        /*naviBinding.btnLogin.setOnClickListener{
+        naviBinding.btnLogin.setOnClickListener{
             //로그인하기
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
@@ -90,19 +90,19 @@ class TestNaviDrawer : AppCompatActivity(), NavigationView.OnNavigationItemSelec
             val intent = intent
             startActivity(intent)
             finish()
-        }*/
+        }
     }
-    /*override fun onStart() {
+    override fun onStart() {
         super.onStart()
         Log.i("액티비티 테스트", "onStart()")
         mFirebaseAuth = FirebaseAuth.getInstance()
         // 사용자가 로그인되어 있는지 확인
         val currentUser = mFirebaseAuth!!.currentUser
         updateUI(currentUser) // UI 업데이트
-    }*/
+    }
 
 
-    /*@SuppressLint("SetTextI18n")
+    @SuppressLint("SetTextI18n")
     private fun updateUI(user: FirebaseUser?) {
         Log.i("액티비티 테스트", "updateUI")
         if (user != null) {
@@ -117,7 +117,7 @@ class TestNaviDrawer : AppCompatActivity(), NavigationView.OnNavigationItemSelec
             naviBinding.btnLogout.visibility = View.GONE
             //binding.tvInfo.visibility = View.GONE
         }
-    }*/
+    }
     fun onClick(view: View) {
         val expandView: View = naviBinding.ndTeamcalendarRv
         if(expandView.visibility == View.VISIBLE) {
