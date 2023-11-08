@@ -6,9 +6,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.SearchView
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.ddmyb.shalendar.R
 import com.ddmyb.shalendar.data.Calendar
 import com.ddmyb.shalendar.databinding.FragmentCalendarListBinding
 import com.ddmyb.shalendar.domain.groups.repository.GroupRepository
@@ -33,7 +35,9 @@ class CalendarListFragment : Fragment() {
         val origin = mutableListOf<Calendar>(Calendar("개인 캘린더", mutableListOf<String>(),1,0,null))
 
         binding.calendarlistRv.setHasFixedSize(true)
-        binding.calendarlistRv.adapter = CalendarAdapter(origin)
+        binding.calendarlistRv.adapter = CalendarAdapter(origin){
+            requireActivity().findViewById<TextView>(R.id.tv_fragment_title).text = it
+        }
         binding.calendarlistRv.layoutManager = LinearLayoutManager(activity)
 
         CoroutineScope(Dispatchers.Main).launch{
@@ -41,7 +45,9 @@ class CalendarListFragment : Fragment() {
             for (i in groupList){
                 origin.add(Calendar(i.groupName, i.userId,i.memberCnt,i.latestUpdateMills,i.groupId))
             }
-            binding.calendarlistRv.adapter = CalendarAdapter(origin)
+            binding.calendarlistRv.adapter = CalendarAdapter(origin){
+                requireActivity().findViewById<TextView>(R.id.tv_fragment_title).text = it
+            }
         }
 
         val searchViewTextListener: SearchView.OnQueryTextListener =
@@ -77,8 +83,9 @@ class CalendarListFragment : Fragment() {
         }
         registerForContextMenu(rv)
         //rv.adapter.setItem
-        rv.adapter = CalendarAdapter(searchresult)
-
+        rv.adapter = CalendarAdapter(searchresult) {
+            requireActivity().findViewById<TextView>(R.id.tv_fragment_title).text = it
+        }
     }
 
     override fun onResume() {

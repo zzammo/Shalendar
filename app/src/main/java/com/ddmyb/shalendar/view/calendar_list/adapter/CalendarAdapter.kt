@@ -4,6 +4,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.ddmyb.shalendar.R
@@ -16,7 +17,8 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 
 class CalendarAdapter (
-    private val ownedCalendarList: MutableList<Calendar>
+    private val ownedCalendarList: MutableList<Calendar>,
+    private val onClick: (String) -> Unit = {}
 ): RecyclerView.Adapter<CalendarAdapter.MyViewHolder>(){
     class MyViewHolder(val binding: ItemCalendarBinding):RecyclerView.ViewHolder(binding.root) {
         @SuppressLint("SetTextI18n", "ResourceType")
@@ -50,17 +52,7 @@ class CalendarAdapter (
                     dpTime="방금"
                 binding.writeTime.text = dpTime
             }
-            itemView.setOnClickListener {
-                val fragmentManager = (itemView.context as FragmentActivity).supportFragmentManager
-                val fragmentTransaction = fragmentManager.beginTransaction()
-                val calendarFragment = CalendarFragment(calendar.groupId)
-                fragmentTransaction.replace(R.id.main_frame, calendarFragment, "CalendarHostFragment")
-                fragmentTransaction.addToBackStack(null) // 뒤로 가기 동작 지원
-                fragmentTransaction.commit()
-            }
-
         }
-
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
@@ -68,6 +60,15 @@ class CalendarAdapter (
     }
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         holder.bind(ownedCalendarList[position])
+        holder.itemView.setOnClickListener{
+            val fragmentManager = (holder.itemView.context as FragmentActivity).supportFragmentManager
+            val fragmentTransaction = fragmentManager.beginTransaction()
+            val calendarFragment = CalendarFragment(ownedCalendarList[position].groupId)
+            fragmentTransaction.replace(R.id.main_frame, calendarFragment, "CalendarHostFragment")
+            fragmentTransaction.commit()
+            Log.d("oz","Adapter createviewholder clicked")
+            onClick(ownedCalendarList[position].Name)
+        }
     }
 
     override fun getItemCount(): Int {
