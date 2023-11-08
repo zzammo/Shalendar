@@ -3,6 +3,7 @@ package com.ddmyb.shalendar.view.month.presenter
 import com.ddmyb.shalendar.R
 import com.ddmyb.shalendar.domain.DBRepository
 import com.ddmyb.shalendar.domain.schedules.repository.ScheduleDto
+import com.ddmyb.shalendar.domain.schedules.repository.ScheduleRepository
 import com.ddmyb.shalendar.util.HttpResult
 import com.ddmyb.shalendar.util.Logger
 import com.ddmyb.shalendar.util.MutableLiveListData
@@ -18,7 +19,7 @@ import java.time.LocalDate
 import java.util.Calendar
 
 class MonthLibraryPresenter(
-    private val repository: DBRepository
+    private val repository: ScheduleRepository
 ) {
 
     val scheduleList: MutableMap<LocalDate, MutableLiveListData<ScheduleDto>> = mutableMapOf()
@@ -66,12 +67,15 @@ class MonthLibraryPresenter(
 
         CoroutineScope(Dispatchers.IO).launch {
                 try {
+                    scheduleList.clear()
+
                     val loadedList = mutableListOf<ScheduleDto>()
                     repository.let {
-                        loadedList.addAll(it.readUserSchedule(it.getCurrentUserUid()!!))
+                        loadedList.addAll(it.readUserSchedule())
                     }
 
                     val cal = Calendar.getInstance()
+                    logger.logD("loadedList size : ${loadedList.size}")
                     for (schedule in loadedList) {
                         val startM = schedule.startMills
                         val endM = schedule.endMills
@@ -119,6 +123,8 @@ class MonthLibraryPresenter(
 
         CoroutineScope(Dispatchers.IO).launch {
             try {
+                scheduleList.clear()
+
                 val loadedList = mutableListOf<ScheduleDto>()
                 repository.let {
                     loadedList.addAll(it.readGroupSchedule(groupId))
@@ -216,8 +222,6 @@ class MonthLibraryPresenter(
     private fun addToScheduleList(year: Int, month: Int, day: Int, loadedList: ScheduleDto) {
         if (scheduleList[LocalDate.of(year, month, day)] == null)
             scheduleList[LocalDate.of(year, month, day)] = MutableLiveListData()
-
-        scheduleList[LocalDate.of(year, month, day)]!!.clear()
 
         scheduleList[LocalDate.of(year, month, day)]!!.add(loadedList)
     }

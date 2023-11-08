@@ -714,6 +714,6 @@ class ScheduleActivity(
         return binding.title.text.toString()
     }
     fun readMemo(): String{
-        return binding.title.text.toString()
+        return binding.memo.text.toString()
     }
 }

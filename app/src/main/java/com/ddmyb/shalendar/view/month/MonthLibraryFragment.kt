@@ -14,6 +14,7 @@ import com.ddmyb.shalendar.R
 import com.ddmyb.shalendar.databinding.FragmentMonthLibraryBinding
 import com.ddmyb.shalendar.domain.FBTest
 import com.ddmyb.shalendar.domain.schedules.repository.ScheduleDto
+import com.ddmyb.shalendar.domain.schedules.repository.ScheduleRepository
 import com.ddmyb.shalendar.util.Logger
 import com.ddmyb.shalendar.util.MutableLiveListData
 import com.ddmyb.shalendar.view.home.CalendarFragment
@@ -53,7 +54,7 @@ class MonthLibraryFragment(
     private lateinit var dayOfWeekList: List<DayOfWeek>
 
     private val presenter = MonthLibraryPresenter(
-        FBTest
+        ScheduleRepository()
     )
 
     private var selectDate: LocalDate? = null
@@ -139,8 +140,6 @@ class MonthLibraryFragment(
             cal.set(year, month, 1)
             (parentFragmentManager.findFragmentByTag("CalendarHostFragment") as CalendarFragment).selectedDateCalendar = cal
         }
-
-        refreshSchedule()
 
 //        presenter.loadData(startMonth, endMonth, currentMonth) {
 //            binding.calendarView.notifyMonthChanged(it)
