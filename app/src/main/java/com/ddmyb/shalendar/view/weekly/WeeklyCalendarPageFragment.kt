@@ -12,7 +12,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
-import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.asynclayoutinflater.view.AsyncLayoutInflater
@@ -25,9 +24,9 @@ import androidx.core.view.setPadding
 import androidx.fragment.app.Fragment
 import com.ddmyb.shalendar.R
 import com.ddmyb.shalendar.databinding.FragmentWeeklyCalendarPageBinding
-import com.ddmyb.shalendar.domain.DBRepository
-import com.ddmyb.shalendar.domain.FBTest
 import com.ddmyb.shalendar.domain.schedules.repository.ScheduleDto
+import com.ddmyb.shalendar.domain.schedules.repository.ScheduleRepository
+import com.ddmyb.shalendar.domain.users.UserRepository
 import com.ddmyb.shalendar.util.HttpResult
 import com.ddmyb.shalendar.util.NewScheduleDto
 import com.ddmyb.shalendar.view.holiday.HolidayApi
@@ -38,13 +37,12 @@ import com.ddmyb.shalendar.view.weekly.data.WeeklyDates
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.Calendar
 
 
-class WeeklyCalendarPageFragment(private val now: Long): Fragment() {
+class WeeklyCalendarPageFragment(private val now: Long, private val groupId: String?): Fragment() {
     val TAG = "WeGlonD"
     private val calendarHostTag = "CalendarHostFragment"
     private lateinit var context: Context
@@ -61,7 +59,8 @@ class WeeklyCalendarPageFragment(private val now: Long): Fragment() {
     val weeknumLayouts = ArrayList<LinearLayout>()
     private lateinit var holidayDrawable: GradientDrawable
     private lateinit var holidayLayoutParams: LinearLayout.LayoutParams
-    private val dbRepository: DBRepository = FBTest
+    private val scheduleRepository = ScheduleRepository()
+    private val userRepository = UserRepository()
 
     companion object {
         var pixel_1minute = 0f
@@ -259,13 +258,11 @@ class WeeklyCalendarPageFragment(private val now: Long): Fragment() {
 
         val getUserScheduleJob = CoroutineScope(Dispatchers.IO).launch(start = CoroutineStart.LAZY) {
             var scheduleList = listOf<ScheduleDto>()
-            val isGroupCalendar = false
-            if (!isGroupCalendar) {
-                scheduleList = dbRepository.readUserSchedule(dbRepository.getCurrentUserUid()!!)
+            if (groupId == null) {
+                scheduleList = scheduleRepository.readUserSchedule()
             }
             else {
-                val groupId = ""
-                scheduleList = dbRepository.readGroupSchedule(groupId)
+                scheduleList = scheduleRepository.readGroupSchedule(groupId)
             }
 
             Log.d(TAG, "get schedule: $scheduleList")
@@ -273,21 +270,15 @@ class WeeklyCalendarPageFragment(private val now: Long): Fragment() {
             withContext(Dispatchers.Main) {
                 clearScheduleViews()
                 for (s in scheduleList) {
-                    displaySchedule(s, s.startMills, isGroupCalendar)
+                    displaySchedule(s, s.startMills, true)
                 }
             }
         }
         getUserScheduleJob.start()
     }
 
-    fun displaySchedule(schedule: ScheduleDto, startMillis:Long, isGroupCalendar:Boolean) {
+    fun displaySchedule(schedule: ScheduleDto, startMillis:Long, isFirst:Boolean) {
         Log.d(TAG, "displaySchedule Start")
-//        val zeroCal = Calendar.getInstance()
-//        zeroCal.timeInMillis = startMillis
-//        zeroCal.set(Calendar.HOUR_OF_DAY, 0)
-//        zeroCal.set(Calendar.MINUTE, 0)
-//        zeroCal.set(Calendar.SECOND, 0)
-//        zeroCal.set(Calendar.MILLISECOND, 0)
 
         val startCal = Calendar.getInstance()
         startCal.timeInMillis = startMillis
@@ -317,8 +308,6 @@ class WeeklyCalendarPageFragment(private val now: Long): Fragment() {
         val dayOfWeek = startCal.get(Calendar.DAY_OF_WEEK) - 1
         val layoutInflater = AsyncLayoutInflater(context)
 
-//        scheduleContainers[dayOfWeek].addView(Button(requireContext()))
-//        scheduleContainers[dayOfWeek].invalidate()
 
         layoutInflater.inflate(R.layout.custom_view_weekly_schedule, null) { scheduleView: View, _, _ ->
             Log.d(TAG, "custom view created")
@@ -326,7 +315,7 @@ class WeeklyCalendarPageFragment(private val now: Long): Fragment() {
             scheduleView.id = ViewCompat.generateViewId()
             scheduleView.alpha = 1/3f
             val drawable = ContextCompat.getDrawable(context, R.drawable.weekly_schedule_background) as GradientDrawable
-            if (!isGroupCalendar) {
+            if (groupId == null) {
                 Log.d(TAG, "Personal Schedule")
                 drawable.setColor(ContextCompat.getColor(context, schedule.color))
             }
@@ -336,7 +325,7 @@ class WeeklyCalendarPageFragment(private val now: Long): Fragment() {
                     Log.d(TAG, "Group public schedule")
                     drawable.setColor(ContextCompat.getColor(context, R.color.cat_1))
                 }
-                else if (schedule.userId != dbRepository.getCurrentUserUid()!!){
+                else if (schedule.userId != userRepository.getUserId()){
                     Log.d(TAG, "Group others schedule")
                     drawable.setColor(ContextCompat.getColor(context,R.color.cat_3))
                 }
@@ -348,7 +337,7 @@ class WeeklyCalendarPageFragment(private val now: Long): Fragment() {
             scheduleView.background = drawable
             viewToScheduleMap.put(scheduleView.id, schedule)
 
-//        scheduleView.findViewById<TextView>(R.id.schedule_name).text = schedule.name
+//            scheduleView.findViewById<TextView>(R.id.schedule_name).text = schedule.name
 
             scheduleContainers[dayOfWeek].addView(scheduleView)
 
@@ -368,14 +357,23 @@ class WeeklyCalendarPageFragment(private val now: Long): Fragment() {
             Log.d(TAG, "pixel_1minute: $pixel_1minute")
         }
 
-
         if (flag) {
             startCal.add(Calendar.DATE, 1)
             startCal.set(Calendar.HOUR_OF_DAY, 0)
             startCal.set(Calendar.MINUTE, 0)
             startCal.set(Calendar.SECOND, 0)
             startCal.set(Calendar.MILLISECOND, 0)
-            displaySchedule(schedule, startCal.timeInMillis, isGroupCalendar)
+            displaySchedule(schedule, startCal.timeInMillis, false)
+        }
+
+        if (isFirst && schedule.dptMills > 0L) {
+            val moveSchedule = schedule.copy()
+            moveSchedule.title = "${moveSchedule.meansType} → ${moveSchedule.title}"
+            moveSchedule.endMills = moveSchedule.startMills
+            moveSchedule.startMills = moveSchedule.dptMills
+            moveSchedule.dptMills = 0L
+            moveSchedule.color = R.color.line_gray
+            displaySchedule(moveSchedule, moveSchedule.startMills, false)
         }
     }
 
