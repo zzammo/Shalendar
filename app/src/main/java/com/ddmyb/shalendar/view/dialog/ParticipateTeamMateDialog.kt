@@ -23,6 +23,7 @@ class ParticipateTeamMateDialog : DialogFragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = DialogNewCalendarBinding.inflate(inflater, container, false)
+        binding.dncNameEt.hint = "참여 코드를 입력해주세요"
         binding.dncOkBtn.setOnClickListener {
             val participateCode = binding.dncNameEt.text.toString()
             CoroutineScope(Dispatchers.IO).launch {
