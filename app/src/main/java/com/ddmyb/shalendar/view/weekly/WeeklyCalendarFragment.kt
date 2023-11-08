@@ -11,7 +11,7 @@ import com.ddmyb.shalendar.view.home.CalendarFragment
 import com.ddmyb.shalendar.view.weekly.adapter.WeeklyCalendarAdapter
 import java.util.Calendar
 
-class WeeklyCalendarFragment(private val startCal: Calendar) : Fragment() {
+class WeeklyCalendarFragment(private val startCal: Calendar, private val groupId: String?) : Fragment() {
     private lateinit var binding: FragmentWeeklyCalendarBinding
     val yearWeek2PageNum = HashMap<Int, Int>()
     private val TAG = "WeGlonD"
@@ -29,7 +29,7 @@ class WeeklyCalendarFragment(private val startCal: Calendar) : Fragment() {
         Log.d(TAG, "startCal: ${startCal.get(Calendar.YEAR)}.${startCal.get(Calendar.MONTH)+1}.${startCal.get(Calendar.DATE)}")
         binding = FragmentWeeklyCalendarBinding.inflate(inflater)
 
-        binding.pager.adapter = WeeklyCalendarAdapter(getFirstDays(100),requireActivity())
+        binding.pager.adapter = WeeklyCalendarAdapter(getFirstDays(100),groupId,requireActivity())
         convertPage(startCal)
 //        binding.pager.setCurrentItem(100, false)
 

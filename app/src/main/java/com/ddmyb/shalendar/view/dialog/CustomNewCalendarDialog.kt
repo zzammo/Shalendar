@@ -19,6 +19,12 @@ import androidx.fragment.app.DialogFragment
 import com.bumptech.glide.Glide
 import com.ddmyb.shalendar.R
 import com.ddmyb.shalendar.databinding.DialogNewCalendarBinding
+import com.ddmyb.shalendar.domain.FBTest
+import com.ddmyb.shalendar.domain.groups.repository.GroupRepository
+import com.ddmyb.shalendar.domain.schedules.repository.ScheduleDto
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
 
 /*import com.google.firebase.storage.FirebaseStorage*/
@@ -57,8 +63,9 @@ class CustomNewCalendarDialog : DialogFragment() {
         }*/
 
         binding.dncOkBtn.setOnClickListener {
-            Log.d("minseok", "ok")
-            val inviteDialog = InviteDialog()
+            val calendarName = binding.dncNameEt.text.toString()
+            val code = GroupRepository().createGroup(calendarName)
+            val inviteDialog = InviteDialog(code)
             inviteDialog.show(requireFragmentManager(),"")
             dismiss()
         }

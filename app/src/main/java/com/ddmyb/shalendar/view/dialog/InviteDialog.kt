@@ -15,7 +15,7 @@ import com.ddmyb.shalendar.databinding.DialogInviteCodeBinding
 import com.ddmyb.shalendar.util.KakaoInvite
 import com.kakao.sdk.common.KakaoSdk
 
-class InviteDialog : DialogFragment(){
+class InviteDialog(private val code:String) : DialogFragment(){
     val binding: DialogInviteCodeBinding by lazy {
         DialogInviteCodeBinding.inflate(layoutInflater)
     }
@@ -28,18 +28,19 @@ class InviteDialog : DialogFragment(){
         dialog.setContentView(binding.root)
         dialog.setCancelable(true)
 
-
+        binding.textViewLink.text = code
         binding.dicCopyBtn.setOnClickListener {
             val clipboard: ClipboardManager = requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-            val clip = ClipData.newPlainText("label", "LinkLink 멘석멘석멘석") // Replace "YourTextHere" with the text you want to copy
+            val clip = ClipData.newPlainText("label", code) // Replace "YourTextHere" with the text you want to copy
             clipboard.setPrimaryClip(clip)
             Toast.makeText(requireContext(), "클립보드에 복사되었습니다.", Toast.LENGTH_SHORT).show()
+            dismiss()
         }
 
 
         binding.dicSendBtn.setOnClickListener{
-            kakao.sendKakaoLink("팀 Shalendar로 초대합니다", "Apple", "")
-
+            kakao.sendKakaoLink("팀 Shalendar로 초대합니다", code, "")
+            dismiss()
         }
         return dialog
     }

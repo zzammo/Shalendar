@@ -55,7 +55,6 @@ class GroupRepository {
         return groupList
     }
     fun createGroup(gName: String): String {
-
         val uID = firebaseAuth.currentUser!!.uid
         val newChildRef = groupRef.push()
         val newGroupId = newChildRef.key.toString()

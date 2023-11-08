@@ -45,7 +45,7 @@ class CalendarFragment(private val groupId: String? = null): Fragment() {
             selectedDateCalendar,
             groupId,
             monthLibraryDayClickListener),
-        WeeklyCalendarFragment(selectedDateCalendar)
+        WeeklyCalendarFragment(selectedDateCalendar, groupId)
     )
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -65,7 +65,7 @@ class CalendarFragment(private val groupId: String? = null): Fragment() {
 
         binding.swCalendarOption.setOnCheckedChangeListener { _, b ->
             if (b){
-                fragments[1] = WeeklyCalendarFragment(selectedDateCalendar)
+                fragments[1] = WeeklyCalendarFragment(selectedDateCalendar, groupId)
                 calendarFragmentPageAdapter = CalendarFragmentPageAdapter(fragments,requireActivity())
                 binding.pager.adapter = calendarFragmentPageAdapter
                 binding.pager.currentItem = 1
