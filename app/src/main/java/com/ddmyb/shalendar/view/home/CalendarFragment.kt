@@ -1,5 +1,6 @@
 package com.ddmyb.shalendar.view.home
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -10,9 +11,11 @@ import androidx.fragment.app.Fragment
 import androidx.viewpager2.widget.ViewPager2
 import com.ddmyb.shalendar.databinding.FragmentCalendarBinding
 import com.ddmyb.shalendar.domain.schedules.repository.ScheduleDto
+import com.ddmyb.shalendar.util.NewScheduleDto
 import com.ddmyb.shalendar.view.month.MonthCalendarFragment
 import com.ddmyb.shalendar.view.month.MonthLibraryDayClickListener
 import com.ddmyb.shalendar.view.month.MonthLibraryFragment
+import com.ddmyb.shalendar.view.schedules.ScheduleActivity
 import com.ddmyb.shalendar.view.weekly.WeeklyCalendarFragment
 import com.ddmyb.shalendar.view.weekly.adapter.SlidingUpPanelAdapter
 import com.sothree.slidinguppanel.SlidingUpPanelLayout
@@ -98,6 +101,11 @@ class CalendarFragment(private val groupId: String? = null): Fragment() {
         binding.planRecyclerView.adapter = slidingUpPanelAdapter
         slidingUpPanelAdapter.notifyDataSetChanged()
         binding.slidingMainFrame.panelState = SlidingUpPanelLayout.PanelState.ANCHORED
+        binding.btnAdd.setOnClickListener {
+            val intent = Intent(requireContext(), ScheduleActivity::class.java)
+            intent.putExtra("NewSchedule", NewScheduleDto("", cal.timeInMillis))
+            startActivity(intent)
+        }
     }
 
     private fun getDateString(cal: Calendar): String {

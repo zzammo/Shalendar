@@ -12,8 +12,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
+import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.asynclayoutinflater.view.AsyncLayoutInflater
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
@@ -23,6 +25,8 @@ import androidx.core.view.setPadding
 import androidx.fragment.app.Fragment
 import com.ddmyb.shalendar.R
 import com.ddmyb.shalendar.databinding.FragmentWeeklyCalendarPageBinding
+import com.ddmyb.shalendar.domain.DBRepository
+import com.ddmyb.shalendar.domain.FBTest
 import com.ddmyb.shalendar.domain.schedules.repository.ScheduleDto
 import com.ddmyb.shalendar.util.HttpResult
 import com.ddmyb.shalendar.util.NewScheduleDto
@@ -31,6 +35,12 @@ import com.ddmyb.shalendar.view.holiday.data.HolidayDTO
 import com.ddmyb.shalendar.view.home.CalendarFragment
 import com.ddmyb.shalendar.view.schedules.ScheduleActivity
 import com.ddmyb.shalendar.view.weekly.data.WeeklyDates
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.Calendar
 
 
@@ -51,6 +61,7 @@ class WeeklyCalendarPageFragment(private val now: Long): Fragment() {
     val weeknumLayouts = ArrayList<LinearLayout>()
     private lateinit var holidayDrawable: GradientDrawable
     private lateinit var holidayLayoutParams: LinearLayout.LayoutParams
+    private val dbRepository: DBRepository = FBTest
 
     companion object {
         var pixel_1minute = 0f
@@ -87,7 +98,6 @@ class WeeklyCalendarPageFragment(private val now: Long): Fragment() {
                     pixel_1minute = binding.clPlanSunday.height / 1440f
                     Log.d(TAG, "ConstlaintLayout height: ${binding.clPlanSunday.height}")
                     Log.d(TAG, "pixel 1minute: $pixel_1minute")
-                    onResume()
                     // 1회성을 위해 Listener 제거
                     binding.root.viewTreeObserver.removeOnGlobalLayoutListener(this)
                 }
@@ -159,6 +169,8 @@ class WeeklyCalendarPageFragment(private val now: Long): Fragment() {
         val cal = Calendar.getInstance()
         cal.timeInMillis = now
         (parentFragmentManager.findFragmentByTag(calendarHostTag) as CalendarFragment).selectedDateCalendar = cal
+
+        displaySchedules(weeklyDates)
     }
 
     override fun onPause() {
@@ -183,6 +195,7 @@ class WeeklyCalendarPageFragment(private val now: Long): Fragment() {
 
     private fun getWeekNums(cal: Calendar): Array<Int> {
         val result = Array<Int>(7, {0})
+        weekCalList.clear()
 
         for (i in 0..6) {
             result[i] = cal.get(Calendar.DATE)
@@ -195,54 +208,99 @@ class WeeklyCalendarPageFragment(private val now: Long): Fragment() {
 
     fun displaySchedules(weeklyDates: WeeklyDates) {
         // 테스트용 코드
-        val cal1 = Calendar.getInstance()
-        cal1.set(Calendar.MONTH, 11)
-        cal1.set(Calendar.DATE,5)
-        cal1.set(Calendar.HOUR_OF_DAY, 10)
-        cal1.set(Calendar.MINUTE, 30)
-        val cal2 = Calendar.getInstance()
-        cal2.set(Calendar.MONTH, 11)
-        cal2.set(Calendar.DATE,5)
-        cal2.set(Calendar.HOUR_OF_DAY, 14)
-        cal2.set(Calendar.MINUTE, 10)
-
-        val cal3 = Calendar.getInstance()
-        cal3.set(Calendar.HOUR_OF_DAY, 11)
-        cal3.set(Calendar.MINUTE, 30)
-        val cal4 = Calendar.getInstance()
-        cal4.set(Calendar.HOUR_OF_DAY, 15)
-        cal4.set(Calendar.MINUTE, 10)
-
-        val scheduleDto1 = ScheduleDto()
-        scheduleDto1.title="test";scheduleDto1.startMills=cal1.timeInMillis;scheduleDto1.endMills=cal2.timeInMillis
-        val scheduleDto2 = ScheduleDto()
-        scheduleDto2.title="text";scheduleDto2.startMills=cal3.timeInMillis;scheduleDto2.endMills=cal4.timeInMillis
-        displaySchedule(scheduleDto1, scheduleDto1.startMills)
-        displaySchedule(scheduleDto2, scheduleDto2.startMills)
+//        val cal1 = Calendar.getInstance()
+//        cal1.set(Calendar.MONTH, 11)
+//        cal1.set(Calendar.DATE,5)
+//        cal1.set(Calendar.HOUR_OF_DAY, 10)
+//        cal1.set(Calendar.MINUTE, 30)
+//        val cal2 = Calendar.getInstance()
+//        cal2.set(Calendar.MONTH, 11)
+//        cal2.set(Calendar.DATE,5)
+//        cal2.set(Calendar.HOUR_OF_DAY, 14)
+//        cal2.set(Calendar.MINUTE, 10)
+//
+//        val cal3 = Calendar.getInstance()
+//        cal3.set(Calendar.HOUR_OF_DAY, 11)
+//        cal3.set(Calendar.MINUTE, 30)
+//        val cal4 = Calendar.getInstance()
+//        cal4.set(Calendar.HOUR_OF_DAY, 15)
+//        cal4.set(Calendar.MINUTE, 10)
+//
+//        val scheduleDto1 = ScheduleDto()
+//        scheduleDto1.title="test";scheduleDto1.startMills=cal1.timeInMillis;scheduleDto1.endMills=cal2.timeInMillis
+//        val scheduleDto2 = ScheduleDto()
+//        scheduleDto2.title="text";scheduleDto2.startMills=cal3.timeInMillis;scheduleDto2.endMills=cal4.timeInMillis
+//        displaySchedule(scheduleDto1, scheduleDto1.startMills, false)
+//        displaySchedule(scheduleDto2, scheduleDto2.startMills, false)
 
         //db 구현 이후 할 일: 반복문 돌면서 일주일 간 각 날짜마다 띄워야할 schedule을 db에서 들고와서 띄우기 (now 변수 활용)
         //기간 쿼리 가능하면 그걸로 들고오자..
+
+//        GlobalScope.launch {
+//            var scheduleList = listOf<ScheduleDto>()
+//            val isGroupCalendar = false
+//            if (!isGroupCalendar) {
+//                scheduleList = dbRepository.readUserSchedule(dbRepository.getCurrentUserUid()!!)
+//            }
+//            else {
+//                val groupId = ""
+//                scheduleList = dbRepository.readGroupSchedule(groupId)
+//            }
+//
+//            Log.d(TAG, "get schedule: $scheduleList")
+//
+//            withContext(Dispatchers.Main) {
+//                clearScheduleViews()
+//                for (s in scheduleList) {
+//                    displaySchedule(s, s.startMills, isGroupCalendar)
+//                }
+//            }
+//        }
+
+        val getUserScheduleJob = CoroutineScope(Dispatchers.IO).launch(start = CoroutineStart.LAZY) {
+            var scheduleList = listOf<ScheduleDto>()
+            val isGroupCalendar = false
+            if (!isGroupCalendar) {
+                scheduleList = dbRepository.readUserSchedule(dbRepository.getCurrentUserUid()!!)
+            }
+            else {
+                val groupId = ""
+                scheduleList = dbRepository.readGroupSchedule(groupId)
+            }
+
+            Log.d(TAG, "get schedule: $scheduleList")
+
+            withContext(Dispatchers.Main) {
+                clearScheduleViews()
+                for (s in scheduleList) {
+                    displaySchedule(s, s.startMills, isGroupCalendar)
+                }
+            }
+        }
+        getUserScheduleJob.start()
     }
 
-    private fun displaySchedule(schedule: ScheduleDto, startMillis:Long) {
+    fun displaySchedule(schedule: ScheduleDto, startMillis:Long, isGroupCalendar:Boolean) {
         Log.d(TAG, "displaySchedule Start")
-        val zeroCal = Calendar.getInstance()
-        zeroCal.timeInMillis = startMillis
-        zeroCal.set(Calendar.HOUR_OF_DAY, 0)
-        zeroCal.set(Calendar.MINUTE, 0)
-        zeroCal.set(Calendar.SECOND, 0)
-        zeroCal.set(Calendar.MILLISECOND, 0)
+//        val zeroCal = Calendar.getInstance()
+//        zeroCal.timeInMillis = startMillis
+//        zeroCal.set(Calendar.HOUR_OF_DAY, 0)
+//        zeroCal.set(Calendar.MINUTE, 0)
+//        zeroCal.set(Calendar.SECOND, 0)
+//        zeroCal.set(Calendar.MILLISECOND, 0)
 
         val startCal = Calendar.getInstance()
         startCal.timeInMillis = startMillis
         val endCal = Calendar.getInstance()
         endCal.timeInMillis = schedule.endMills
 
+        Log.d(TAG, "start: $startCal\nend: $endCal")
+
         //이번주에 표시할 것이 아니면 리턴
         if(endCal.get(Calendar.WEEK_OF_YEAR) != weeknum || weeknum != startCal.get(Calendar.WEEK_OF_YEAR)) {
             Log.d(TAG, "this schedule is not this week")
             Log.d(TAG, "endCal: ${endCal.get(Calendar.MONTH)+1}.${endCal.get(Calendar.DATE)}, sunday: ${weeklyDates.daynums[0]}, saturday: ${weeklyDates.daynums[6]}")
-            return;
+            return
         }
         Log.d(TAG, "this schedule is this week")
 
@@ -257,30 +315,59 @@ class WeeklyCalendarPageFragment(private val now: Long): Fragment() {
 
 
         val dayOfWeek = startCal.get(Calendar.DAY_OF_WEEK) - 1
-        val scheduleView = LayoutInflater.from(context)
-            .inflate(R.layout.custom_view_weekly_schedule, null)
-        Log.d(TAG, "custom view created")
+        val layoutInflater = AsyncLayoutInflater(context)
 
-        scheduleView.id = ViewCompat.generateViewId()
-        viewToScheduleMap.put(scheduleView.id, schedule)
+//        scheduleContainers[dayOfWeek].addView(Button(requireContext()))
+//        scheduleContainers[dayOfWeek].invalidate()
+
+        layoutInflater.inflate(R.layout.custom_view_weekly_schedule, null) { scheduleView: View, _, _ ->
+            Log.d(TAG, "custom view created")
+
+            scheduleView.id = ViewCompat.generateViewId()
+            scheduleView.alpha = 1/3f
+            val drawable = ContextCompat.getDrawable(context, R.drawable.weekly_schedule_background) as GradientDrawable
+            if (!isGroupCalendar) {
+                Log.d(TAG, "Personal Schedule")
+                drawable.setColor(ContextCompat.getColor(context, schedule.color))
+            }
+            else {
+                Log.d(TAG, "Group Schedule")
+                if (schedule.groupId != "") {
+                    Log.d(TAG, "Group public schedule")
+                    drawable.setColor(ContextCompat.getColor(context, R.color.cat_1))
+                }
+                else if (schedule.userId != dbRepository.getCurrentUserUid()!!){
+                    Log.d(TAG, "Group others schedule")
+                    drawable.setColor(ContextCompat.getColor(context,R.color.cat_3))
+                }
+                else{
+                    Log.d(TAG, "Group my schedule")
+                    drawable.setColor(ContextCompat.getColor(context,R.color.cat_5))
+                }
+            }
+            scheduleView.background = drawable
+            viewToScheduleMap.put(scheduleView.id, schedule)
 
 //        scheduleView.findViewById<TextView>(R.id.schedule_name).text = schedule.name
 
-        scheduleContainers[dayOfWeek].addView(scheduleView)
+            scheduleContainers[dayOfWeek].addView(scheduleView)
 
-        val layoutParams = ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT, ConstraintLayout.LayoutParams.MATCH_CONSTRAINT)
-        layoutParams.topToTop = hours[dayOfWeek][startCal.get(Calendar.HOUR_OF_DAY)].id
-        layoutParams.bottomToBottom = hours[dayOfWeek][endCal.get(Calendar.HOUR_OF_DAY)].id
-        layoutParams.topMargin = (pixel_1minute * startCal.get(Calendar.MINUTE)).toInt()
-        layoutParams.bottomMargin = (pixel_1minute * (60 - endCal.get(Calendar.MINUTE))).toInt()
+            val layoutParams = ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT, ConstraintLayout.LayoutParams.MATCH_CONSTRAINT)
+            layoutParams.topToTop = scheduleContainers[dayOfWeek][startCal.get(Calendar.HOUR_OF_DAY)].id
+            layoutParams.bottomToBottom = scheduleContainers[dayOfWeek][endCal.get(Calendar.HOUR_OF_DAY)].id
+            layoutParams.topMargin = (pixel_1minute * startCal.get(Calendar.MINUTE)).toInt()
+            layoutParams.bottomMargin = (pixel_1minute * (60 - endCal.get(Calendar.MINUTE))).toInt()
 
-        scheduleView.layoutParams = layoutParams
+            scheduleView.layoutParams = layoutParams
 
-        scheduleContainers[dayOfWeek].invalidate()
-        Log.d(TAG, "custom view displayed")
+            scheduleContainers[dayOfWeek].invalidate()
+            Log.d(TAG, "custom view displayed")
 
-        Log.d(TAG, "schedule x: ${scheduleView.x}")
-        Log.d(TAG, "schedule y: ${scheduleView.y}")
+            Log.d(TAG, "schedule x: ${scheduleView.x}")
+            Log.d(TAG, "schedule y: ${scheduleView.y}")
+            Log.d(TAG, "pixel_1minute: $pixel_1minute")
+        }
+
 
         if (flag) {
             startCal.add(Calendar.DATE, 1)
@@ -288,7 +375,7 @@ class WeeklyCalendarPageFragment(private val now: Long): Fragment() {
             startCal.set(Calendar.MINUTE, 0)
             startCal.set(Calendar.SECOND, 0)
             startCal.set(Calendar.MILLISECOND, 0)
-            displaySchedule(schedule, startCal.timeInMillis)
+            displaySchedule(schedule, startCal.timeInMillis, isGroupCalendar)
         }
     }
 

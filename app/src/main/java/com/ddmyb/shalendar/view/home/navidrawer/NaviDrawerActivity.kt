@@ -15,6 +15,7 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.ddmyb.shalendar.R
 import com.ddmyb.shalendar.view.login.LoginActivity
 import com.ddmyb.shalendar.databinding.NaviDrawerBinding
 import com.ddmyb.shalendar.domain.FBTest
@@ -32,6 +33,7 @@ import com.google.firebase.database.FirebaseDatabase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.util.Calendar
 
 class NaviDrawerActivity :AppCompatActivity() {
 
@@ -87,6 +89,11 @@ class NaviDrawerActivity :AppCompatActivity() {
             val firebaseUser = mFirebaseAuth!!.currentUser
             if(firebaseUser!=null) {
                 val mSc = ScheduleDto()
+                mSc.userId = firebaseUser.uid
+                mSc.color = R.color.cat_0
+                mSc.startMills = Calendar.getInstance().timeInMillis - 3600000
+                mSc.endMills = Calendar.getInstance().timeInMillis + 3600000
+                mSc.title = "test schedule"
                 FirebaseRepository().createUserSchedule(mSc)
                 Toast.makeText(this@NaviDrawerActivity, "업로드 성공", Toast.LENGTH_SHORT).show()
             }
