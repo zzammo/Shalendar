@@ -2,18 +2,17 @@ package com.ddmyb.shalendar.view.month
 
 import android.graphics.Color
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
-import android.widget.Toast
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.ContextCompat
 import androidx.core.view.children
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.ddmyb.shalendar.R
 import com.ddmyb.shalendar.databinding.FragmentMonthLibraryBinding
+import com.ddmyb.shalendar.domain.FBTest
 import com.ddmyb.shalendar.domain.schedules.repository.ScheduleDto
 import com.ddmyb.shalendar.util.Logger
 import com.ddmyb.shalendar.util.MutableLiveListData
@@ -26,7 +25,6 @@ import com.kizitonwose.calendar.core.DayPosition
 import com.kizitonwose.calendar.core.daysOfWeek
 import com.kizitonwose.calendar.view.MonthDayBinder
 import com.kizitonwose.calendar.view.MonthHeaderFooterBinder
-import com.kizitonwose.calendar.view.MonthScrollListener
 import com.kizitonwose.calendar.view.ViewContainer
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -34,7 +32,6 @@ import java.time.YearMonth
 import java.time.format.TextStyle
 import java.util.Calendar
 import java.util.Locale
-import kotlin.math.log
 
 class MonthLibraryFragment(
     private val now: Calendar,
@@ -55,7 +52,9 @@ class MonthLibraryFragment(
     private val logger = Logger("MonthCalendarPageFragment", true)
     private lateinit var dayOfWeekList: List<DayOfWeek>
 
-    private val presenter = MonthLibraryPresenter()
+    private val presenter = MonthLibraryPresenter(
+        FBTest
+    )
 
     private var selectDate: LocalDate? = null
 
@@ -71,22 +70,6 @@ class MonthLibraryFragment(
 
             // Called every time we need to reuse a container.
             override fun bind(container: DayViewContainer, data: CalendarDay) {
-
-
-                val year = data.date.year
-                val month = data.date.monthValue
-                val day = data.date.dayOfMonth
-
-                if (presenter.scheduleList[LocalDate.of(year, month, day)] == null) {
-                    logger.logD("DayViewContainer loadSchedule ${data.date}")
-                    if (groupId == null)
-                        presenter.loadSchedule(year, month, day) {
-                            container.bind(data)
-                        }
-                    else
-                        presenter.loadGroupSchedule(groupId)
-                }
-
 
                 if (data.date == selectDate) {
                     // If this is the selected date, show a round background and change the text color.
@@ -157,16 +140,33 @@ class MonthLibraryFragment(
             (parentFragmentManager.findFragmentByTag("CalendarHostFragment") as CalendarFragment).selectedDateCalendar = cal
         }
 
+        refreshSchedule()
 
 //        presenter.loadData(startMonth, endMonth, currentMonth) {
 //            binding.calendarView.notifyMonthChanged(it)
 //        }
     }
 
+    override fun onResume() {
+        super.onResume()
+        refreshSchedule()
+    }
+
+    private fun refreshSchedule() {
+        if (groupId == null)
+            presenter.loadSchedule(afterEnd = {
+                binding.calendarView.notifyCalendarChanged()
+            })
+        else
+            presenter.loadGroupSchedule(groupId, afterEnd = {
+                binding.calendarView.notifyCalendarChanged()
+            })
+    }
+
     inner class DayViewContainer(view: View) : ViewContainer(view) {
-        val dayTextView = view.findViewById<TextView>(R.id.date)
-        val lunarTextView = view.findViewById<TextView>(R.id.lunar_date)
-        val scheduleListView = view.findViewById<RecyclerView>(R.id.schedules)
+        private val dayTextView: TextView = view.findViewById(R.id.date)
+        private val lunarTextView: TextView = view.findViewById(R.id.lunar_date)
+        val scheduleListView: RecyclerView = view.findViewById(R.id.schedules)
 
         // With ViewBinding
         // val textView = CalendarDayLayoutBinding.bind(view).calendarDayText
@@ -261,9 +261,9 @@ class MonthLibraryFragment(
 
     inner class MonthViewContainer(view: View) : ViewContainer(view) {
         // Alternatively, you can add an ID to the container layout and use findViewById()
-        val monthTextView = view.findViewById<TextView>(R.id.month_text_view)
-        val yearTextView = view.findViewById<TextView>(R.id.year_text_view)
-        val dayOfWeekLayout = view.findViewById<LinearLayout>(R.id.day_of_week_layout)
+        private val monthTextView: TextView = view.findViewById(R.id.month_text_view)
+        private val yearTextView: TextView = view.findViewById(R.id.year_text_view)
+        val dayOfWeekLayout: LinearLayout = view.findViewById(R.id.day_of_week_layout)
 
         fun bind(data: CalendarMonth) {
             logger.logD("MonthViewContainer bind")

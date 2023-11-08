@@ -1,6 +1,7 @@
 package com.ddmyb.shalendar.view.month.presenter
 
 import com.ddmyb.shalendar.R
+import com.ddmyb.shalendar.domain.DBRepository
 import com.ddmyb.shalendar.domain.schedules.repository.ScheduleDto
 import com.ddmyb.shalendar.util.HttpResult
 import com.ddmyb.shalendar.util.Logger
@@ -10,13 +11,15 @@ import com.ddmyb.shalendar.view.holiday.data.HolidayDTO
 import com.ddmyb.shalendar.view.lunar.LunarCalendar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.time.DayOfWeek
 import java.time.LocalDate
-import java.time.YearMonth
+import java.util.Calendar
 
-class MonthLibraryPresenter {
+class MonthLibraryPresenter(
+    private val repository: DBRepository
+) {
 
     val scheduleList: MutableMap<LocalDate, MutableLiveListData<ScheduleDto>> = mutableMapOf()
     val holidayList: MutableMap<LocalDate, MutableLiveListData<HolidayDTO.HolidayItem>> = mutableMapOf()
@@ -57,77 +60,107 @@ class MonthLibraryPresenter {
         )
     }
 
-    fun loadSchedule(year: Int, month: Int, day: Int, afterEnd: () -> Unit = {}) {
-        //TODO: load schedules
+    fun loadSchedule(
+        afterEnd: () -> Unit = {},
+        ifFail: (Exception) -> Unit = {}) {
 
-        if (scheduleList[LocalDate.of(year, month, day)] == null)
-            scheduleList[LocalDate.of(year, month, day)] = MutableLiveListData()
-
-        scheduleList[LocalDate.of(year, month, day)]!!.clear()
-
-        scheduleList[LocalDate.of(year, month, day)]!!.addAll(
-            mutableListOf(ScheduleDto(title="test1", color = R.color.cat_3),
-                ScheduleDto(title="test2", color = R.color.cat_5)))
-
-        afterEnd()
-    }
-
-    fun loadGroupSchedule(groupId: String) {
-
-    }
-
-    fun loadData(startMonth: YearMonth,
-                 endMonth: YearMonth,
-                 currentMonth: YearMonth,
-                 afterEnd: (YearMonth) -> Unit = {}) {
         CoroutineScope(Dispatchers.IO).launch {
-            var nowMonth = YearMonth.of(currentMonth.year, currentMonth.monthValue)
-            var year: Int
-            var month: Int
-            var cnt = 0
+                try {
+                    val loadedList = mutableListOf<ScheduleDto>()
+                    repository.let {
+                        loadedList.addAll(it.readUserSchedule(it.getCurrentUserUid()!!))
+                    }
 
-            while (true) {
-                logger.logD("loadData: toEnd ${nowMonth.year}, ${nowMonth.monthValue}")
-                year = nowMonth.year
-                month = nowMonth.monthValue
+                    val cal = Calendar.getInstance()
+                    for (schedule in loadedList) {
+                        val startM = schedule.startMills
+                        val endM = schedule.endMills
 
-                for (day in 1..nowMonth.atEndOfMonth().dayOfMonth) {
-                    loadSchedule(year, month, day)
+                        cal.timeInMillis = startM
+                        val sYear = cal[Calendar.YEAR]
+                        val sMonth = cal[Calendar.MONTH]+1
+                        val sDay = cal[Calendar.DAY_OF_MONTH]
+
+                        cal.timeInMillis = endM
+                        val eYear = cal[Calendar.YEAR]
+                        val eMonth = cal[Calendar.MONTH]+1
+                        val eDay = cal[Calendar.DAY_OF_MONTH]
+
+                        addToScheduleList(sYear, sMonth, sDay, schedule)
+                        if (!(sYear == eYear && sMonth == eMonth && sDay == eDay))
+                            addToScheduleList(eYear, eMonth, eDay, schedule)
+
+                        logger.logD("$schedule ($sYear,$sMonth,$sDay) - ($eYear,$eMonth,$eDay)")
+                    }
+
+                    withContext(Dispatchers.Main) {
+                        afterEnd()
+                    }
+                } catch (e: Exception) {
+                    logger.logE("message: ${e.message}")
+                    for (stack in e.stackTrace) {
+                        logger.logE("className: ${stack.className}\n" +
+                                "fileName: ${stack.fileName}\n" +
+                                "lineNumber: ${stack.lineNumber}\n" +
+                                "isNativeMethod: ${stack.isNativeMethod}\n" +
+                                "methodName: ${stack.methodName}")
+                    }
+                    withContext(Dispatchers.Main) {
+                        ifFail(e)
+                    }
                 }
-                loadHoliday(year, month) {
-                    afterEnd(nowMonth)
-                }
-                if ((nowMonth.year == endMonth.year) && (nowMonth.monthValue == endMonth.monthValue))
-                    break
-                delay(cnt*500L)
-
-                nowMonth = nowMonth.plusMonths(1)
-                cnt++
-            }
         }
+    }
+
+    fun loadGroupSchedule(
+        groupId: String,
+        afterEnd: () -> Unit = {},
+        ifFail: (Exception) -> Unit = {}) {
+
         CoroutineScope(Dispatchers.IO).launch {
-            var nowMonth = YearMonth.of(currentMonth.year, currentMonth.monthValue)
-            var year: Int
-            var month: Int
-            var cnt = 0
-
-            while (true) {
-                logger.logD("loadData: toStart ${nowMonth.year}, ${nowMonth.monthValue}")
-                year = nowMonth.year
-                month = nowMonth.monthValue
-
-                for (day in 1..nowMonth.atEndOfMonth().dayOfMonth) {
-                    loadSchedule(year, month, day)
+            try {
+                val loadedList = mutableListOf<ScheduleDto>()
+                repository.let {
+                    loadedList.addAll(it.readGroupSchedule(groupId))
                 }
-                loadHoliday(year, month) {
-                    afterEnd(nowMonth)
-                }
-                if ((nowMonth.year == startMonth.year) && (nowMonth.monthValue == startMonth.monthValue))
-                    break
-                delay(cnt*500L)
 
-                nowMonth = nowMonth.minusMonths(1)
-                cnt++
+                val cal = Calendar.getInstance()
+                for (schedule in loadedList) {
+                    val startM = schedule.startMills
+                    val endM = schedule.endMills
+
+                    cal.timeInMillis = startM
+                    val sYear = cal[Calendar.YEAR]
+                    val sMonth = cal[Calendar.MONTH]+1
+                    val sDay = cal[Calendar.DAY_OF_MONTH]
+
+                    cal.timeInMillis = endM
+                    val eYear = cal[Calendar.YEAR]
+                    val eMonth = cal[Calendar.MONTH]+1
+                    val eDay = cal[Calendar.DAY_OF_MONTH]
+
+                    addToScheduleList(sYear, sMonth, sDay, schedule)
+                    if (!(sYear == eYear && sMonth == eMonth && sDay == eDay))
+                        addToScheduleList(eYear, eMonth, eDay, schedule)
+
+                    logger.logD("$schedule ($sYear,$sMonth,$sDay) - ($eYear,$eMonth,$eDay)")
+                }
+
+                withContext(Dispatchers.Main) {
+                    afterEnd()
+                }
+            } catch (e: Exception) {
+                logger.logE("message: ${e.message}")
+                for (stack in e.stackTrace) {
+                    logger.logE("className: ${stack.className}\n" +
+                            "fileName: ${stack.fileName}\n" +
+                            "lineNumber: ${stack.lineNumber}\n" +
+                            "isNativeMethod: ${stack.isNativeMethod}\n" +
+                            "methodName: ${stack.methodName}")
+                }
+                withContext(Dispatchers.Main) {
+                    ifFail(e)
+                }
             }
         }
     }
@@ -151,7 +184,7 @@ class MonthLibraryPresenter {
         return holidayList.list.size != 0
     }
 
-    fun dateToYYYYMMDD(year: Int, month: Int, date: Int): String {
+    private fun dateToYYYYMMDD(year: Int, month: Int, date: Int): String {
         val yyyy = year.toString()
         val mm = when(month) {
             in 1 .. 9 -> "0${month}"
@@ -179,4 +212,13 @@ class MonthLibraryPresenter {
         return LocalDate.of(lunarYear, lunarMonth, lunarDay)
     }
 
+
+    private fun addToScheduleList(year: Int, month: Int, day: Int, loadedList: ScheduleDto) {
+        if (scheduleList[LocalDate.of(year, month, day)] == null)
+            scheduleList[LocalDate.of(year, month, day)] = MutableLiveListData()
+
+        scheduleList[LocalDate.of(year, month, day)]!!.clear()
+
+        scheduleList[LocalDate.of(year, month, day)]!!.add(loadedList)
+    }
 }
