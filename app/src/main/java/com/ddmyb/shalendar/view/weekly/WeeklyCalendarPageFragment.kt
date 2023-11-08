@@ -335,14 +335,17 @@ class WeeklyCalendarPageFragment(private val now: Long, private val groupId: Str
                 if (schedule.groupId != "") {
                     Log.d(TAG, "Group public schedule")
                     drawable.setColor(ContextCompat.getColor(context, R.color.cat_1))
+                    schedule.color = R.color.cat_1
                 }
                 else if (schedule.userId != userRepository.getUserId()){
                     Log.d(TAG, "Group others schedule")
                     drawable.setColor(ContextCompat.getColor(context,R.color.cat_3))
+                    schedule.color = R.color.cat_3
                 }
                 else{
                     Log.d(TAG, "Group my schedule")
                     drawable.setColor(ContextCompat.getColor(context,R.color.cat_5))
+                    schedule.color = R.color.cat_5
                 }
             }
             scheduleView.background = drawable
