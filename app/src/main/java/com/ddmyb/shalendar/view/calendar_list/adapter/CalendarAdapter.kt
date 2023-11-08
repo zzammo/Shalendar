@@ -1,5 +1,6 @@
 package com.ddmyb.shalendar.view.calendar_list.adapter
 import android.annotation.SuppressLint
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,11 +15,21 @@ class CalendarAdapter (
     class MyViewHolder(val binding: ItemCalendarBinding):RecyclerView.ViewHolder(binding.root) {
         @SuppressLint("SetTextI18n")
         fun bind(calendar: Calendar) {
-            binding.calendarName.text = calendar.text
-            binding.teammemberCnt.text = "5"
+            var teamMate: String = ""
+            for(i in calendar.userIds){
+                Log.d("oz","Adapter $i")
+                teamMate += ""
+            }
+            binding.calendarName.text = calendar.Name
+            binding.teammemberCnt.text = calendar.cnt.toString()
             binding.teammemberCntBorder.visibility = View.INVISIBLE
-            binding.writeTime.text = "오전 9시 30분"
-            binding.teammateName.text = "김민석, 양재모, 김동기, 이동원, 백명준"
+            binding.writeTime.text = calendar.time.toString()
+
+            for(i in calendar.userIds){
+                Log.d("oz","Adapter $i")
+                teamMate += "$i "
+            }
+            binding.teammateName.text = teamMate
         }
     }
 
