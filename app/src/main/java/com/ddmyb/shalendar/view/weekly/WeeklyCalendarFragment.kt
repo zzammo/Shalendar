@@ -1,6 +1,7 @@
 package com.ddmyb.shalendar.view.weekly
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -24,6 +25,8 @@ class WeeklyCalendarFragment(private val startCal: Calendar) : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        Log.d(TAG, "WeeklyCalendarFragment - onCreateView")
+        Log.d(TAG, "startCal: ${startCal.get(Calendar.YEAR)}.${startCal.get(Calendar.MONTH)+1}.${startCal.get(Calendar.DATE)}")
         binding = FragmentWeeklyCalendarBinding.inflate(inflater)
 
         binding.pager.adapter = WeeklyCalendarAdapter(getFirstDays(100),requireActivity())

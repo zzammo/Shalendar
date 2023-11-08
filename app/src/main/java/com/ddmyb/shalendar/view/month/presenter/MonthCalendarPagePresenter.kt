@@ -123,6 +123,10 @@ class MonthCalendarPagePresenter(
 //        )
     }
 
+    fun loadGroupSchedule(idx: Int, groupId: String) {
+
+    }
+
     fun findDate(year: Int, month: Int, date: Int): Int? {
         for (i in pageData.calendarDateList.value!!.indices) {
             val dateData = pageData.calendarDateList.value!![i]
@@ -181,7 +185,7 @@ class MonthCalendarPagePresenter(
     }
 
     fun toLunar(yyyymmdd: String): String {
-        val lunar = LunarCalendar.LunarToSolar(yyyymmdd)
+        val lunar = LunarCalendar.SolarToLunar(yyyymmdd)
         return "${lunar.substring(4, 6)}/${lunar.substring(6, 8)}"
     }
 

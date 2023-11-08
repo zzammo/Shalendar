@@ -3,6 +3,7 @@ package com.ddmyb.shalendar.view.alarm_manager
 import android.graphics.Canvas
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -28,10 +29,15 @@ class AlarmManagerFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
-        service = AlarmService(requireContext().applicationContext)
+        service = AlarmService.getInstance(requireContext().applicationContext)!!
         val root = inflater.inflate(R.layout.fragment_alarm_manager, container, false)
         val rv = root.findViewById<RecyclerView>(R.id.rv_alarm)
         val itemList = service.getAllAlarm()
+        var text = ""
+        itemList.forEach {
+            text += it.id.toString() + ", "
+        }
+        Log.d(this.toString(), text)
         val alarmRVAdapter = AlarmRVAdapter(itemList as ArrayList<Alarm>)
         alarmRVAdapter.notifyDataSetChanged()
 
@@ -58,13 +64,6 @@ class AlarmManagerFragment : Fragment() {
                         service.cancelAlarm(deleteItem.id)
                         itemList.removeAt(position)
                         alarmRVAdapter.notifyItemRemoved(position)
-
-                        //복구 기능
-//                        Snackbar.make(rv, deleteItem.name, Snackbar.LENGTH_LONG)
-//                            .setAction("복구", View.OnClickListener {
-//                                itemList.add(position, deleteItem)
-//                                alarmRVAdapter.notifyItemInserted(position)
-//                            }).show()
                     }
                 }
             }

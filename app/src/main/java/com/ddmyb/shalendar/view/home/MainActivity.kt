@@ -6,6 +6,7 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -16,6 +17,7 @@ import com.ddmyb.shalendar.domain.FirebaseRepository
 import com.ddmyb.shalendar.view.calendar_list.CalendarListFragment
 import com.ddmyb.shalendar.view.alarm_manager.AlarmManagerFragment
 import com.ddmyb.shalendar.util.HttpResult
+import com.ddmyb.shalendar.view.dialog.CustomNewCalendarDialog
 import com.ddmyb.shalendar.view.holiday.HolidayApi
 import com.ddmyb.shalendar.view.holiday.data.HolidayDTO
 import com.ddmyb.shalendar.view.test.TestActivity
@@ -61,6 +63,7 @@ class MainActivity : AppCompatActivity() {
                 R.id.item_fragment1 -> {
                     supportFragmentManager.beginTransaction()
                         .replace(R.id.main_frame, CalendarFragment(), "CalendarHostFragment").commit()
+                    binding.ivGroupAdd.visibility = View.GONE
                     binding.tvFragmentTitle.text = "개인 캘린더"
                     true
                 }
@@ -70,6 +73,7 @@ class MainActivity : AppCompatActivity() {
                     supportFragmentManager.beginTransaction()
                         .replace(R.id.main_frame, CalendarListFragment()).commit()
                     binding.tvFragmentTitle.text = "그룹 관리"
+                    binding.ivGroupAdd.visibility = View.VISIBLE
                     true
                 }
 
@@ -84,6 +88,7 @@ class MainActivity : AppCompatActivity() {
                     supportFragmentManager.beginTransaction()
                         .replace(R.id.main_frame, AlarmManagerFragment()).commit()
                     binding.tvFragmentTitle.text = "알람 관리"
+                    binding.ivGroupAdd.visibility = View.GONE
                     true
                 }
 
@@ -91,12 +96,20 @@ class MainActivity : AppCompatActivity() {
 //                    supportFragmentManager.beginTransaction()
 //                        .replace(R.id.main_frame, ProflieFragment()).commit()
 //                    binding.tvFragmentTitle.text = "내 정보"
+//                    binding.ivGroupAdd.visibility = View.GONE
+//                    binding.llCalendarOption.visibility = View.GONE
+//
 //                    true
 //                }
 
                 else -> false
             }
         }
+
+        binding.ivGroupAdd.setOnClickListener {
+            CustomNewCalendarDialog().show(this@MainActivity.supportFragmentManager, "")
+        }
+
         HolidayApi.getHolidays(
             year = 2023,
             month = 12,

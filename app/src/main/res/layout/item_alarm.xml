@@ -4,11 +4,11 @@
     android:layout_height="wrap_content"
     android:background="@color/bg_white"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:paddingHorizontal="25sp"
-    android:paddingVertical="15sp">
+    android:paddingHorizontal="20sp"
+    android:paddingVertical="18sp">
 
     <TextView
-        android:id="@+id/tv_date_alarm"
+        android:id="@+id/tv_date_start"
         android:layout_width="80sp"
         android:layout_height="20sp"
         android:textSize="15sp"
@@ -17,19 +17,19 @@
         android:textAlignment="center"
         android:textColor="@color/black"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/tv_time_alarm"
+        app:layout_constraintBottom_toTopOf="@id/tv_time_start"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@id/ll_alarm_color"
         android:layout_marginEnd="10dp"/>
 
     <TextView
-        android:id="@+id/tv_time_alarm"
+        android:id="@+id/tv_time_start"
         android:layout_width="80sp"
         android:layout_height="20sp"
         android:textSize="15sp"
         android:text="오후 12:30"
         android:textAlignment="center"
-        app:layout_constraintTop_toBottomOf="@id/tv_date_alarm"
+        app:layout_constraintTop_toBottomOf="@id/tv_date_start"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/ll_alarm_color"
@@ -41,22 +41,31 @@
         android:layout_height="0dp"
         android:background="@drawable/round_boundry"
         android:orientation="horizontal"
-        app:layout_constraintStart_toEndOf="@id/tv_date_alarm"
+        app:layout_constraintStart_toEndOf="@id/tv_date_start"
         app:layout_constraintEnd_toStartOf="@id/tv_title_alarm_item"
-        app:layout_constraintTop_toTopOf="@id/tv_date_alarm"
-        app:layout_constraintBottom_toBottomOf="@id/tv_time_alarm" />
+        app:layout_constraintTop_toTopOf="@id/tv_date_start"
+        app:layout_constraintBottom_toBottomOf="@id/tv_time_start" />
 
     <TextView
         android:id="@+id/tv_title_alarm_item"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="수업"
-        android:textSize="20sp"
+        android:textSize="17sp"
         android:textAlignment="center"
-        app:layout_constraintTop_toTopOf="@+id/tv_date_alarm"
+        app:layout_constraintTop_toTopOf="@+id/tv_date_start"
         app:layout_constraintStart_toEndOf="@id/ll_alarm_color"
-        app:layout_constraintBottom_toBottomOf="@+id/tv_time_alarm"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_time_start"
         android:layout_marginStart="10dp"/>
+
+    <TextView
+        android:id = "@+id/tv_datetime_alarm"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="오후 12:00 알람"
+        android:textSize="8sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

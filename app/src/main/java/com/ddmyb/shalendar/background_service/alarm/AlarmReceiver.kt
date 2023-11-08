@@ -12,7 +12,6 @@ import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import com.ddmyb.shalendar.R
 import com.ddmyb.shalendar.view.alarm_manager.FullScreenAlarmActivity
-import com.ddmyb.shalendar.view.home.MainActivity
 
 
 class AlarmReceiver: BroadcastReceiver() {
@@ -23,6 +22,7 @@ class AlarmReceiver: BroadcastReceiver() {
 
     private lateinit var manager: NotificationManager
     private lateinit var builder: NotificationCompat.Builder
+    private lateinit var service: AlarmService
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onReceive(context: Context?, intent: Intent?) {
@@ -42,13 +42,18 @@ class AlarmReceiver: BroadcastReceiver() {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
 
-        val requestCode = intent?.extras!!.getInt("request_code")
+        val code = intent?.extras!!.getLong("code")
         val title = intent.extras!!.getString("title")
         val memo = intent.extras!!.getString("memo")
 
+        Log.d(this.toString(), "code: $code title: $title")
+
+        service = AlarmService.getInstance(context)!!
+        service.finish(code)
+
         val fullscreenPendingIntent = PendingIntent.getActivity(
             context,
-            requestCode,
+            code.toInt(),
             fullscreenIntent,
             PendingIntent.FLAG_IMMUTABLE
         )

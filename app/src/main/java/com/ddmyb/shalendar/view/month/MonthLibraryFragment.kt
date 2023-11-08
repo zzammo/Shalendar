@@ -6,6 +6,9 @@ import androidx.fragment.app.Fragment
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
+import androidx.core.content.ContentProviderCompat.requireContext
+import androidx.core.content.ContextCompat
 import androidx.core.view.children
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -14,6 +17,7 @@ import com.ddmyb.shalendar.databinding.FragmentMonthLibraryBinding
 import com.ddmyb.shalendar.domain.schedules.repository.ScheduleDto
 import com.ddmyb.shalendar.util.Logger
 import com.ddmyb.shalendar.util.MutableLiveListData
+import com.ddmyb.shalendar.view.home.CalendarFragment
 import com.ddmyb.shalendar.view.month.adapter.MonthCalendarDateScheduleRVAdapter
 import com.ddmyb.shalendar.view.month.presenter.MonthLibraryPresenter
 import com.kizitonwose.calendar.core.CalendarDay
@@ -22,20 +26,38 @@ import com.kizitonwose.calendar.core.DayPosition
 import com.kizitonwose.calendar.core.daysOfWeek
 import com.kizitonwose.calendar.view.MonthDayBinder
 import com.kizitonwose.calendar.view.MonthHeaderFooterBinder
+import com.kizitonwose.calendar.view.MonthScrollListener
 import com.kizitonwose.calendar.view.ViewContainer
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.TextStyle
+import java.util.Calendar
 import java.util.Locale
+import kotlin.math.log
 
-class MonthLibraryFragment : Fragment(R.layout.fragment_month_library) {
+class MonthLibraryFragment(
+    private val now: Calendar,
+    private val groupId: String? = null,
+    private val clickListener: MonthLibraryDayClickListener =
+        object: MonthLibraryDayClickListener{
+            override fun click(year: Int, month: Int, day: Int, scheduleList: MutableList<ScheduleDto>) {
+
+            }
+
+            override fun doubleClick(year: Int, month: Int, day: Int, scheduleList: MutableList<ScheduleDto>) {
+
+            }
+        }
+): Fragment(R.layout.fragment_month_library) {
 
     private lateinit var binding: FragmentMonthLibraryBinding
     private val logger = Logger("MonthCalendarPageFragment", true)
     private lateinit var dayOfWeekList: List<DayOfWeek>
 
     private val presenter = MonthLibraryPresenter()
+
+    private var selectDate: LocalDate? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -50,15 +72,36 @@ class MonthLibraryFragment : Fragment(R.layout.fragment_month_library) {
             // Called every time we need to reuse a container.
             override fun bind(container: DayViewContainer, data: CalendarDay) {
 
+
                 val year = data.date.year
                 val month = data.date.monthValue
                 val day = data.date.dayOfMonth
 
-                presenter.loadSchedule(year, month, day) {
-                    if (container.view.isAttachedToWindow)
-                        container.bind(data)
+                if (presenter.scheduleList[LocalDate.of(year, month, day)] == null) {
+                    logger.logD("DayViewContainer loadSchedule ${data.date}")
+                    if (groupId == null)
+                        presenter.loadSchedule(year, month, day) {
+                            container.bind(data)
+                        }
+                    else
+                        presenter.loadGroupSchedule(groupId)
                 }
+
+
+                if (data.date == selectDate) {
+                    // If this is the selected date, show a round background and change the text color.
+                    container.view.setBackgroundColor(requireContext().getColor(R.color.google_blue__33Alpha))
+                } else {
+                    // If this is NOT the selected date, remove the background and reset the text color.
+                    container.view.setBackgroundColor(requireContext().getColor(R.color.white))
+                }
+
                 container.bind(data)
+
+                if (data.position != DayPosition.MonthDate)
+                    container.view.alpha = 0.3f
+                else
+                    container.view.alpha = 1.0f
 
                 if (container.scheduleListView.tag == null) {
                     container.scheduleListView.tag = data.date
@@ -72,14 +115,16 @@ class MonthLibraryFragment : Fragment(R.layout.fragment_month_library) {
 
             override fun bind(container: MonthViewContainer, data: CalendarMonth) {
 
-                logger.logD("month bind - ${data.yearMonth.year}, ${data.yearMonth.monthValue}")
+                logger.logD("MonthViewContainer bind - ${data.yearMonth.year}, ${data.yearMonth.monthValue}")
 
                 val year = data.yearMonth.year
                 val month = data.yearMonth.monthValue
 
-                presenter.loadHoliday(year, month) {
-                    if (container.view.isAttachedToWindow)
+                if (presenter.holidayList[LocalDate.of(year, month, 1)] == null) {
+                    logger.logD("MonthViewContainer loadHoliday ${data.yearMonth}")
+                    presenter.loadHoliday(year, month) {
                         binding.calendarView.notifyMonthChanged(data.yearMonth)
+                    }
                 }
 
                 container.bind(data)
@@ -94,15 +139,24 @@ class MonthLibraryFragment : Fragment(R.layout.fragment_month_library) {
             }
         }
 
-        val currentMonth = YearMonth.now()
-        val startMonth = currentMonth.minusMonths(100)  // Adjust as needed
-        val endMonth = currentMonth.plusMonths(100)  // Adjust as needed
+        val currentMonth = YearMonth.of(now[Calendar.YEAR], now[Calendar.MONTH]+1)
+        val startMonth = currentMonth.minusMonths(60)  // Adjust as needed
+        val endMonth = currentMonth.plusMonths(60)  // Adjust as needed
 
         dayOfWeekList = daysOfWeek()  // Available from the library
         val firstDayOfWeek = dayOfWeekList.first()
 
         binding.calendarView.setup(startMonth, endMonth, firstDayOfWeek)
         binding.calendarView.scrollToMonth(currentMonth)
+
+        binding.calendarView.monthScrollListener = {
+            val year = it.yearMonth.year
+            val month = it.yearMonth.monthValue-1
+            val cal = Calendar.getInstance()
+            cal.set(year, month, 1)
+            (parentFragmentManager.findFragmentByTag("CalendarHostFragment") as CalendarFragment).selectedDateCalendar = cal
+        }
+
 
 //        presenter.loadData(startMonth, endMonth, currentMonth) {
 //            binding.calendarView.notifyMonthChanged(it)
@@ -118,6 +172,8 @@ class MonthLibraryFragment : Fragment(R.layout.fragment_month_library) {
         // val textView = CalendarDayLayoutBinding.bind(view).calendarDayText
 
         fun bind(data: CalendarDay) {
+//            logger.logD("DayViewContainer bind")
+
             val year = data.date.year
             val month = data.date.monthValue
             val day = data.date.dayOfMonth
@@ -128,14 +184,44 @@ class MonthLibraryFragment : Fragment(R.layout.fragment_month_library) {
             val lunarText = "${lunarDate.monthValue}/${lunarDate.dayOfMonth}"
             lunarTextView.text = lunarText
 
-            if (presenter.scheduleList[LocalDate.of(year, month, day)] == null)
-                presenter.scheduleList[LocalDate.of(year, month, day)] = MutableLiveListData()
+            setAdapter(year, month, day)
 
-            if (presenter.holidayList[LocalDate.of(year, month, day)] == null)
-                presenter.holidayList[LocalDate.of(year, month, day)] = MutableLiveListData()
+            if (presenter.isSaturday(data.date))
+                dayTextView.setTextColor(Color.BLUE)
+            if (presenter.isHoliday(data.date) || presenter.isSunday(data.date))
+                dayTextView.setTextColor(Color.RED)
 
-            val holidayList = presenter.holidayList[LocalDate.of(year, month, day)]!!.list
-            val scheduleList = presenter.scheduleList[LocalDate.of(year, month, day)]!!.list
+            view.setOnClickListener {
+                val currentSelection = selectDate
+                if (currentSelection == data.date) {
+                    selectDate = null
+                    clickListener.doubleClick(
+                        year,
+                        month,
+                        1,
+                        (scheduleListView.adapter!! as
+                            MonthCalendarDateScheduleRVAdapter).scheduleList.list
+                    )
+                    binding.calendarView.notifyDateChanged(currentSelection)
+                }
+                else {
+                    selectDate = data.date
+                    binding.calendarView.notifyDateChanged(data.date)
+                    clickListener.click(
+                        year,
+                        month,
+                        day,
+                        (scheduleListView.adapter!! as
+                                MonthCalendarDateScheduleRVAdapter).scheduleList.list
+                    )
+                    if (currentSelection != null) {
+                        binding.calendarView.notifyDateChanged(currentSelection)
+                    }
+                }
+            }
+        }
+
+        private fun setAdapter(year: Int, month: Int, day: Int) {
             val mutableList = MutableLiveListData<ScheduleDto>()
 
             scheduleListView.apply {
@@ -149,23 +235,26 @@ class MonthLibraryFragment : Fragment(R.layout.fragment_month_library) {
                 )
             }
 
-            val sList = presenter.holidayListToScheduleList(holidayList)
-            for (schedule in sList) {
-                mutableList.add(schedule)
-                scheduleListView.adapter!!.notifyItemInserted(mutableList.list.size)
-            }
-            for (schedule in scheduleList) {
-                mutableList.add(schedule)
-                scheduleListView.adapter!!.notifyItemInserted(mutableList.list.size)
+            if (presenter.holidayList[LocalDate.of(year, month, day)] != null) {
+                val holidayList = presenter.holidayList[LocalDate.of(year, month, day)]!!.list
+
+                val sList = presenter.holidayListToScheduleList(holidayList)
+                for (schedule in sList) {
+                    logger.logD("setAdapter holiday ${schedule.title}")
+                    mutableList.add(schedule)
+                    scheduleListView.adapter!!.notifyItemInserted(mutableList.list.size)
+                }
             }
 
-            if (presenter.isSaturday(data.date))
-                dayTextView.setTextColor(Color.BLUE)
-            else if (presenter.isHoliday(data.date) || presenter.isSunday(data.date))
-                dayTextView.setTextColor(Color.RED)
+            if (presenter.scheduleList[LocalDate.of(year, month, day)] != null) {
+                val scheduleList = presenter.scheduleList[LocalDate.of(year, month, day)]!!.list
 
-            if (data.position != DayPosition.MonthDate)
-                this.view.alpha = 0.3f
+                for (schedule in scheduleList) {
+                    mutableList.add(schedule)
+                    scheduleListView.adapter!!.notifyItemInserted(mutableList.list.size)
+                }
+            }
+
         }
 
     }
@@ -177,16 +266,22 @@ class MonthLibraryFragment : Fragment(R.layout.fragment_month_library) {
         val dayOfWeekLayout = view.findViewById<LinearLayout>(R.id.day_of_week_layout)
 
         fun bind(data: CalendarMonth) {
+            logger.logD("MonthViewContainer bind")
             monthTextView.text = data.yearMonth.monthValue.toString()
             yearTextView.text = data.yearMonth.year.toString()
         }
 
         fun dayOfWeekBind() {
+            logger.logD("MonthViewContainer dayOfWeekBind")
             dayOfWeekLayout.children.map { it as TextView }
                 .forEachIndexed { index, textView ->
                     val dayOfWeek = dayOfWeekList[index]
                     val title = dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault())
                     textView.text = title
+                    if (index == 0)
+                        textView.setTextColor(ContextCompat.getColor(requireContext(), R.color.red))
+                    else if(index == 6)
+                        textView.setTextColor(ContextCompat.getColor(requireContext(), R.color.blue))
                     // In the code above, we use the same `daysOfWeek` list
                     // that was created when we set up the calendar.
                     // However, we can also get the `daysOfWeek` list from the month data:

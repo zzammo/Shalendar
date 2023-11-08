@@ -17,6 +17,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.ddmyb.shalendar.view.login.LoginActivity
 import com.ddmyb.shalendar.databinding.NaviDrawerBinding
+import com.ddmyb.shalendar.domain.FBTest
 import com.ddmyb.shalendar.domain.FirebaseRepository
 import com.ddmyb.shalendar.domain.schedules.repository.ScheduleDto
 import com.ddmyb.shalendar.view.calendar_list.adapter.CalendarAdapter
@@ -28,6 +29,9 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class NaviDrawerActivity :AppCompatActivity() {
 
@@ -94,7 +98,15 @@ class NaviDrawerActivity :AppCompatActivity() {
         binding.btnCheckSc.setOnClickListener {
             val mSc = ScheduleDto()
 //            FirebaseRepository().createGroup("도리맹돌의 수하물들")
-            FirebaseRepository().createUserSchedule(mSc)
+//            FirebaseRepository().createUserSchedule(mSc)
+            CoroutineScope(Dispatchers.IO).launch {
+                val scheduleList = FBTest.readUserSchedule(FBTest.getCurrentUserUid()!!)
+                for (schedule in scheduleList) {
+                    Log.d("Dirtfy Test", schedule.scheduleId)
+                }
+
+            }
+
             //manageSchedule().crateGroupSchedule(mSc,"-Ni8tG4kZmQCO1W0JBzk")
 //            manageSchedule().inviteGroup("-Ni8tG4kZmQCO1W0JBzk")
         }

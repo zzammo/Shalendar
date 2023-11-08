@@ -10,11 +10,11 @@ import com.ddmyb.shalendar.domain.Alarms.Alarm
 @Dao
 interface AlarmDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(alarm: Alarm)
+    fun insert(alarm: Alarm): Long
     @Update
     fun update(alarm: Alarm)
     @Query("DELETE FROM Alarm WHERE id=:id")
-    fun deleteById(id: Int)
+    fun deleteById(id: Long)
     @Query("DELETE FROM Alarm")
     fun deleteAll()
     @Query("SELECT * FROM Alarm")

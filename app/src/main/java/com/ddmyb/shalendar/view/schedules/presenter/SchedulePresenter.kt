@@ -170,6 +170,7 @@ class SchedulePresenter {
                 val newStartDatetime = schedule.startLocalDatetime
                 val newEndDatetime = schedule.endLocalDatetime
                 val newDptDatetime = schedule.dptLocalDateTime
+                Log.d("newStartDatetime", newStartDatetime.toString())
                 saveDistinctSchedule(newStartDatetime, newEndDatetime, newDptDatetime, context)
             }
             IterationType.EVERY_DAY ->{
@@ -218,19 +219,17 @@ class SchedulePresenter {
         s.endLocalDatetime = newEndDatetime
         s.dptLocalDateTime = newDptDatetime
         val scheduleDto = ScheduleDto(s)
-        val alarmService = AlarmService(context)
+        val alarmService = AlarmService.getInstance(context)!!
         if (alarmInfo.alarmType != AlarmInfo.AlarmType.NULL) {
             Log.d("saveSchedule", "alarm seconds: " + alarmInfo.toSeconds().toString())
             if (view.isCheckedDepartureAlarmSwitch()) {
-                val seconds = s.dptLocalDateTime.atZone(ZoneId.systemDefault())
-                    .toEpochSecond() - alarmInfo.toSeconds()
-                val newAlarm = Alarm(scheduleDto)
-                alarmService.setAlarmWithTime(seconds, newAlarm)
+                val milliSeconds = scheduleDto.dptMills - (alarmInfo.toSeconds() * 1000)
+                val newAlarm = Alarm(scheduleDto, milliSeconds)
+                alarmService.setAlarmWithTime(newAlarm)
             } else {
-                val seconds = s.startLocalDatetime.atZone(ZoneId.systemDefault())
-                    .toEpochSecond() - alarmInfo.toSeconds()
-                val newAlarm = Alarm(scheduleDto)
-                alarmService.setAlarmWithTime(seconds, newAlarm)
+                val milliSeconds = scheduleDto.startMills - (alarmInfo.toSeconds() * 1000)
+                val newAlarm = Alarm(scheduleDto, milliSeconds)
+                alarmService.setAlarmWithTime(newAlarm)
             }
         }
         if (NetworkStatusService.isOnline(context)) {
@@ -256,7 +255,6 @@ class SchedulePresenter {
                 DateInfo(
                     schedule.endLocalDatetime.monthValue,
                     schedule.endLocalDatetime.dayOfMonth,
-
                     schedule.endLocalDatetime.dayOfWeek.value
                 )
             )

@@ -29,11 +29,15 @@ class AlarmRVAdapter(private val itemList: ArrayList<Alarm>): RecyclerView.Adapt
     override fun onBindViewHolder(holder: AlarmViewHolder, position: Int) {
         val localDateTime = Instant.ofEpochMilli(itemList[position].mills).atZone(ZoneId.systemDefault()).toLocalDateTime()
         holder.tv_title_alarm_item.text = itemList[position].name
-        holder.tv_date_alarm.text = DateInfo(localDateTime.monthValue, localDateTime.dayOfMonth, localDateTime.dayOfWeek.value).toString()
-        holder.tv_time_alarm.text = TimeInfo(localDateTime.hour, localDateTime.minute).toString()
+        holder.tv_date_start.text = DateInfo(localDateTime.monthValue, localDateTime.dayOfMonth, localDateTime.dayOfWeek.value).toString()
+        holder.tv_time_start.text = TimeInfo(localDateTime.hour, localDateTime.minute).toString()
         val drawable = ContextCompat.getDrawable(context, R.drawable.round_boundry) as GradientDrawable
         drawable.setColor(ContextCompat.getColor(context, itemList[position].color))
         holder.ll_alarm_color.background = drawable
+        val alarmLocalDateTime = Instant.ofEpochMilli(itemList[position].alarmMills).atZone(ZoneId.systemDefault()).toLocalDateTime()
+        holder.tv_datetime_alarm.text = DateInfo(alarmLocalDateTime.monthValue, alarmLocalDateTime.dayOfMonth, alarmLocalDateTime
+            .dayOfWeek.value).toString() + " " + TimeInfo(alarmLocalDateTime.hour, alarmLocalDateTime.minute)
+                .toString() + " 알람"
     }
 
     fun addItem(position: Int, item: Alarm){

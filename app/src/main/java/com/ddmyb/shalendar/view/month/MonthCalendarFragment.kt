@@ -17,7 +17,7 @@ import com.ddmyb.shalendar.view.month.adapter.MonthCalendarRecyclerViewAdapter
 import java.time.YearMonth
 import java.util.Calendar
 
-class MonthCalendarFragment(private val pageCount: Int) : Fragment() {
+class MonthCalendarFragment(private val pageCount: Int, private val groupId: String? = null) : Fragment() {
 
     val pageIndex: MutableMap<Int, Int> = mutableMapOf()
 
@@ -65,7 +65,7 @@ class MonthCalendarFragment(private val pageCount: Int) : Fragment() {
     private fun makeFragments(refList: List<Long>): List<MonthCalendarPageFragment> {
         val fragmentList = mutableListOf<MonthCalendarPageFragment>()
         for (ref in refList) {
-            fragmentList.add(MonthCalendarPageFragment(ref))
+            fragmentList.add(MonthCalendarPageFragment(ref, groupId))
         }
         return fragmentList
     }
