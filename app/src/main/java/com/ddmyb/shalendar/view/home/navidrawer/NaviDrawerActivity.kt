@@ -19,9 +19,9 @@ import com.ddmyb.shalendar.R
 import com.ddmyb.shalendar.view.login.LoginActivity
 import com.ddmyb.shalendar.databinding.NaviDrawerBinding
 import com.ddmyb.shalendar.domain.FBTest
-import com.ddmyb.shalendar.domain.FirebaseRepository
+import com.ddmyb.shalendar.domain.groups.repository.GroupRepository
 import com.ddmyb.shalendar.domain.schedules.repository.ScheduleDto
-import com.ddmyb.shalendar.view.calendar_list.adapter.CalendarAdapter
+import com.ddmyb.shalendar.domain.schedules.repository.ScheduleRepository
 import com.ddmyb.shalendar.view.home.navidrawer.adapter.OwnedCalendarAdapter
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -89,12 +89,7 @@ class NaviDrawerActivity :AppCompatActivity() {
             val firebaseUser = mFirebaseAuth!!.currentUser
             if(firebaseUser!=null) {
                 val mSc = ScheduleDto()
-                mSc.userId = firebaseUser.uid
-                mSc.color = R.color.cat_0
-                mSc.startMills = Calendar.getInstance().timeInMillis - 3600000
-                mSc.endMills = Calendar.getInstance().timeInMillis + 3600000
-                mSc.title = "test schedule"
-                FirebaseRepository().createUserSchedule(mSc)
+                ScheduleRepository().createUserSchedule(mSc)
                 Toast.makeText(this@NaviDrawerActivity, "업로드 성공", Toast.LENGTH_SHORT).show()
             }
             else{
@@ -104,8 +99,8 @@ class NaviDrawerActivity :AppCompatActivity() {
 
         binding.btnCheckSc.setOnClickListener {
             val mSc = ScheduleDto()
-//            FirebaseRepository().createGroup("도리맹돌의 수하물들")
-//            FirebaseRepository().createUserSchedule(mSc)
+            GroupRepository().createGroup("도리맹돌의 수하물들")
+
             CoroutineScope(Dispatchers.IO).launch {
                 val scheduleList = FBTest.readUserSchedule(FBTest.getCurrentUserUid()!!)
                 for (schedule in scheduleList) {

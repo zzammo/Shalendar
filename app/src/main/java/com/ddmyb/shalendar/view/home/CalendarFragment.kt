@@ -25,23 +25,26 @@ class CalendarFragment(private val groupId: String? = null): Fragment() {
     private lateinit var binding: FragmentCalendarBinding
     var selectedDateCalendar: Calendar = Calendar.getInstance()
     private var fragmentNum = 0
+    private val monthLibraryDayClickListener =
+        object : MonthLibraryDayClickListener {
+            override fun click(year: Int, month: Int, day: Int, scheduleList: MutableList<ScheduleDto>) {
+                Log.d("CalendarFragment", "clicked $year/$month/$day\"")
+                selectedDateCalendar.set(year, month-1, day)
+            }
+
+            override fun doubleClick(year: Int, month: Int, day: Int, scheduleList: MutableList<ScheduleDto>) {
+                Log.d("CalendarFragment", "double clicked $year/$month/$day")
+                selectedDateCalendar.set(year, month-1, 1)
+                val cal = Calendar.getInstance()
+                cal.set(year, month-1, day)
+                openSlidingUpPanel(cal, ArrayList(scheduleList))
+            }
+        }
     private val fragments = arrayListOf(
         MonthLibraryFragment(
             selectedDateCalendar,
             groupId,
-            object : MonthLibraryDayClickListener {
-                override fun click(year: Int, month: Int, day: Int, scheduleList: MutableList<ScheduleDto>) {
-                    Toast.makeText(requireContext(), "clicked $year/$month/$day", Toast.LENGTH_SHORT).show()
-                    Log.d("CalendarFragment", scheduleList.toString())
-                    selectedDateCalendar.set(year, month-1, day)
-                }
-
-                override fun doubleClick(year: Int, month: Int, day: Int, scheduleList: MutableList<ScheduleDto>) {
-                    Toast.makeText(requireContext(), "double clicked $year/$month/$day", Toast.LENGTH_SHORT).show()
-                    Log.d("CalendarFragment", scheduleList.toString())
-                    selectedDateCalendar.set(year, month-1, day)
-                }
-            }),
+            monthLibraryDayClickListener),
         WeeklyCalendarFragment(selectedDateCalendar)
     )
     override fun onCreateView(
@@ -72,19 +75,7 @@ class CalendarFragment(private val groupId: String? = null): Fragment() {
                 fragments[0] = MonthLibraryFragment(
                     selectedDateCalendar,
                     groupId,
-                    object : MonthLibraryDayClickListener {
-                        override fun click(year: Int, month: Int, day: Int, scheduleList: MutableList<ScheduleDto>) {
-                            Toast.makeText(requireContext(), "clicked $year/$month/$day", Toast.LENGTH_SHORT).show()
-                            Log.d("CalendarFragment", scheduleList.toString())
-                            selectedDateCalendar.set(year, month-1, day)
-                        }
-
-                        override fun doubleClick(year: Int, month: Int, day: Int, scheduleList: MutableList<ScheduleDto>) {
-                            Toast.makeText(requireContext(), "double clicked $year/$month/$day", Toast.LENGTH_SHORT).show()
-                            Log.d("CalendarFragment", scheduleList.toString())
-                            selectedDateCalendar.set(year, month-1, day)
-                        }
-                    })
+                    monthLibraryDayClickListener)
                 binding.pager.adapter!!.notifyItemChanged(0)
                 binding.pager.currentItem = 0
                 fragmentNum = 0

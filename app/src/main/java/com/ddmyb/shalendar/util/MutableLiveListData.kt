@@ -10,21 +10,21 @@ class MutableLiveListData<T> : MutableLiveData<MutableList<T>>() {
     private var changeObserver: (Int) -> Unit = {}
 
     init {
-        value = list
+        postValue(list)
     }
 
     fun add(element: T) {
         list.add(element)
         insertObserver(list.size-1)
 
-        value = list
+        postValue(list)
     }
 
     fun add(index: Int, element: T) {
         list.add(index, element)
         insertObserver(index)
 
-        value = list
+        postValue(list)
     }
 
     fun addAll(index: Int, elements: Collection<T>) {
@@ -35,7 +35,7 @@ class MutableLiveListData<T> : MutableLiveData<MutableList<T>>() {
             insertObserver(insertIndex)
         }
 
-        value = list
+        postValue(list)
     }
 
     fun addAll(elements: Collection<T>) {
@@ -48,7 +48,7 @@ class MutableLiveListData<T> : MutableLiveData<MutableList<T>>() {
             insertObserver(insertIndex)
         }
 
-        value = list
+        postValue(list)
     }
 
     fun remove(element: T): Boolean {
@@ -59,7 +59,7 @@ class MutableLiveListData<T> : MutableLiveData<MutableList<T>>() {
         list.remove(element)
         removeObserver(index)
 
-        value = list
+        postValue(list)
 
         return true
     }
@@ -77,7 +77,7 @@ class MutableLiveListData<T> : MutableLiveData<MutableList<T>>() {
             returnValue = true
         }
 
-        value = list
+        postValue(list)
 
         return returnValue
     }
@@ -86,7 +86,7 @@ class MutableLiveListData<T> : MutableLiveData<MutableList<T>>() {
         val returnValue = list.removeAt(index)
         removeObserver(index)
 
-        value = list
+        postValue(list)
 
         return returnValue
     }
@@ -106,7 +106,7 @@ class MutableLiveListData<T> : MutableLiveData<MutableList<T>>() {
             changeObserver(i)
         }
 
-        value = list
+        postValue(list)
     }
 
     fun retainAll(elements: Collection<T>): Boolean {
@@ -120,17 +120,16 @@ class MutableLiveListData<T> : MutableLiveData<MutableList<T>>() {
             returnValue = true
         }
 
-        value = list
+        postValue(list)
 
         return returnValue
     }
 
     fun clear() {
-        while(list.size != 0) {
+        while(list.size > 0) {
             removeAt(0)
-            removeObserver(0)
         }
-        value = list
+        postValue(list)
     }
 
     fun observeInsert(insertedAt: (Int) -> Unit) {

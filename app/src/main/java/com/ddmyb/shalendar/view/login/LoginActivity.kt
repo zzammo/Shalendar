@@ -6,12 +6,12 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 
 import com.ddmyb.shalendar.databinding.ActivityLoginBinding
-import com.ddmyb.shalendar.domain.FirebaseRepository
+import com.ddmyb.shalendar.domain.users.UserRepository
 
 
 class LoginActivity : AppCompatActivity() {
 
-    private val firebaseRepository = FirebaseRepository.getInstance()
+    private val userRepository = UserRepository.getInstance()
 
     private val binding by lazy {
         ActivityLoginBinding.inflate(layoutInflater)
@@ -21,7 +21,7 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
         binding.btnLogin.setOnClickListener {
-            firebaseRepository!!.login(
+            userRepository!!.login(
                 binding.etEmail.text.toString(),
                 binding.etPwd.text.toString(),
                 applicationContext
