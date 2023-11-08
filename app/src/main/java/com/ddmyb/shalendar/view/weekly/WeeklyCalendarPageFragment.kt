@@ -295,6 +295,17 @@ class WeeklyCalendarPageFragment(private val now: Long, private val groupId: Str
         }
         Log.d(TAG, "this schedule is this week")
 
+        // 이동 시간 스케줄 display
+        if (isFirst && schedule.dptMills > 0L) {
+            val moveSchedule = schedule.copy()
+            moveSchedule.title = "${moveSchedule.meansType} → ${moveSchedule.title}"
+            moveSchedule.endMills = moveSchedule.startMills
+            moveSchedule.startMills = moveSchedule.dptMills
+            moveSchedule.dptMills = 0L
+            moveSchedule.color = R.color.line_gray
+            displaySchedule(moveSchedule, moveSchedule.startMills, false)
+        }
+
         var flag = false
 
         if(startCal.get(Calendar.DAY_OF_MONTH) != endCal.get(Calendar.DAY_OF_MONTH)){
@@ -364,16 +375,6 @@ class WeeklyCalendarPageFragment(private val now: Long, private val groupId: Str
             startCal.set(Calendar.SECOND, 0)
             startCal.set(Calendar.MILLISECOND, 0)
             displaySchedule(schedule, startCal.timeInMillis, false)
-        }
-
-        if (isFirst && schedule.dptMills > 0L) {
-            val moveSchedule = schedule.copy()
-            moveSchedule.title = "${moveSchedule.meansType} → ${moveSchedule.title}"
-            moveSchedule.endMills = moveSchedule.startMills
-            moveSchedule.startMills = moveSchedule.dptMills
-            moveSchedule.dptMills = 0L
-            moveSchedule.color = R.color.line_gray
-            displaySchedule(moveSchedule, moveSchedule.startMills, false)
         }
     }
 
