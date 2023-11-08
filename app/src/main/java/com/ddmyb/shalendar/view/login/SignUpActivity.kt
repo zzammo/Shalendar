@@ -30,7 +30,7 @@ class SignUpActivity : AppCompatActivity() {
             val strNickname = binding.etNickname.getText().toString()
             val strEmail = binding.etEmail.getText().toString()
             val strPwd = binding.etPwd.getText().toString()
-            Toast.makeText(this@SignUpActivity, "진행중", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this@SignUpActivity, "회원가입 진행 중", Toast.LENGTH_SHORT).show()
             //Firebase Auth 진행
             mFirebaseAuth!!.createUserWithEmailAndPassword(strEmail, strPwd).addOnCompleteListener(this@SignUpActivity)
             { task ->
@@ -42,11 +42,7 @@ class SignUpActivity : AppCompatActivity() {
                         nickName = strNickname
                         password = strPwd
                     }
-                    Toast.makeText(this@SignUpActivity, "진행중", Toast.LENGTH_SHORT).show()
-                    //child는 해당 키 위치로 이동하는 함수입니다.
-                    //키가 없는데 "UserAccount"와 firebaseUser.getUid()같이 값을 지정한 경우 자동으로 생성합니다.
                     mDatabaseRef!!.child(firebaseUser!!.uid).setValue(account)
-                    //mDatabaseRef!!.child(firebaseUser!!.email.toString().replace(".","_")).setValue(account)
                     Toast.makeText(this@SignUpActivity, "회원가입에 성공하셨습니다", Toast.LENGTH_LONG).show()
                 } else {
                     Toast.makeText(this@SignUpActivity, "회원가입에 실패하셨습니다", Toast.LENGTH_LONG).show()
