@@ -296,7 +296,7 @@ class WeeklyCalendarPageFragment(private val now: Long, private val groupId: Str
         Log.d(TAG, "this schedule is this week")
 
         // 이동 시간 스케줄 display
-        if (isFirst && schedule.dptMills > 0L) {
+        if (groupId == null && isFirst && schedule.dptMills > 0L) {
             val moveSchedule = schedule.copy()
             moveSchedule.title = "${moveSchedule.meansType} → ${moveSchedule.title}"
             moveSchedule.endMills = moveSchedule.startMills
