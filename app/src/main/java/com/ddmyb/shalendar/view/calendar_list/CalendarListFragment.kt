@@ -1,6 +1,7 @@
 package com.ddmyb.shalendar.view.calendar_list
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,7 +11,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.ddmyb.shalendar.data.Calendar
 import com.ddmyb.shalendar.databinding.FragmentCalendarListBinding
+import com.ddmyb.shalendar.domain.groups.repository.GroupRepository
 import com.ddmyb.shalendar.view.calendar_list.adapter.CalendarAdapter
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 
 
 class CalendarListFragment : Fragment() {
@@ -27,15 +33,18 @@ class CalendarListFragment : Fragment() {
 
         val origin = mutableListOf<Calendar>()
 
-        origin.add(Calendar("Project"))
-        origin.add(Calendar("개인 캘린더"))
-        origin.add(Calendar("모바일 공학과"))
-
         binding.calendarlistRv.setHasFixedSize(true)
         binding.calendarlistRv.adapter = CalendarAdapter(origin)
         binding.calendarlistRv.layoutManager = LinearLayoutManager(activity)
 
-
+        CoroutineScope(Dispatchers.Main).launch{
+            val groupList = GroupRepository().readUsersGroup()
+            for (i in groupList){
+                Log.d("oz","${i.groupId} ${i.groupName} ${i.userId} ${i.memberCnt} ${i.latestUpdateMills} ${i.groupId}")
+                origin.add(Calendar(i.groupName, i.userId,i.memberCnt,i.latestUpdateMills))
+            }
+            binding.calendarlistRv.adapter = CalendarAdapter(origin)
+        }
 
         val searchViewTextListener: SearchView.OnQueryTextListener =
             object : SearchView.OnQueryTextListener {
@@ -64,7 +73,7 @@ class CalendarListFragment : Fragment() {
     private fun search(keyword: String, itemList: MutableList<Calendar>, rv: RecyclerView) {
         val searchresult = mutableListOf<Calendar>()
         for (item in itemList) {
-            if (item.text.toLowerCase().contains(keyword.toLowerCase())) {
+            if (item.Name.toLowerCase().contains(keyword.toLowerCase())) {
                 searchresult.add(item)
             }
         }
