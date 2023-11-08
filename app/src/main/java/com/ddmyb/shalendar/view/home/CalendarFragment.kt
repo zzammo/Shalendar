@@ -55,7 +55,7 @@ class CalendarFragment(private val groupId: String? = null): Fragment() {
         binding = FragmentCalendarBinding.inflate(inflater)
 
 
-        val calendarFragmentPageAdapter = CalendarFragmentPageAdapter(fragments, requireActivity())
+        var calendarFragmentPageAdapter = CalendarFragmentPageAdapter(fragments, requireActivity())
         binding.pager.apply {
             orientation = ViewPager2.ORIENTATION_HORIZONTAL
             adapter = calendarFragmentPageAdapter
@@ -66,7 +66,8 @@ class CalendarFragment(private val groupId: String? = null): Fragment() {
         binding.swCalendarOption.setOnCheckedChangeListener { _, b ->
             if (b){
                 fragments[1] = WeeklyCalendarFragment(selectedDateCalendar)
-                binding.pager.adapter!!.notifyItemChanged(1)
+                calendarFragmentPageAdapter = CalendarFragmentPageAdapter(fragments,requireActivity())
+                binding.pager.adapter = calendarFragmentPageAdapter
                 binding.pager.currentItem = 1
                 fragmentNum = 1
                 Log.d("CalendarFragment", "$selectedDateCalendar")
@@ -96,6 +97,7 @@ class CalendarFragment(private val groupId: String? = null): Fragment() {
             val intent = Intent(requireContext(), ScheduleActivity::class.java)
             intent.putExtra("NewSchedule", NewScheduleDto("", cal.timeInMillis))
             startActivity(intent)
+            binding.slidingMainFrame.panelState = SlidingUpPanelLayout.PanelState.COLLAPSED
         }
     }
 

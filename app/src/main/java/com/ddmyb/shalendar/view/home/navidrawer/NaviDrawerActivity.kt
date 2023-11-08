@@ -84,7 +84,6 @@ class NaviDrawerActivity :AppCompatActivity() {
                 }
             }
         }
-        FirebaseRepository().readUserSchedule()
         binding.btnAddSc.setOnClickListener {
             val firebaseUser = mFirebaseAuth!!.currentUser
             if(firebaseUser!=null) {
