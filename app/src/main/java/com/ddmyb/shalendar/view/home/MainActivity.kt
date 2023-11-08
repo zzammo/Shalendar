@@ -13,7 +13,7 @@ import androidx.databinding.DataBindingUtil
 import com.ddmyb.shalendar.view.login.LoginActivity
 import com.ddmyb.shalendar.R
 import com.ddmyb.shalendar.databinding.ActivityMainBinding
-import com.ddmyb.shalendar.domain.FirebaseRepository
+import com.ddmyb.shalendar.domain.users.UserRepository
 import com.ddmyb.shalendar.view.calendar_list.CalendarListFragment
 import com.ddmyb.shalendar.view.alarm_manager.AlarmManagerFragment
 import com.ddmyb.shalendar.util.HttpResult
@@ -28,12 +28,12 @@ import com.ddmyb.shalendar.view.weather.WeatherTest
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
-    private val firebaseRepository = FirebaseRepository.getInstance()
+    private val userRepository = UserRepository.getInstance()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this@MainActivity, R.layout.activity_main)
 
-        if (!firebaseRepository!!.checkLogin()){
+        if (!userRepository!!.checkLogin()){
             Log.d("isLogin?","gogo")
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)

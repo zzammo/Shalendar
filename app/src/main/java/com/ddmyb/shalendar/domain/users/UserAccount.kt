@@ -13,4 +13,7 @@ class UserAccount {
 
     @JvmField
     var password: String? = null //패스워드
+
+    @JvmField
+    var groupId: MutableList<String> = mutableListOf() //속한 GroupdId 리스트
 }

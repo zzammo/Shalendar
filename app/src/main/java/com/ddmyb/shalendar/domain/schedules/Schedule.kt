@@ -53,7 +53,7 @@ data class Schedule (
         if (scheduleDto.srcLat > 0.0){
             this.srcPosition = LatLng(scheduleDto.srcLat, scheduleDto.srcLon)
         }
-        if (scheduleDto.dstLat > 0.0){
+        if (scheduleDto.dstLat > 0.0) {
             this.dstPosition = LatLng(scheduleDto.dstLat, scheduleDto.dstLon)
         }
         this.srcAddress = scheduleDto.srcAddress

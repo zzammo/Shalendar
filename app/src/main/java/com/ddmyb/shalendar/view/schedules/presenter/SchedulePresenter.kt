@@ -12,9 +12,10 @@ import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import com.ddmyb.shalendar.background_service.alarm.AlarmService
 import com.ddmyb.shalendar.domain.Alarms.Alarm
-import com.ddmyb.shalendar.domain.FirebaseRepository
+import com.ddmyb.shalendar.domain.users.UserRepository
 import com.ddmyb.shalendar.domain.schedules.Schedule
 import com.ddmyb.shalendar.domain.schedules.repository.ScheduleDto
+import com.ddmyb.shalendar.domain.schedules.repository.ScheduleRepository
 import com.ddmyb.shalendar.view.schedules.ScheduleActivity
 import com.ddmyb.shalendar.view.schedules.model.service.GeoCodingService
 import com.ddmyb.shalendar.view.schedules.model.service.NetworkStatusService
@@ -47,7 +48,8 @@ class SchedulePresenter {
     private val view: ScheduleActivity
 
     private val schedule: Schedule
-    private val firebaseRepository = FirebaseRepository.getInstance()
+    private val userRepository = UserRepository.getInstance()
+    private val scheduleRepository = ScheduleRepository.getInstance()
 
     private val alarmInfo: AlarmInfo = AlarmInfo()
     private var iterationType: IterationType = IterationType.NO_REPEAT
@@ -60,7 +62,7 @@ class SchedulePresenter {
         this.schedule = if (newScheduleDto.scheduleId == ""){
             val s = Schedule()
             s.scheduleId = UUID.randomUUID().toString()
-            s.userId = firebaseRepository!!.getUserId()
+            s.userId = userRepository!!.getUserId()
             s.startLocalDatetime = Instant.ofEpochMilli(newScheduleDto.mills).atZone(ZoneId.systemDefault()).toLocalDateTime()
             s.endLocalDatetime = s.startLocalDatetime.plusHours(1)
             view.showStartTimeText(TimeInfo( s.startLocalDatetime.hour, s.startLocalDatetime.minute))
@@ -235,9 +237,9 @@ class SchedulePresenter {
         if (NetworkStatusService.isOnline(context)) {
             if (s.groupId == "") {
                 Log.d("createUserSchedule", "call")
-                firebaseRepository!!.createUserSchedule(scheduleDto)
+                scheduleRepository!!.createUserSchedule(scheduleDto)
             } else {
-                firebaseRepository!!.createGroupSchedule(scheduleDto, scheduleDto.groupId)
+                scheduleRepository!!.createGroupSchedule(scheduleDto, scheduleDto.groupId)
             }
         }
     }
