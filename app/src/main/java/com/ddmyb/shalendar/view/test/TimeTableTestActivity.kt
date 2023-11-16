@@ -1,12 +1,11 @@
 package com.ddmyb.shalendar.view.test
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.commit
 import com.ddmyb.shalendar.R
 import com.ddmyb.shalendar.databinding.ActivityTimeTableTestBinding
-import com.ddmyb.shalendar.util.MutableLiveListData
 import com.ddmyb.shalendar.view.month.TimeTableFragment
 import com.ddmyb.shalendar.view.month.data.ScheduleData
 import com.ddmyb.shalendar.view.month.data.TimeTableScheduleList

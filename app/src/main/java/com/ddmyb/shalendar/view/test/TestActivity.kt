@@ -58,5 +58,10 @@ class TestActivity : AppCompatActivity() {
             val intent = Intent(this, MonthLibraryActivity::class.java)
             startActivity(intent)
         }
+
+        binding.calendarProviderTest.setOnClickListener {
+            val intent = Intent(this, CalendarProviderTestActivity::class.java)
+            startActivity(intent)
+        }
     }
 }

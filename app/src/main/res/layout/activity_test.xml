@@ -73,5 +73,11 @@
             android:layout_height="wrap_content"
             android:text="month library"/>
 
+        <Button
+            android:id="@+id/calendar_provider_test"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="calendar_provider_test"/>
+
     </LinearLayout>
 </layout>
