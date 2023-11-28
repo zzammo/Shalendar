@@ -4,13 +4,22 @@ import android.annotation.SuppressLint
 import android.app.KeyguardManager
 import android.app.NotificationManager
 import android.content.Context
+import android.media.MediaPlayer
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
+import android.os.VibrationEffect
+import android.os.Vibrator
 import android.util.Log
 import android.view.WindowManager
 import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
+import com.ddmyb.shalendar.R
 import com.ddmyb.shalendar.databinding.ActivityFullScreenAlarmBinding
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 
 /**f
@@ -20,6 +29,8 @@ import com.ddmyb.shalendar.databinding.ActivityFullScreenAlarmBinding
 class FullScreenAlarmActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityFullScreenAlarmBinding
+    private lateinit var vibrator: Vibrator
+    private lateinit var mediaPlayer: MediaPlayer
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,6 +38,21 @@ class FullScreenAlarmActivity : AppCompatActivity() {
 
         binding = ActivityFullScreenAlarmBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+            getSystemService(Vibrator::class.java)
+        }else{
+            getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+            vibrator.vibrate(VibrationEffect.createWaveform(longArrayOf(1000, 3000), 0))
+        }else{
+            vibrator.vibrate(longArrayOf(1000, 3000), 0)
+        }
+
+        mpCoroutine.start()
+
         turnScreenOnAndKeyguardOff()
 
         binding.btnAlarmCancel.setOnClickListener {
@@ -72,5 +98,28 @@ class FullScreenAlarmActivity : AppCompatActivity() {
          */
         private const val AUTO_HIDE_DELAY_MILLIS = 3000
 
+    }
+
+    private val mpCoroutine = CoroutineScope(Dispatchers.IO).launch(start = CoroutineStart.LAZY) {
+        mediaPlayer = MediaPlayer.create(this@FullScreenAlarmActivity, R.raw.demo)
+        mediaPlayer.start()
+        while (true) {
+            if (mediaPlayer.isPlaying) { }
+            else {
+                mediaPlayer = MediaPlayer.create(this@FullScreenAlarmActivity, R.raw.demo)
+                mediaPlayer.start()
+            }
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+
+        vibrator.cancel()
+
+        mpCoroutine.cancel()
+        if(mediaPlayer.isPlaying)
+            mediaPlayer.stop()
+        mediaPlayer.release()
     }
 }
