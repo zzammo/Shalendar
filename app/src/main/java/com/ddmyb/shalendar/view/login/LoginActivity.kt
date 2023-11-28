@@ -6,7 +6,11 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 
 import com.ddmyb.shalendar.databinding.ActivityLoginBinding
+import com.ddmyb.shalendar.domain.groups.repository.GroupRepository
 import com.ddmyb.shalendar.domain.users.UserRepository
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 
 class LoginActivity : AppCompatActivity() {
@@ -25,7 +29,9 @@ class LoginActivity : AppCompatActivity() {
                 binding.etEmail.text.toString(),
                 binding.etPwd.text.toString(),
                 applicationContext
-            )
+            ){
+                this.finish()
+            }
         }
 
         binding.btnRegister.setOnClickListener { //회원가입 화면으로 이동
