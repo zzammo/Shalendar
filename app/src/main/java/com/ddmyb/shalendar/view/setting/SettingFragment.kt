@@ -80,13 +80,13 @@ class SettingFragment : Fragment(R.layout.fragment_setting) {
         super.onPause()
         Log.d("oz","SettingFragment OnPause")
         CoroutineScope(Dispatchers.IO).launch{
-            setting = db.getAll()[0]
             db.update(setting)
         }
     }
     override fun onResume() {
         super.onResume()
         Log.d("oz","SettingFragment OnResume")
+        setting = db.getAll()[0]
         getSetting()
     }
 
