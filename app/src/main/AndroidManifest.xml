@@ -45,6 +45,7 @@
         <activity
             android:name=".view.alarm_manager.FullScreenAlarmActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
+            android:showOnLockScreen="true"
             android:exported="false"
             android:label="@string/title_activity_fullscreen_alarm"
             android:theme="@style/Theme.Shalendar.Fullscreen" />

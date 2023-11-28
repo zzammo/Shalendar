@@ -11,8 +11,7 @@ properties.load(project.rootProject.file('local.properties').newDataInputStream(
 
 android {
     namespace 'com.ddmyb.shalendar'
-    compileSdk 33
-    compileSdkVersion 34
+    compileSdk 34
 
     defaultConfig {
         applicationId "com.ddmyb.shalendar"
@@ -138,4 +137,8 @@ dependencies {
 
     // calendar
     implementation 'com.kizitonwose.calendar:view:2.4.0'
+
+    // animation
+    def lottieVersion = "3.4.0"
+    implementation "com.airbnb.android:lottie:$lottieVersion"
 }
