@@ -15,6 +15,8 @@ import com.ddmyb.shalendar.databinding.FragmentMonthLibraryBinding
 import com.ddmyb.shalendar.domain.FBTest
 import com.ddmyb.shalendar.domain.schedules.repository.ScheduleDto
 import com.ddmyb.shalendar.domain.schedules.repository.ScheduleRepository
+import com.ddmyb.shalendar.domain.setting.Setting
+import com.ddmyb.shalendar.domain.setting.repository.SettingRepository
 import com.ddmyb.shalendar.util.Logger
 import com.ddmyb.shalendar.util.MutableLiveListData
 import com.ddmyb.shalendar.view.home.CalendarFragment
@@ -27,6 +29,9 @@ import com.kizitonwose.calendar.core.daysOfWeek
 import com.kizitonwose.calendar.view.MonthDayBinder
 import com.kizitonwose.calendar.view.MonthHeaderFooterBinder
 import com.kizitonwose.calendar.view.ViewContainer
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.YearMonth
@@ -47,9 +52,7 @@ class MonthLibraryFragment(
 
             }
         },
-    private val lunarIndicate: Boolean = true,
-    private val loadExternalCalendar: Boolean = false,
-    private val externalCalendarIdList: List<Int> = listOf(5)
+    private val lunarIndicate: Boolean = true
 ): Fragment(R.layout.fragment_month_library) {
 
     private lateinit var binding: FragmentMonthLibraryBinding
@@ -163,18 +166,24 @@ class MonthLibraryFragment(
             presenter.loadGroupSchedule(groupId, afterEnd = {
                 binding.calendarView.notifyCalendarChanged()
             })
-        if (loadExternalCalendar) {
-            for (id in externalCalendarIdList) {
+
+        val settings =
+            SettingRepository.getInstance(
+                this@MonthLibraryFragment.requireContext()
+            ).settingDao().getAll()
+
+        if (settings.isNotEmpty() && settings[0].calendars != ""){
+            for (id in settings[0].calendars.split('.')) {
                 presenter.loadExternalSchedule(
                     requireActivity().contentResolver,
-                    id,
+                    id.toInt(),
                     {
                         binding.calendarView.notifyCalendarChanged()
                     }
-                    )
+                )
             }
-
         }
+
     }
 
     inner class DayViewContainer(view: View) : ViewContainer(view) {

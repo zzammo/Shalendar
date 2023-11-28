@@ -49,11 +49,13 @@ class UserRepository {
         else return "NULL"
     }
 
-    fun login(strEmail: String, strPwd: String, context: Context) {
+
+    fun login(strEmail: String, strPwd: String, context: Context, successJob: () -> Unit) {
         firebaseAuth!!.signInWithEmailAndPassword(strEmail, strPwd)
             .addOnCompleteListener() { task ->
                 if (task.isSuccessful) {
                     Toast.makeText(context, "로그인 성공", Toast.LENGTH_SHORT).show()
+                    successJob()
                 } else {
                     Toast.makeText(context, "로그인 실패", Toast.LENGTH_SHORT).show()
                 }

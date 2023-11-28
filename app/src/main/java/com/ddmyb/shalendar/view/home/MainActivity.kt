@@ -4,6 +4,8 @@ package com.ddmyb.shalendar.view.home
 
 import android.app.Dialog
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -26,6 +28,7 @@ import com.ddmyb.shalendar.view.holiday.HolidayApi
 import com.ddmyb.shalendar.view.holiday.data.HolidayDTO
 import com.ddmyb.shalendar.view.test.TestActivity
 import com.ddmyb.shalendar.view.schedules.ScheduleActivity
+import com.ddmyb.shalendar.view.setting.SettingFragment
 import com.ddmyb.shalendar.view.weather.WeatherTest
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -96,15 +99,13 @@ class MainActivity : AppCompatActivity() {
                     true
                 }
 
-//                R.id.item_fragment5 -> {
-//                    supportFragmentManager.beginTransaction()
-//                        .replace(R.id.main_frame, ProflieFragment()).commit()
-//                    binding.tvFragmentTitle.text = "내 정보"
-//                    binding.ivGroupAdd.visibility = View.GONE
-//                    binding.llCalendarOption.visibility = View.GONE
-//
-//                    true
-//                }
+                R.id.item_fragment5 -> {
+                    supportFragmentManager.beginTransaction()
+                        .replace(R.id.main_frame, SettingFragment()).commit()
+                    binding.tvFragmentTitle.text = "내 정보"
+                    binding.ivGroupAdd.visibility = View.GONE
+                    true
+                }
 
                 else -> false
             }
@@ -114,6 +115,7 @@ class MainActivity : AppCompatActivity() {
             val dialog = Dialog(this)
             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
             dialog.setContentView(R.layout.dialog_invite_or_participate)
+            dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
             val inviteBtn : TextView = dialog.findViewById<TextView>(R.id.invite_teammate)
             val participateBtn : TextView = dialog.findViewById<TextView>(R.id.participate_group)
             inviteBtn.setOnClickListener {

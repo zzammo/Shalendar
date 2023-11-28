@@ -91,19 +91,19 @@ class CalendarFragment(private val groupId: String? = null): Fragment() {
             }
         }
 
-//        requestPermissionLauncher =
-//            registerForActivityResult(ActivityResultContracts.RequestPermission()) { result ->
-//                if (result == true) {
-//                    Log.d("CalendarProviderTestActivity", "permission true")
-//                } else {
-//                    Toast.makeText(
-//                        requireContext(),
-//                        "Please allow this app to access your calendar",
-//                        Toast.LENGTH_SHORT
-//                    ).show()
-//                }
-//            }
-//        requestPermissionLauncher.launch(Manifest.permission.READ_CALENDAR)
+        requestPermissionLauncher =
+            registerForActivityResult(ActivityResultContracts.RequestPermission()) { result ->
+                if (result == true) {
+                    Log.d("CalendarProviderTestActivity", "permission true")
+                } else {
+                    Toast.makeText(
+                        requireContext(),
+                        "Please allow this app to access your calendar",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+        requestPermissionLauncher.launch(Manifest.permission.READ_CALENDAR)
 
         return binding.root
     }

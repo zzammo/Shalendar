@@ -5,6 +5,7 @@ import com.ddmyb.shalendar.R
 import com.ddmyb.shalendar.domain.DBRepository
 import com.ddmyb.shalendar.domain.schedules.repository.ScheduleDto
 import com.ddmyb.shalendar.domain.schedules.repository.ScheduleRepository
+import com.ddmyb.shalendar.domain.users.UserRepository
 import com.ddmyb.shalendar.util.CalendarProvide
 import com.ddmyb.shalendar.util.CalendarProvider
 import com.ddmyb.shalendar.util.HttpResult
@@ -231,7 +232,7 @@ class MonthLibraryPresenter(
     fun holidayListToScheduleList(holidayList: List<HolidayDTO.HolidayItem>): List<ScheduleDto> {
         val sList = mutableListOf<ScheduleDto>()
         for (holiday in holidayList) {
-            sList.add(ScheduleDto(title = holiday.dateName, color = R.color.cat_1))
+            sList.add(ScheduleDto(userId = UserRepository.getInstance()!!.getUserId(), title = holiday.dateName, color = R.color.cat_1))
         }
         return sList
     }
