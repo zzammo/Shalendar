@@ -20,10 +20,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:breakStrategy="high_quality"
+            android:maxLines="2"
+            android:ellipsize="end"
             android:text="@{schedule.title}"
             android:textSize="11sp"
             android:textColor="@color/white"
-            android:gravity="center"
+            android:gravity="start"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="test"
             tools:background="#4285F4"/>

@@ -39,7 +39,15 @@ object CalendarProvider {
     private const val EVENTS_DESCRIPTION_INDEX: Int = 5
     private const val EVENTS_COLOR_INDEX: Int = 6
 
-    fun getCalendars(contentResolver: ContentResolver, afterEach: (CalendarProvide) -> Unit) {
+    fun getCalendars(contentResolver: ContentResolver, idList: List<Int>, afterEach: (CalendarProvide) -> Unit) {
+        CoroutineScope(Dispatchers.IO).launch {
+            for (id in idList) {
+                getEvents(contentResolver, id, afterEach)
+            }
+        }
+    }
+
+    fun getCalendarList(contentResolver: ContentResolver, after: (Map<Int, String>) -> Unit) {
         val uri = CalendarContract.Calendars.CONTENT_URI
         val selection = ""
         val selectionArgs = emptyArray<String>()
@@ -50,29 +58,37 @@ object CalendarProvider {
             null,
         )
 
-        val idMap = mutableMapOf<Int, String>()
-
         Log.d("CalendarProviderTestActivity", "$cur")
-        while (cur?.moveToNext() == true) {
-            val id = cur.getInt(CALENDAR_ID_INDEX)
-            val name = cur.getString(CALENDAR_NAME_INDEX)
-            val displayName = cur.getString(CALENDAR_DISPLAY_NAME_INDEX)
+        CoroutineScope(Dispatchers.IO).launch {
+            val idMap = mutableMapOf<Int, String>()
 
-            Log.d("CalendarProviderTestActivity", "$id, $name, $displayName")
+            while (cur?.moveToNext() == true) {
+                val id = cur.getInt(CALENDAR_ID_INDEX)
+                val name = cur.getString(CALENDAR_NAME_INDEX)
+                val displayName = cur.getString(CALENDAR_DISPLAY_NAME_INDEX)
 
-            if (name == "Samsung Calendar" || name.matches(Regex("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\$"))) {
-                idMap[id] = displayName
+                Log.d("CalendarProviderTestActivity", "$id, $name, $displayName")
+
+                if (name == "Samsung Calendar") {
+                    idMap[id] = displayName
+                }
+                else if(name.matches(Regex("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\$"))) {
+                    idMap[id] = "Google Calendar($displayName)"
+                }
+
             }
+            cur?.close()
 
+            after(idMap)
         }
-        cur?.close()
-
-
-        getEvents(contentResolver, idMap, afterEach)
 
     }
 
-    private fun getEvents(contentResolver: ContentResolver, idMap: MutableMap<Int, String>, afterEach: (CalendarProvide) -> Unit) {
+    suspend fun getEvents(
+        contentResolver: ContentResolver,
+        targetId: Int,
+        afterEach: (CalendarProvide) -> Unit = {},
+        afterEnd: () -> Unit = {}) {
         val uri = CalendarContract.Events.CONTENT_URI
         val selection = ""
         val selectionArgs = emptyArray<String>()
@@ -84,29 +100,32 @@ object CalendarProvider {
         )
 
         Log.d("CalendarProviderTestActivity", "$cur")
-        CoroutineScope(Dispatchers.IO).launch {
-            while (cur?.moveToNext() == true) {
-                val id = cur.getInt(EVENTS_ID_INDEX)
-                val title = cur.getString(EVENTS_TITLE_INDEX)
-                val location = cur.getString(EVENTS_LOCATION_INDEX)
-                val start = cur.getLong(EVENTS_START_INDEX)
-                val end = cur.getLong(EVENTS_END_INDEX)
-                val description = cur.getString(EVENTS_DESCRIPTION_INDEX)
-                val color = cur.getInt(EVENTS_COLOR_INDEX)
+        while (cur?.moveToNext() == true) {
+            val id = cur.getInt(EVENTS_ID_INDEX)
+            val title = cur.getString(EVENTS_TITLE_INDEX)
+            val location = cur.getString(EVENTS_LOCATION_INDEX)
+            val start = cur.getLong(EVENTS_START_INDEX)
+            val end = cur.getLong(EVENTS_END_INDEX)
+            val description = cur.getString(EVENTS_DESCRIPTION_INDEX)
+            val color = cur.getInt(EVENTS_COLOR_INDEX)
 
-                val data = CalendarProvide(idMap[id]?: id.toString(), title, location, start, end, description, color)
+            val data = CalendarProvide(id.toString(), title, location, start, end, description, color)
 
-                Log.d("CalendarProviderTestActivity", "$data")
+            Log.d("CalendarProviderTestActivity", "$data")
 
-                if (idMap.contains(id)) {
-                    withContext(Dispatchers.Main) {
-                        afterEach(data)
-                    }
+            if (id == targetId) {
+                withContext(Dispatchers.Main) {
+                    afterEach(data)
                 }
-
             }
-            cur?.close()
+
         }
+
+        withContext(Dispatchers.Main) {
+            afterEnd()
+        }
+
+        cur?.close()
 
     }
 

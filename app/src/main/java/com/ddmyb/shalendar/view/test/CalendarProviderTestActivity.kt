@@ -39,9 +39,11 @@ class CalendarProviderTestActivity : AppCompatActivity() {
             registerForActivityResult(ActivityResultContracts.RequestPermission()) { result ->
                 if (result == true) {
                     Log.d("CalendarProviderTestActivity", "permission true")
-                    CalendarProvider.getCalendars(contentResolver) {
-                        calendarList.add(it)
-                        adapter.notifyItemInserted(calendarList.size-1)
+                    CalendarProvider.getCalendarList(contentResolver) { map ->
+                        CalendarProvider.getCalendars(contentResolver, map.keys.toList()) {
+                            calendarList.add(it)
+                            adapter.notifyItemInserted(calendarList.size-1)
+                        }
                     }
                 } else {
                     Toast.makeText(
