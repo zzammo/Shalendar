@@ -2,18 +2,29 @@ package com.ddmyb.shalendar.view.home
 
 //import com.ddmyb.shalendar.view.dialog.TestDialog
 
+import android.app.AlarmManager
 import android.app.Dialog
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
+import android.os.Build.VERSION
+import android.os.Build.VERSION_CODES
 import android.os.Bundle
+import android.os.PowerManager
+import android.provider.Settings
 import android.util.Log
 import android.view.View
 import android.view.Window
 import android.widget.TextView
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import androidx.core.content.getSystemService
 import androidx.databinding.DataBindingUtil
 import com.ddmyb.shalendar.view.login.LoginActivity
 import com.ddmyb.shalendar.R
@@ -29,6 +40,7 @@ import com.ddmyb.shalendar.view.holiday.data.HolidayDTO
 import com.ddmyb.shalendar.view.test.TestActivity
 import com.ddmyb.shalendar.view.schedules.ScheduleActivity
 import com.ddmyb.shalendar.view.setting.SettingFragment
+import com.ddmyb.shalendar.view.schedules.utils.Permission
 import com.ddmyb.shalendar.view.weather.WeatherTest
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -36,6 +48,14 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private val userRepository = UserRepository.getInstance()
+    private val permissions = arrayOf(
+        android.Manifest.permission.ACCESS_FINE_LOCATION,
+        android.Manifest.permission.ACCESS_COARSE_LOCATION,
+        android.Manifest.permission.POST_NOTIFICATIONS,
+        android.Manifest.permission.READ_CALENDAR,
+        android.Manifest.permission.WRITE_CALENDAR
+    )
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this@MainActivity, R.layout.activity_main)
@@ -151,5 +171,46 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         )
+        requestInitialPermissions()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        //requestInitialPermissions()
+    }
+
+    fun requestInitialPermissions() {
+        drawOverOtherApps()
+        scheduleExactAlarm()
+        ignoreBatteryOptimization()
+        requestPermissions(permissions, Permission.PERMISSIONS_REQUEST_CODE)
+    }
+
+    fun drawOverOtherApps() {
+        if (!Settings.canDrawOverlays(this)) {
+            Log.d("WeGlonD", "Permission REQ: SYSTEM_ALERT_WINDOW")
+            val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + packageName))
+            startActivity(intent)
+        }
+    }
+
+    fun scheduleExactAlarm() {
+        val alarmManager = getSystemService<AlarmManager>()!!
+        if(VERSION.SDK_INT >= VERSION_CODES.S) {
+            if (!alarmManager.canScheduleExactAlarms()) {
+                Log.d("WeGlonD", "Permission REQ: SCHEDULE_EXACT_ALARM")
+                val intent = Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM, Uri.parse("package:" + packageName))
+                startActivity(intent)
+            }
+        }
+    }
+
+    fun ignoreBatteryOptimization() {
+        val pm = getSystemService(POWER_SERVICE) as PowerManager
+        if(!pm.isIgnoringBatteryOptimizations(packageName)) {
+            Log.d("WeGlonD", "Permission REQ: REQUEST_IGNORE_BATTERY_OPTIMIZATIONS")
+            val intent = Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS, Uri.parse("package:" + packageName))
+            startActivity(intent)
+        }
     }
 }

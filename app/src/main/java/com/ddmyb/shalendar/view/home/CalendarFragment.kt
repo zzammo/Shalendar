@@ -116,7 +116,11 @@ class CalendarFragment(private val groupId: String? = null): Fragment() {
         binding.slidingMainFrame.panelState = SlidingUpPanelLayout.PanelState.ANCHORED
         binding.btnAdd.setOnClickListener {
             val intent = Intent(requireContext(), ScheduleActivity::class.java)
-            intent.putExtra("NewSchedule", NewScheduleDto("", cal.timeInMillis))
+            val gID: String = when(groupId) {
+                null -> ""
+                else -> groupId
+            }
+            intent.putExtra("NewSchedule", NewScheduleDto("", cal.timeInMillis, gID))
             startActivity(intent)
             binding.slidingMainFrame.panelState = SlidingUpPanelLayout.PanelState.COLLAPSED
         }

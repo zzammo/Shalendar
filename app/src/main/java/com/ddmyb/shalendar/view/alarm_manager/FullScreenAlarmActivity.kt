@@ -19,6 +19,7 @@ import com.ddmyb.shalendar.databinding.ActivityFullScreenAlarmBinding
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
 
@@ -45,10 +46,10 @@ class FullScreenAlarmActivity : AppCompatActivity() {
             getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
-            vibrator.vibrate(VibrationEffect.createWaveform(longArrayOf(1000, 3000), 0))
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){ // minSdk=27, VERSION_CODES.M=23. 늘 if문 충족
+            vibrator.vibrate(VibrationEffect.createWaveform(longArrayOf(2000, 1000), intArrayOf(255, 0), 0))
         }else{
-            vibrator.vibrate(longArrayOf(1000, 3000), 0)
+            vibrator.vibrate(longArrayOf(1000, 2000), 0)
         }
 
         mpCoroutine.start()
@@ -58,6 +59,9 @@ class FullScreenAlarmActivity : AppCompatActivity() {
         binding.btnAlarmCancel.setOnClickListener {
             val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             manager.cancelAll()
+            mpCoroutine.cancel()
+            if(mediaPlayer.isPlaying)
+                mediaPlayer.stop()
             finish()
         }
     }
@@ -103,7 +107,7 @@ class FullScreenAlarmActivity : AppCompatActivity() {
     private val mpCoroutine = CoroutineScope(Dispatchers.IO).launch(start = CoroutineStart.LAZY) {
         mediaPlayer = MediaPlayer.create(this@FullScreenAlarmActivity, R.raw.demo)
         mediaPlayer.start()
-        while (true) {
+        while (isActive) {
             if (mediaPlayer.isPlaying) { }
             else {
                 mediaPlayer = MediaPlayer.create(this@FullScreenAlarmActivity, R.raw.demo)

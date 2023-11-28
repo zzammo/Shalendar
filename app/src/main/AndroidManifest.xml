@@ -21,6 +21,7 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
 
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
 
     <queries>
         <package android:name="com.kakao.talk" />
@@ -58,9 +59,9 @@
         <activity
             android:name=".view.alarm_manager.FullScreenAlarmActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
+            android:showOnLockScreen="true"
             android:exported="false"
             android:label="@string/title_activity_fullscreen_alarm"
-            android:showOnLockScreen="true"
             android:theme="@style/Theme.Shalendar.Fullscreen" />
 
         <receiver
