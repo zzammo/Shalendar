@@ -1,5 +1,6 @@
 package com.ddmyb.shalendar.view.home
 
+import android.Manifest
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -7,10 +8,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.widget.ViewPager2
 import com.ddmyb.shalendar.databinding.FragmentCalendarBinding
 import com.ddmyb.shalendar.domain.schedules.repository.ScheduleDto
+import com.ddmyb.shalendar.util.CalendarProvider
 import com.ddmyb.shalendar.util.NewScheduleDto
 import com.ddmyb.shalendar.view.month.MonthCalendarFragment
 import com.ddmyb.shalendar.view.month.MonthLibraryDayClickListener
@@ -47,6 +51,9 @@ class CalendarFragment(private val groupId: String? = null): Fragment() {
             monthLibraryDayClickListener),
         WeeklyCalendarFragment(selectedDateCalendar, groupId)
     )
+
+    private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -83,6 +90,20 @@ class CalendarFragment(private val groupId: String? = null): Fragment() {
                 Log.d("CalendarFragment", "$selectedDateCalendar")
             }
         }
+
+//        requestPermissionLauncher =
+//            registerForActivityResult(ActivityResultContracts.RequestPermission()) { result ->
+//                if (result == true) {
+//                    Log.d("CalendarProviderTestActivity", "permission true")
+//                } else {
+//                    Toast.makeText(
+//                        requireContext(),
+//                        "Please allow this app to access your calendar",
+//                        Toast.LENGTH_SHORT
+//                    ).show()
+//                }
+//            }
+//        requestPermissionLauncher.launch(Manifest.permission.READ_CALENDAR)
 
         return binding.root
     }
