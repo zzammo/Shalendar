@@ -6,8 +6,9 @@ import com.ddmyb.shalendar.domain.schedules.repository.ScheduleDto
 
 @Entity
 data class Setting(
-    var vibration: Boolean = false,
-    var alarm: Boolean = false,
+    var vibration: Boolean = true,
+    var alarm: Boolean = true,
+    var lunar: Boolean = true,
     var calendars: String = ""
 ){
     @PrimaryKey(autoGenerate = true) var id: Long = 0

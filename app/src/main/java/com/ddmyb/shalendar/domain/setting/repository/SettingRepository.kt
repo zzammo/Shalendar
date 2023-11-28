@@ -27,7 +27,7 @@ abstract class SettingRepository:RoomDatabase() {
                         context.applicationContext,
                         SettingRepository::class.java,
                         "setting-database1"
-                    ).build()
+                    ).allowMainThreadQueries().build()
                 }
             }
             return instance!!
