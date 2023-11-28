@@ -1,5 +1,8 @@
 package com.ddmyb.shalendar.view.calendar_list
 
+import android.app.ProgressDialog
+import android.content.Context
+import android.net.ConnectivityManager
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -40,16 +43,29 @@ class CalendarListFragment : Fragment() {
         }
         binding.calendarlistRv.layoutManager = LinearLayoutManager(activity)
 
+        val progressDialog = ProgressDialog(requireContext())
+        progressDialog.setMessage("로딩 중...")
+        progressDialog.setCancelable(false)
+        progressDialog.show()
+
+        val connectivityManager = requireContext().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val networkInfo = connectivityManager.activeNetworkInfo
+
+        if (networkInfo == null || !networkInfo.isConnected) {
+            progressDialog.dismiss()
+        }
+
         CoroutineScope(Dispatchers.Main).launch{
             val groupList = GroupRepository().readUsersGroup()
             for (i in groupList){
                 origin.add(Calendar(i.groupName, i.userId,i.memberCnt,i.latestUpdateMills,i.groupId))
             }
+            progressDialog.dismiss()
+
             binding.calendarlistRv.adapter = CalendarAdapter(origin){
                 requireActivity().findViewById<TextView>(R.id.tv_fragment_title).text = it
             }
         }
-
         val searchViewTextListener: SearchView.OnQueryTextListener =
             object : SearchView.OnQueryTextListener {
                 //검색버튼 입력시 호출, 검색버튼이 없으므로 사용하지 않음

@@ -79,7 +79,9 @@ object CalendarProvider {
             }
             cur?.close()
 
-            after(idMap)
+            withContext(Dispatchers.Main) {
+                after(idMap)
+            }
         }
 
     }
