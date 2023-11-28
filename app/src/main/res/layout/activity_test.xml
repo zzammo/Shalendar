@@ -79,5 +79,11 @@
             android:layout_height="wrap_content"
             android:text="calendar_provider_test"/>
 
+        <Button
+            android:id="@+id/setting_save_test"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="setting_save_test"/>
+
     </LinearLayout>
 </layout>
