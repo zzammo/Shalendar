@@ -65,6 +65,7 @@ class SchedulePresenter {
             s.userId = userRepository!!.getUserId()
             s.startLocalDatetime = Instant.ofEpochMilli(newScheduleDto.mills).atZone(ZoneId.systemDefault()).toLocalDateTime()
             s.endLocalDatetime = s.startLocalDatetime.plusHours(1)
+            s.groupId = newScheduleDto.groupId
             view.showStartTimeText(TimeInfo( s.startLocalDatetime.hour, s.startLocalDatetime.minute))
             view.showEndTimeText(TimeInfo(s.endLocalDatetime.hour, s.endLocalDatetime.minute))
             view.showStartDateText(s.startLocalDatetime.year, DateInfo(s.startLocalDatetime.monthValue, s.startLocalDatetime.dayOfMonth, s.startLocalDatetime.dayOfWeek.value), true)
