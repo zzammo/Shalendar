@@ -48,7 +48,7 @@ class MonthLibraryFragment(
             }
         },
     private val lunarIndicate: Boolean = true,
-    private val loadExternalCalendar: Boolean = true,
+    private val loadExternalCalendar: Boolean = false,
     private val externalCalendarIdList: List<Int> = listOf(5)
 ): Fragment(R.layout.fragment_month_library) {
 
