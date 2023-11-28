@@ -28,7 +28,7 @@ class CalendarFragment(private val groupId: String? = null): Fragment() {
     private val monthLibraryDayClickListener =
         object : MonthLibraryDayClickListener {
             override fun click(year: Int, month: Int, day: Int, scheduleList: MutableList<ScheduleDto>) {
-                Log.d("CalendarFragment", "clicked $year/$month/$day\"")
+                Log.d("CalendarFragment", "clicked $year/$month/$day")
                 selectedDateCalendar.set(year, month-1, day)
             }
 

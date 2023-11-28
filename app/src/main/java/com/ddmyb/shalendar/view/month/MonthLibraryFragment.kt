@@ -46,7 +46,10 @@ class MonthLibraryFragment(
             override fun doubleClick(year: Int, month: Int, day: Int, scheduleList: MutableList<ScheduleDto>) {
 
             }
-        }
+        },
+    private val lunarIndicate: Boolean = true,
+    private val loadExternalCalendar: Boolean = true,
+    private val externalCalendarIdList: List<Int> = listOf(5)
 ): Fragment(R.layout.fragment_month_library) {
 
     private lateinit var binding: FragmentMonthLibraryBinding
@@ -160,6 +163,18 @@ class MonthLibraryFragment(
             presenter.loadGroupSchedule(groupId, afterEnd = {
                 binding.calendarView.notifyCalendarChanged()
             })
+        if (loadExternalCalendar) {
+            for (id in externalCalendarIdList) {
+                presenter.loadExternalSchedule(
+                    requireActivity().contentResolver,
+                    id,
+                    {
+                        binding.calendarView.notifyCalendarChanged()
+                    }
+                    )
+            }
+
+        }
     }
 
     inner class DayViewContainer(view: View) : ViewContainer(view) {
@@ -182,6 +197,8 @@ class MonthLibraryFragment(
             val lunarDate = presenter.toLunar(data.date)
             val lunarText = "${lunarDate.monthValue}/${lunarDate.dayOfMonth}"
             lunarTextView.text = lunarText
+            if (!lunarIndicate)
+                lunarTextView.visibility = View.GONE
 
             setAdapter(year, month, day)
 
@@ -247,6 +264,15 @@ class MonthLibraryFragment(
 
             if (presenter.scheduleList[LocalDate.of(year, month, day)] != null) {
                 val scheduleList = presenter.scheduleList[LocalDate.of(year, month, day)]!!.list
+
+                for (schedule in scheduleList) {
+                    mutableList.add(schedule)
+                    scheduleListView.adapter!!.notifyItemInserted(mutableList.list.size)
+                }
+            }
+
+            if (presenter.externalScheduleList[LocalDate.of(year, month, day)] != null) {
+                val scheduleList = presenter.externalScheduleList[LocalDate.of(year, month, day)]!!.list
 
                 for (schedule in scheduleList) {
                     mutableList.add(schedule)
