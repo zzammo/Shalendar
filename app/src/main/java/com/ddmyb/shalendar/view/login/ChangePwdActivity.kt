@@ -11,6 +11,9 @@ import com.ddmyb.shalendar.domain.users.UserAccount
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
 class ChangePwdActivity : AppCompatActivity() {
@@ -28,15 +31,20 @@ class ChangePwdActivity : AppCompatActivity() {
         userRef = FirebaseDatabase.getInstance().getReference("UserAccount")
 
         binding.btnRegister.setOnClickListener(View.OnClickListener {
-
-            //userRef!!.child(fbAuth!!.currentUser!!.uid).child("nickName").get().await().getValue(String::class.java)!!
+            var curPwd: String = ""
+            CoroutineScope(Dispatchers.Main).launch {
+                curPwd = userRef!!.child(fbAuth!!.currentUser!!.uid).child("password").get().await().getValue(String::class.java)!!
+            }
+            //
             //회원가입 처리 시작
-            val curPwd = binding.etCurpwd.text.toString()
+            val currentPwd = binding.etCurpwd.text.toString()
             val newPwd = binding.etNewpwd.text.toString()
             val newPwdChk = binding.etNewpwdchk.text.toString()
-
-            if (newPwd != newPwdChk) {
-                Toast.makeText(this@ChangePwdActivity, "비밀번호가 일치하지 않습니다", Toast.LENGTH_SHORT).show()
+            if (curPwd != currentPwd) {
+                Toast.makeText(this@ChangePwdActivity, "현재 비밀번호가 일치하지 않습니다", Toast.LENGTH_SHORT).show()
+            }
+            else if (newPwd != newPwdChk) {
+                Toast.makeText(this@ChangePwdActivity, "새 비밀번호가 일치하지 않습니다", Toast.LENGTH_SHORT).show()
             } else {
                 Toast.makeText(this@ChangePwdActivity, "비밀번호 변경 중", Toast.LENGTH_SHORT).show()
                 //Firebase Auth 진행
