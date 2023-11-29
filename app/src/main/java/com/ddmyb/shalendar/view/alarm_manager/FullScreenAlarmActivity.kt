@@ -2,14 +2,25 @@ package com.ddmyb.shalendar.view.alarm_manager
 
 import android.annotation.SuppressLint
 import android.app.KeyguardManager
+import android.app.NotificationManager
 import android.content.Context
+import android.media.MediaPlayer
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
+import android.os.VibrationEffect
+import android.os.Vibrator
 import android.util.Log
 import android.view.WindowManager
 import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
+import com.ddmyb.shalendar.R
 import com.ddmyb.shalendar.databinding.ActivityFullScreenAlarmBinding
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 
 
 /**f
@@ -19,6 +30,8 @@ import com.ddmyb.shalendar.databinding.ActivityFullScreenAlarmBinding
 class FullScreenAlarmActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityFullScreenAlarmBinding
+    private lateinit var vibrator: Vibrator
+    private lateinit var mediaPlayer: MediaPlayer
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,55 +40,43 @@ class FullScreenAlarmActivity : AppCompatActivity() {
         binding = ActivityFullScreenAlarmBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+            getSystemService(Vibrator::class.java)
+        }else{
+            getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){ // minSdk=27, VERSION_CODES.M=23. 늘 if문 충족
+            vibrator.vibrate(VibrationEffect.createWaveform(longArrayOf(2000, 1000), intArrayOf(255, 0), 0))
+        }else{
+            vibrator.vibrate(longArrayOf(1000, 2000), 0)
+        }
+
+        mpCoroutine.start()
+
         turnScreenOnAndKeyguardOff()
 
-        binding.dummyButton.setOnClickListener {
+        binding.btnAlarmCancel.setOnClickListener {
+            val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            manager.cancelAll()
+            mpCoroutine.cancel()
+            if(mediaPlayer.isPlaying)
+                mediaPlayer.stop()
             finish()
         }
     }
 
     private fun turnScreenOnAndKeyguardOff(){
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
-//            setShowWhenLocked(true)
-//            setTurnScreenOn(true)
-//            window.addFlags(
-//                WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
-//                    or WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON)
-//        } else {
-//            window.addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED    // deprecated api 27
-//                    or WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD     // deprecated api 26
-//                    or WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
-//                    or WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON   // deprecated api 27
-//                    or WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON)
-//        }
-//        val keyguardMgr = getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-//            keyguardMgr.requestDismissKeyguard(this@FullScreenAlarmActivity, null)
-//        }
-        // 안드12 이상에서 잠금화면 위로 액티비티 띄우기 & 화면 켜기
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
-//            setShowWhenLocked(true)
-//            setTurnScreenOn(true)
-//            (getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager).apply {
-//                requestDismissKeyguard(this@FullScreenAlarmActivity, null)
-//            }
-//        } else {
-//            this.window.addFlags(
-//                WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD or
-//                        WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or
-//                        WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
-//            )
-//        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
             Log.d("didwoah","version high")
             setShowWhenLocked(true)
             setTurnScreenOn(true)
-            window.addFlags(
-                WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
-                    or WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON)
-            val keyguardManager = getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
-            keyguardManager.requestDismissKeyguard(this, null)
+            window.addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
+                    or WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
+                    or WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON
+                    or WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
+            )
         } else {
             Log.d("didwoah","version low")
             window.addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED    // deprecated api 27
@@ -84,6 +85,8 @@ class FullScreenAlarmActivity : AppCompatActivity() {
                     or WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON   // deprecated api 27
                     or WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON)
         }
+        val keyguardManager = getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
+        keyguardManager.requestDismissKeyguard(this, null)
     }
 
     companion object {
@@ -99,5 +102,28 @@ class FullScreenAlarmActivity : AppCompatActivity() {
          */
         private const val AUTO_HIDE_DELAY_MILLIS = 3000
 
+    }
+
+    private val mpCoroutine = CoroutineScope(Dispatchers.IO).launch(start = CoroutineStart.LAZY) {
+        mediaPlayer = MediaPlayer.create(this@FullScreenAlarmActivity, R.raw.demo)
+        mediaPlayer.start()
+        while (isActive) {
+            if (mediaPlayer.isPlaying) { }
+            else {
+                mediaPlayer = MediaPlayer.create(this@FullScreenAlarmActivity, R.raw.demo)
+                mediaPlayer.start()
+            }
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+
+        vibrator.cancel()
+
+        mpCoroutine.cancel()
+        if(mediaPlayer.isPlaying)
+            mediaPlayer.stop()
+        mediaPlayer.release()
     }
 }

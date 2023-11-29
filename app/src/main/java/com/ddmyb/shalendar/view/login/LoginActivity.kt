@@ -21,17 +21,14 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
         binding.btnLogin.setOnClickListener {
-            if (userRepository!!.login(
-                    binding.etEmail2.text.toString(),
-                    binding.etPwd2.text.toString(),
-                    applicationContext
-                )
-            ) {
-                finish();
-            }
+            userRepository!!.login(
+                binding.etEmail.text.toString(),
+                binding.etPwd.text.toString(),
+                applicationContext
+            )
         }
 
-        binding.btnRegister2.setOnClickListener { //회원가입 화면으로 이동
+        binding.btnRegister.setOnClickListener { //회원가입 화면으로 이동
             val intent = Intent(this@LoginActivity, SignUpActivity::class.java)
             startActivity(intent)
         }

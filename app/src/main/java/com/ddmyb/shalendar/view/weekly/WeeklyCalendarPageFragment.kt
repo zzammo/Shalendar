@@ -334,18 +334,17 @@ class WeeklyCalendarPageFragment(private val now: Long, private val groupId: Str
                 Log.d(TAG, "Group Schedule")
                 if (schedule.groupId != "") {
                     Log.d(TAG, "Group public schedule")
-                    drawable.setColor(ContextCompat.getColor(context, R.color.cat_1))
-                    schedule.color = R.color.cat_1
+                    drawable.setColor(ContextCompat.getColor(context, R.color.google_blue))
+                    schedule.color = R.color.google_blue
                 }
                 else if (schedule.userId != userRepository.getUserId()){
                     Log.d(TAG, "Group others schedule")
-                    drawable.setColor(ContextCompat.getColor(context,R.color.cat_3))
-                    schedule.color = R.color.cat_3
+                    drawable.setColor(ContextCompat.getColor(context,R.color.line_gray))
+                    schedule.color = R.color.line_gray
                 }
                 else{
                     Log.d(TAG, "Group my schedule")
-                    drawable.setColor(ContextCompat.getColor(context,R.color.cat_5))
-                    schedule.color = R.color.cat_5
+                    drawable.setColor(ContextCompat.getColor(context,schedule.color))
                 }
             }
             scheduleView.background = drawable
@@ -416,7 +415,11 @@ class WeeklyCalendarPageFragment(private val now: Long, private val groupId: Str
                 if (selected_hour == hours[dayOfWeek][hour]) {
                     // 인텐트, 액티비티 이동 ScheduleActivity
                     val intent = Intent(context, ScheduleActivity::class.java)
-                    intent.putExtra("NewSchedule", NewScheduleDto("", blankStartCal.timeInMillis))
+                    val gID: String = when(groupId) {
+                        null -> ""
+                        else -> groupId
+                    }
+                    intent.putExtra("NewSchedule", NewScheduleDto("", blankStartCal.timeInMillis, gID))
                     startActivity(intent)
                 }
                 else {

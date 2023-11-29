@@ -1,9 +1,13 @@
 package com.ddmyb.shalendar.view.month.presenter
 
+import android.content.ContentResolver
 import com.ddmyb.shalendar.R
 import com.ddmyb.shalendar.domain.DBRepository
 import com.ddmyb.shalendar.domain.schedules.repository.ScheduleDto
 import com.ddmyb.shalendar.domain.schedules.repository.ScheduleRepository
+import com.ddmyb.shalendar.domain.users.UserRepository
+import com.ddmyb.shalendar.util.CalendarProvide
+import com.ddmyb.shalendar.util.CalendarProvider
 import com.ddmyb.shalendar.util.HttpResult
 import com.ddmyb.shalendar.util.Logger
 import com.ddmyb.shalendar.util.MutableLiveListData
@@ -23,6 +27,7 @@ class MonthLibraryPresenter(
 ) {
 
     val scheduleList: MutableMap<LocalDate, MutableLiveListData<ScheduleDto>> = mutableMapOf()
+    val externalScheduleList: MutableMap<LocalDate, MutableLiveListData<ScheduleDto>> = mutableMapOf()
     val holidayList: MutableMap<LocalDate, MutableLiveListData<HolidayDTO.HolidayItem>> = mutableMapOf()
 
     private val logger = Logger("MonthLibraryPresenter", true)
@@ -171,10 +176,63 @@ class MonthLibraryPresenter(
         }
     }
 
+    fun loadExternalSchedule(
+        contentResolver: ContentResolver,
+        calendarId: Int,
+        afterEnd: () -> Unit,
+        ifFail: (Exception) -> Unit = {}
+    ) {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val cal = Calendar.getInstance()
+
+                externalScheduleList.clear()
+
+                CalendarProvider.getEvents(contentResolver, calendarId,
+                    {
+                        val schedule = it.toScheduleDto()
+                        val startM = schedule.startMills
+                        val endM = schedule.endMills
+
+                        cal.timeInMillis = startM
+                        val sYear = cal[Calendar.YEAR]
+                        val sMonth = cal[Calendar.MONTH]+1
+                        val sDay = cal[Calendar.DAY_OF_MONTH]
+
+                        cal.timeInMillis = endM
+                        val eYear = cal[Calendar.YEAR]
+                        val eMonth = cal[Calendar.MONTH]+1
+                        val eDay = cal[Calendar.DAY_OF_MONTH]
+
+                        addToExternalScheduleList(sYear, sMonth, sDay, schedule)
+                        if (!(sYear == eYear && sMonth == eMonth && sDay == eDay))
+                            addToExternalScheduleList(eYear, eMonth, eDay, schedule)
+                    },
+                    {
+                        afterEnd()
+                    }
+                )
+            } catch (e: Exception) {
+                logger.logE("message: ${e.message}")
+                for (stack in e.stackTrace) {
+                    logger.logE("className: ${stack.className}\n" +
+                            "fileName: ${stack.fileName}\n" +
+                            "lineNumber: ${stack.lineNumber}\n" +
+                            "isNativeMethod: ${stack.isNativeMethod}\n" +
+                            "methodName: ${stack.methodName}")
+                }
+                withContext(Dispatchers.Main) {
+                    ifFail(e)
+                }
+            }
+
+        }
+    }
+
     fun holidayListToScheduleList(holidayList: List<HolidayDTO.HolidayItem>): List<ScheduleDto> {
         val sList = mutableListOf<ScheduleDto>()
         for (holiday in holidayList) {
-            sList.add(ScheduleDto(title = holiday.dateName, color = R.color.cat_1))
+            sList.add(ScheduleDto(userId = UserRepository.getInstance()!!.getUserId(), title = holiday.dateName, color = R.color.cat_1))
         }
         return sList
     }
@@ -224,5 +282,12 @@ class MonthLibraryPresenter(
             scheduleList[LocalDate.of(year, month, day)] = MutableLiveListData()
 
         scheduleList[LocalDate.of(year, month, day)]!!.add(loadedList)
+    }
+
+    private fun addToExternalScheduleList(year: Int, month: Int, day: Int, loadedList: ScheduleDto) {
+        if (externalScheduleList[LocalDate.of(year, month, day)] == null)
+            externalScheduleList[LocalDate.of(year, month, day)] = MutableLiveListData()
+
+        externalScheduleList[LocalDate.of(year, month, day)]!!.add(loadedList)
     }
 }

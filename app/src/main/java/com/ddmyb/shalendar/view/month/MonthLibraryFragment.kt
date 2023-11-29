@@ -15,6 +15,8 @@ import com.ddmyb.shalendar.databinding.FragmentMonthLibraryBinding
 import com.ddmyb.shalendar.domain.FBTest
 import com.ddmyb.shalendar.domain.schedules.repository.ScheduleDto
 import com.ddmyb.shalendar.domain.schedules.repository.ScheduleRepository
+import com.ddmyb.shalendar.domain.setting.Setting
+import com.ddmyb.shalendar.domain.setting.repository.SettingRepository
 import com.ddmyb.shalendar.util.Logger
 import com.ddmyb.shalendar.util.MutableLiveListData
 import com.ddmyb.shalendar.view.home.CalendarFragment
@@ -27,6 +29,9 @@ import com.kizitonwose.calendar.core.daysOfWeek
 import com.kizitonwose.calendar.view.MonthDayBinder
 import com.kizitonwose.calendar.view.MonthHeaderFooterBinder
 import com.kizitonwose.calendar.view.ViewContainer
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.YearMonth
@@ -46,7 +51,8 @@ class MonthLibraryFragment(
             override fun doubleClick(year: Int, month: Int, day: Int, scheduleList: MutableList<ScheduleDto>) {
 
             }
-        }
+        },
+    private val lunarIndicate: Boolean = true
 ): Fragment(R.layout.fragment_month_library) {
 
     private lateinit var binding: FragmentMonthLibraryBinding
@@ -160,6 +166,24 @@ class MonthLibraryFragment(
             presenter.loadGroupSchedule(groupId, afterEnd = {
                 binding.calendarView.notifyCalendarChanged()
             })
+
+        val settings =
+            SettingRepository.getInstance(
+                this@MonthLibraryFragment.requireContext()
+            ).settingDao().getAll()
+
+        if (settings.isNotEmpty() && settings[0].calendars != ""){
+            for (id in settings[0].calendars.split('.')) {
+                presenter.loadExternalSchedule(
+                    requireActivity().contentResolver,
+                    id.toInt(),
+                    {
+                        binding.calendarView.notifyCalendarChanged()
+                    }
+                )
+            }
+        }
+
     }
 
     inner class DayViewContainer(view: View) : ViewContainer(view) {
@@ -182,6 +206,8 @@ class MonthLibraryFragment(
             val lunarDate = presenter.toLunar(data.date)
             val lunarText = "${lunarDate.monthValue}/${lunarDate.dayOfMonth}"
             lunarTextView.text = lunarText
+            if (!lunarIndicate)
+                lunarTextView.visibility = View.GONE
 
             setAdapter(year, month, day)
 
@@ -247,6 +273,15 @@ class MonthLibraryFragment(
 
             if (presenter.scheduleList[LocalDate.of(year, month, day)] != null) {
                 val scheduleList = presenter.scheduleList[LocalDate.of(year, month, day)]!!.list
+
+                for (schedule in scheduleList) {
+                    mutableList.add(schedule)
+                    scheduleListView.adapter!!.notifyItemInserted(mutableList.list.size)
+                }
+            }
+
+            if (presenter.externalScheduleList[LocalDate.of(year, month, day)] != null) {
+                val scheduleList = presenter.externalScheduleList[LocalDate.of(year, month, day)]!!.list
 
                 for (schedule in scheduleList) {
                     mutableList.add(schedule)
