@@ -120,7 +120,6 @@ class FullScreenAlarmActivity : AppCompatActivity() {
         super.onDestroy()
 
         vibrator.cancel()
-
         mpCoroutine.cancel()
         if(mediaPlayer.isPlaying)
             mediaPlayer.stop()
