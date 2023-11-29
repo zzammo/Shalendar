@@ -9,7 +9,7 @@ import com.ddmyb.shalendar.R
 import com.ddmyb.shalendar.databinding.FragmentSettingBinding
 import com.ddmyb.shalendar.domain.setting.Setting
 import com.ddmyb.shalendar.domain.setting.repository.SettingDao
-import com.ddmyb.shalendar.domain.setting.repository.SettingRepository
+import com.ddmyb.shalendar.domain.setting.repository.SettingRoom
 import com.ddmyb.shalendar.domain.users.UserRepository
 import com.ddmyb.shalendar.view.external_calendar.GetCalendarList
 import com.ddmyb.shalendar.view.login.LoginActivity
@@ -34,7 +34,7 @@ class SettingFragment : Fragment(R.layout.fragment_setting) {
         binding = FragmentSettingBinding.bind(view)
 
         setting = Setting()
-        db = SettingRepository.getInstance(requireContext()).settingDao()
+        db = SettingRoom.getInstance(requireContext()).settingDao()
         if(db.getAll().isEmpty()){
             setting = Setting()
             db.insert(setting)

@@ -1,22 +1,19 @@
 package com.ddmyb.shalendar.view.external_calendar
 
 import android.app.ProgressDialog
-import android.content.ContentResolver
 import android.os.Bundle
 import android.util.Log
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.ddmyb.shalendar.databinding.ActivityGetAnotherCalendarBinding
 import com.ddmyb.shalendar.domain.setting.Setting
 import com.ddmyb.shalendar.domain.setting.repository.SettingDao
-import com.ddmyb.shalendar.domain.setting.repository.SettingRepository
+import com.ddmyb.shalendar.domain.setting.repository.SettingRoom
 import com.ddmyb.shalendar.util.CalendarProvider
 import com.ddmyb.shalendar.view.external_calendar.adapter.GetCalendarListAdapter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class GetCalendarList : AppCompatActivity() {
     private lateinit var binding: ActivityGetAnotherCalendarBinding
@@ -31,7 +28,7 @@ class GetCalendarList : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityGetAnotherCalendarBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        db = SettingRepository.getInstance(this@GetCalendarList).settingDao()
+        db = SettingRoom.getInstance(this@GetCalendarList).settingDao()
         if(db.getAll().isEmpty()){
             setting = Setting()
             db.insert(setting)
