@@ -74,15 +74,8 @@ class NaviDrawerActivity :AppCompatActivity() {
         val currentUser = fbAuth!!.currentUser
 
         binding.btnAddSc.setOnClickListener {
-            val firebaseUser = fbAuth!!.currentUser
-            if(firebaseUser!=null) {
-                val mSc = ScheduleDto()
-                ScheduleRepository().createUserSchedule(mSc)
-                Toast.makeText(this@NaviDrawerActivity, "업로드 성공", Toast.LENGTH_SHORT).show()
-            }
-            else{
-                Toast.makeText(this@NaviDrawerActivity, "로그인 되어있지 않습니다", Toast.LENGTH_SHORT).show()
-            }
+            val imageUri: Uri
+            //userRepository!!.downloadImage(imageUri)
         }
 
 

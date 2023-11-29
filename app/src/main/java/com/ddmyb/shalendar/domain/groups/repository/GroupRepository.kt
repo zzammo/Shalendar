@@ -2,7 +2,11 @@ package com.ddmyb.shalendar.domain.groups.repository
 
 import com.ddmyb.shalendar.domain.groups.Group
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.Query
+import com.google.firebase.database.ValueEventListener
 import kotlinx.coroutines.tasks.await
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -54,6 +58,22 @@ class GroupRepository {
             groupList.add(curGroup)
         }
         return groupList
+    }
+
+    fun checkGroup(groupId: String, callback: (Boolean) -> Unit) {
+        val query: Query = groupRef.child(groupId)
+
+        query.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                // 데이터가 있으면 true, 없으면 false 전달
+                callback(dataSnapshot.exists())
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                // 쿼리 중 오류 발생
+                callback(false)
+            }
+        })
     }
     fun createGroup(gName: String): String {
         val uID = firebaseAuth.currentUser!!.uid

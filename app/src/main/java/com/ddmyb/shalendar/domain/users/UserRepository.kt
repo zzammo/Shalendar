@@ -112,19 +112,24 @@ class UserRepository {
     suspend fun readUserNickName(): String {
         return  userRef.child(firebaseAuth.currentUser!!.uid).child("nickName").get().await().getValue(String::class.java)!!
     }
-    fun downloadImage() {
+    fun downloadImage(imageUri: Uri?) {
         val storageRef = FirebaseStorage.getInstance().reference
         val user = firebaseAuth!!.currentUser
         val imagesRef = storageRef.child("pfImage/${user!!.email}.jpg")
 
         imagesRef.downloadUrl
             .addOnSuccessListener { uri ->
+                Log.d("maengdol","찐성공000")
                 // 다운로드 URL을 통해 이미지를 표시
             }
             .addOnFailureListener { exception ->
                 // 다운로드 실패 시
                 Log.e("FirebaseExample", "이미지 다운로드 실패", exception)
             }
+
+        imagesRef.getFile(imageUri!!).addOnSuccessListener {
+            Log.d("maengdol","찐성공123")
+        }
     }
 
 
