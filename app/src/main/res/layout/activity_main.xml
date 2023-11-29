@@ -23,7 +23,7 @@
                 android:layout_height="wrap_content"
                 android:padding="10sp"
                 android:layout_marginLeft="10sp"
-                android:text="캘린더"
+                android:text="개인 캘린더"
                 android:textSize="20sp"
                 android:textStyle="bold"
                 app:layout_constraintTop_toTopOf="parent"
@@ -50,7 +50,7 @@
             app:layout_constraintBottom_toTopOf="@+id/bottom_nav"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            android:visibility="visible"/>
+            android:visibility="gone"/>
 
         <Button
             android:id="@+id/schedules_button"
@@ -59,13 +59,14 @@
             android:text="schedule"
             app:layout_constraintBottom_toTopOf="@+id/bottom_nav"
             app:layout_constraintLeft_toLeftOf="parent"
-            android:visibility="visible"/>
+            android:visibility="gone"/>
 
         <Button
             android:id="@+id/am_weather_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="weatherTest"
+            android:visibility="gone"
             app:layout_constraintBottom_toTopOf="@+id/bottom_nav"
             app:layout_constraintEnd_toEndOf="parent" />
 

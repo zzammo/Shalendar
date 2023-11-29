@@ -88,6 +88,7 @@ class SchedulePresenter {
                     view.showEndDateText(s.endLocalDatetime.year, DateInfo(s.endLocalDatetime.monthValue, s.endLocalDatetime.dayOfMonth, s.endLocalDatetime.dayOfWeek.value), true)
                     view.setColor(s.color)
                     view.changeEditMode()
+                    view.writeTitleAndMemo(s.title, s.memo)
                 }
             }
         }

@@ -717,4 +717,10 @@ class ScheduleActivity(
     fun readMemo(): String{
         return binding.memo.text.toString()
     }
+    fun writeTitleAndMemo(
+        title: String,
+        memo: String){
+        binding.title.setText(title)
+        binding.memo.setText(memo)
+    }
 }
