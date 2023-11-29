@@ -56,7 +56,7 @@ class UserRepository {
         else return "NULL"
     }
 
-    fun login(strEmail: String, strPwd: String, context: Context, successJob: ()->Unit) {
+    fun login(strEmail: String, strPwd: String, context: Context, successJob:()->Unit) {
         firebaseAuth!!.signInWithEmailAndPassword(strEmail, strPwd)
             .addOnCompleteListener() { task ->
                 if (task.isSuccessful) {
