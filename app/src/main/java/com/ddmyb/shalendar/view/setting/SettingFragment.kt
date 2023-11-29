@@ -3,11 +3,8 @@ package com.ddmyb.shalendar.view.setting
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import android.widget.Toast
+import androidx.fragment.app.Fragment
 import com.ddmyb.shalendar.R
 import com.ddmyb.shalendar.databinding.FragmentSettingBinding
 import com.ddmyb.shalendar.domain.setting.Setting
@@ -16,7 +13,6 @@ import com.ddmyb.shalendar.domain.setting.repository.SettingRepository
 import com.ddmyb.shalendar.domain.users.UserRepository
 import com.ddmyb.shalendar.view.external_calendar.GetCalendarList
 import com.ddmyb.shalendar.view.login.LoginActivity
-import com.ddmyb.shalendar.view.login.SignUpActivity
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

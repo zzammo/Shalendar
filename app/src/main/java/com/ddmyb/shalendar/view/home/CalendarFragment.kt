@@ -1,21 +1,33 @@
 package com.ddmyb.shalendar.view.home
 
 import android.Manifest
+import android.app.Dialog
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.Window
+import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager2.widget.ViewPager2
+import com.ddmyb.shalendar.R
 import com.ddmyb.shalendar.databinding.FragmentCalendarBinding
 import com.ddmyb.shalendar.domain.schedules.repository.ScheduleDto
 import com.ddmyb.shalendar.util.CalendarProvider
 import com.ddmyb.shalendar.util.NewScheduleDto
+import com.ddmyb.shalendar.view.calendar_list.presenter.MyViewModel
+import com.ddmyb.shalendar.view.dialog.CustomNewCalendarDialog
+import com.ddmyb.shalendar.view.dialog.InviteDialog
+import com.ddmyb.shalendar.view.dialog.ParticipateTeamMateDialog
 import com.ddmyb.shalendar.view.lunar.LunarCalendar
 import com.ddmyb.shalendar.view.month.MonthCalendarFragment
 import com.ddmyb.shalendar.view.month.MonthLibraryDayClickListener
@@ -28,6 +40,7 @@ import java.util.Calendar
 
 class CalendarFragment(private val groupId: String? = null): Fragment() {
     private lateinit var binding: FragmentCalendarBinding
+    private lateinit var myViewModel: MyViewModel
     var selectedDateCalendar: Calendar = Calendar.getInstance()
     private var fragmentNum = 0
     private val monthLibraryDayClickListener =
@@ -54,14 +67,12 @@ class CalendarFragment(private val groupId: String? = null): Fragment() {
     )
 
     private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentCalendarBinding.inflate(inflater)
-
 
         var calendarFragmentPageAdapter = CalendarFragmentPageAdapter(fragments, requireActivity())
         binding.pager.apply {
@@ -70,6 +81,9 @@ class CalendarFragment(private val groupId: String? = null): Fragment() {
             isUserInputEnabled = false
             currentItem = 0
         }
+
+        myViewModel = ViewModelProvider(requireActivity())[MyViewModel::class.java]
+        myViewModel.groupId = groupId
 
         binding.swCalendarOption.setOnCheckedChangeListener { _, b ->
             if (b){
