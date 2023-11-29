@@ -75,6 +75,7 @@ class ScheduleActivity(
             ?: NewScheduleDto(scheduleId = "", mills = LocalDateTime.now().atZone(ZoneId.systemDefault()).toEpochSecond() * 1000)
 
         Log.d("startDateTimeDto", newScheduleDto.toString())
+        initColorListener()
         presenter = SchedulePresenter(this, newScheduleDto, this)
 
         binding.map.layoutParams.height = resources.displayMetrics.widthPixels - 100
@@ -92,7 +93,7 @@ class ScheduleActivity(
         initTimeRequiredListener()
         initSaveCancelListener()
         initTitleMemoListener(binding.root)
-        initColorListener()
+
 
         getResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
             if (it.resultCode == RESULT_OK){
@@ -147,8 +148,10 @@ class ScheduleActivity(
     }
 
     fun changeGroupMode(){
+        Log.d("WeGlonD", "changeGroupMode")
         binding.imColorCircleSchedule.backgroundTintList = ContextCompat.getColorStateList(applicationContext, R.color.google_blue)
         binding.imColorCircleSchedule.isClickable = false
+        binding.llColorCircleSchedule.isClickable = false
         binding.llDepartureAlarm.visibility = View.GONE
     }
 
