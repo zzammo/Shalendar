@@ -150,6 +150,33 @@ class CalendarFragment(private val groupId: String? = null): Fragment() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        Log.d("WeGlonD", "CalendarFragment onResume")
+        when(binding.slidingMainFrame.panelState) {
+            SlidingUpPanelLayout.PanelState.ANCHORED -> {
+                Log.d("WeGlonD", "SlidingUpPanel ANCHORED")
+                binding.slidingMainFrame.panelState = SlidingUpPanelLayout.PanelState.COLLAPSED
+            }
+            SlidingUpPanelLayout.PanelState.COLLAPSED -> {
+                Log.d("WeGlonD", "SlidingUpPanel COLLAPSED")
+                binding.slidingMainFrame.panelState = SlidingUpPanelLayout.PanelState.COLLAPSED
+            }
+            SlidingUpPanelLayout.PanelState.DRAGGING -> {
+                Log.d("WeGlonD", "SlidingUpPanel DRAGGING")
+                binding.slidingMainFrame.panelState = SlidingUpPanelLayout.PanelState.COLLAPSED
+            }
+            SlidingUpPanelLayout.PanelState.EXPANDED -> {
+                Log.d("WeGlonD", "SlidingUpPanel EXPANDED")
+                binding.slidingMainFrame.panelState = SlidingUpPanelLayout.PanelState.COLLAPSED
+            }
+            SlidingUpPanelLayout.PanelState.HIDDEN -> {
+                Log.d("WeGlonD", "SlidingUpPanel HIDDEN")
+                binding.slidingMainFrame.panelState = SlidingUpPanelLayout.PanelState.COLLAPSED
+            }
+        }
+    }
+
     private fun getDateString(cal: Calendar): String {
         val str = "${cal.get(Calendar.MONTH)+1}월 ${cal.get(Calendar.DATE)}일 "
         when (cal.get(Calendar.DAY_OF_WEEK)) {
