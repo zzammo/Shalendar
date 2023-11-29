@@ -24,7 +24,9 @@ class FirebaseTestActivity : AppCompatActivity() {
         binding.loginButton.setOnClickListener {
             val id = binding.idEditText.text.toString()
             val pw = binding.pwEditText.text.toString()
-            UserRepository().login(id, pw, applicationContext)
+            UserRepository().login(id, pw, applicationContext){
+                this@FirebaseTestActivity.finish()
+            }
             this.finish()
         }
 
