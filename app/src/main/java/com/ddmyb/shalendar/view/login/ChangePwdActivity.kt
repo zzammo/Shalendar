@@ -11,6 +11,7 @@ import com.ddmyb.shalendar.domain.users.UserAccount
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import kotlinx.coroutines.tasks.await
 
 class ChangePwdActivity : AppCompatActivity() {
     private var fbAuth: FirebaseAuth? = null //파이어베이스 인증 처리
@@ -27,6 +28,8 @@ class ChangePwdActivity : AppCompatActivity() {
         userRef = FirebaseDatabase.getInstance().getReference("UserAccount")
 
         binding.btnRegister.setOnClickListener(View.OnClickListener {
+
+            //userRef!!.child(fbAuth!!.currentUser!!.uid).child("nickName").get().await().getValue(String::class.java)!!
             //회원가입 처리 시작
             val curPwd = binding.etCurpwd.getText().toString()
             val newPwd = binding.etNewpwd.getText().toString()

@@ -36,11 +36,15 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import java.util.Calendar
+import com.bumptech.glide.Glide
+import com.google.firebase.auth.UserProfileChangeRequest
+import kotlinx.coroutines.tasks.await
 
 class NaviDrawerActivity :AppCompatActivity() {
 
@@ -74,8 +78,8 @@ class NaviDrawerActivity :AppCompatActivity() {
         val currentUser = fbAuth!!.currentUser
 
         binding.btnAddSc.setOnClickListener {
-            val imageUri: Uri
-            //userRepository!!.downloadImage(imageUri)
+            var imageuri: Uri? = null
+            userRepository!!.downloadImage(imageuri)
         }
 
 
