@@ -1,6 +1,7 @@
 package com.ddmyb.shalendar.view.weekly.adapter
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.drawable.GradientDrawable
 import android.util.Log
 import android.view.LayoutInflater
@@ -13,6 +14,9 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.ddmyb.shalendar.R
 import com.ddmyb.shalendar.domain.schedules.repository.ScheduleDto
+import com.ddmyb.shalendar.domain.users.UserRepository
+import com.ddmyb.shalendar.util.NewScheduleDto
+import com.ddmyb.shalendar.view.schedules.ScheduleActivity
 import java.util.Calendar
 
 class SlidingUpPanelAdapter(
@@ -73,6 +77,15 @@ class SlidingUpPanelAdapter(
         val drawable = ContextCompat.getDrawable(context, R.drawable.round_boundry) as GradientDrawable
         drawable.setColor(ContextCompat.getColor(context,schedule.color))
         holder.ll_schedule_color.background = drawable
+
+        holder.itemView.setOnClickListener {
+            if (schedule.userId == UserRepository.getInstance()!!.getUserId()) {
+                val intent = Intent(context, ScheduleActivity::class.java)
+                intent.putExtra("NewSchedule", NewScheduleDto(schedule.scheduleId, 0L, schedule.groupId))
+                context.startActivity(intent)
+            }
+
+        }
     }
 
     fun calcDateString(cal: Calendar) : String {
