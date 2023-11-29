@@ -45,7 +45,9 @@ class ScheduleRepository {
         val newChildRef = scheduleRef.push()
         val scheduleId = newChildRef.key.toString()
         //스케줄에 스케줄 생성, 얘네 밑에 필요 없다는데 확인해보기
-        curSc.scheduleId = scheduleId; curSc.userId = firebaseAuth.currentUser!!.uid; curSc.groupId = groupId
+        curSc.scheduleId = scheduleId
+        curSc.userId = firebaseAuth.currentUser!!.uid
+        curSc.groupId = groupId
         newChildRef.setValue(curSc)
 
         //그룹에 스케줄아이디 생성
@@ -62,6 +64,29 @@ class ScheduleRepository {
         for (curscheduleId in userRef.child(uID).child("scheduleId").get().await().children) {
             val scheduleId = curscheduleId.key
             scheduleIdList.add(scheduleId!!)
+        }
+        val scheduleList = mutableListOf<ScheduleDto>()
+        for (scheduleId in scheduleIdList) {
+            scheduleList.add(scheduleRef.child(scheduleId).get().await().getValue(ScheduleDto::class.java)!!)
+        }
+
+        return scheduleList
+    }
+
+    suspend fun readUserAllSchedule(): List<ScheduleDto> {
+        val uID = firebaseAuth.currentUser!!.uid
+
+        val scheduleIdList = mutableListOf<String>()
+        for (curscheduleId in userRef.child(uID).child("scheduleId").get().await().children) {
+            scheduleIdList.add(curscheduleId.key.toString())
+        }
+
+        val GroupIdList = mutableListOf<String>()
+        for (curgroupId in userRef.child(uID).child("groupId").get().await().children) {
+            val curGroupId = curgroupId.key.toString()
+            for (curscheduleId in groupRef.child(curGroupId).child("scheduleId").get().await().children) {
+                scheduleIdList.add(curscheduleId.key.toString())
+            }
         }
         val scheduleList = mutableListOf<ScheduleDto>()
         for (scheduleId in scheduleIdList) {
