@@ -16,6 +16,8 @@ import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
 import com.ddmyb.shalendar.R
 import com.ddmyb.shalendar.databinding.ActivityFullScreenAlarmBinding
+import com.ddmyb.shalendar.domain.setting.Setting
+import com.ddmyb.shalendar.domain.setting.repository.SettingRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
@@ -32,6 +34,8 @@ class FullScreenAlarmActivity : AppCompatActivity() {
     private lateinit var binding: ActivityFullScreenAlarmBinding
     private lateinit var vibrator: Vibrator
     private lateinit var mediaPlayer: MediaPlayer
+    private lateinit var settingRepository: SettingRepository
+    private lateinit var setting: Setting
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,28 +44,30 @@ class FullScreenAlarmActivity : AppCompatActivity() {
         binding = ActivityFullScreenAlarmBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
-            getSystemService(Vibrator::class.java)
-        }else{
-            getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
-        }
+        settingRepository = SettingRepository.getInstance(applicationContext)
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){ // minSdk=27, VERSION_CODES.M=23. 늘 if문 충족
-            vibrator.vibrate(VibrationEffect.createWaveform(longArrayOf(2000, 1000), intArrayOf(255, 0), 0))
-        }else{
-            vibrator.vibrate(longArrayOf(1000, 2000), 0)
-        }
+        setting = settingRepository.settingDao().getAll()[0]
 
-        mpCoroutine.start()
+        if (setting.vibration) {
+            vbCoroutine.start()
+        }else {
+            mpCoroutine.start()
+        }
 
         turnScreenOnAndKeyguardOff()
 
         binding.btnAlarmCancel.setOnClickListener {
             val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             manager.cancelAll()
-            mpCoroutine.cancel()
-            if(mediaPlayer.isPlaying)
-                mediaPlayer.stop()
+
+            if (setting.vibration){
+                vbCoroutine.cancel()
+                vibrator.cancel()
+            }else {
+                mpCoroutine.cancel()
+                if (mediaPlayer.isPlaying)
+                    mediaPlayer.stop()
+            }
             finish()
         }
     }
@@ -89,21 +95,6 @@ class FullScreenAlarmActivity : AppCompatActivity() {
         keyguardManager.requestDismissKeyguard(this, null)
     }
 
-    companion object {
-        /**
-         * Whether or not the system UI should be auto-hidden after
-         * [AUTO_HIDE_DELAY_MILLIS] milliseconds.
-         */
-        private const val AUTO_HIDE = true
-
-        /**
-         * If [AUTO_HIDE] is set, the number of milliseconds to wait after
-         * user interaction before hiding the system UI.
-         */
-        private const val AUTO_HIDE_DELAY_MILLIS = 3000
-
-    }
-
     private val mpCoroutine = CoroutineScope(Dispatchers.IO).launch(start = CoroutineStart.LAZY) {
         mediaPlayer = MediaPlayer.create(this@FullScreenAlarmActivity, R.raw.demo)
         mediaPlayer.start()
@@ -116,14 +107,30 @@ class FullScreenAlarmActivity : AppCompatActivity() {
         }
     }
 
+    private val vbCoroutine = CoroutineScope(Dispatchers.IO).launch(start = CoroutineStart.LAZY){
+        vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            getSystemService(Vibrator::class.java)
+        } else {
+            getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) { // minSdk=27, VERSION_CODES.M=23. 늘 if문 충족
+            vibrator.vibrate(VibrationEffect.createWaveform(longArrayOf(2000, 1000), intArrayOf(255, 0), 0))
+        } else {
+            vibrator.vibrate(longArrayOf(1000, 2000), 0)
+        }
+    }
+
     override fun onDestroy() {
         super.onDestroy()
 
-        vibrator.cancel()
-
-        mpCoroutine.cancel()
-        if(mediaPlayer.isPlaying)
-            mediaPlayer.stop()
-        mediaPlayer.release()
+        if (setting.vibration) {
+            vbCoroutine.cancel()
+            vibrator.cancel()
+        } else {
+            mpCoroutine.cancel()
+            if (mediaPlayer.isPlaying)
+                mediaPlayer.stop()
+            mediaPlayer.release()
+        }
     }
 }

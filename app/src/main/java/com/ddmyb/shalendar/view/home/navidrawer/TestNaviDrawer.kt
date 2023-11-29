@@ -56,25 +56,7 @@ class TestNaviDrawer : AppCompatActivity(), NavigationView.OnNavigationItemSelec
         mtvName = naviBinding.tvName
         mFirebaseAuth = FirebaseAuth.getInstance()
         val currentUser = mFirebaseAuth!!.currentUser
-
-        viewModel.loadAllCalendar{
-            naviBinding.ndTeamcalendarRv.apply{
-                adapter = OwnedCalendarAdapter(viewModel.getList())
-                layoutManager = LinearLayoutManager(
-                    this@TestNaviDrawer, LinearLayoutManager.VERTICAL, false)
-                adapter!!.also{that ->
-                    viewModel.ownedCalendarList.observeInsert {
-                        that.notifyItemInserted(it)
-                    }
-                    viewModel.ownedCalendarList.observeRemove {
-                        that.notifyItemRemoved(it)
-                    }
-                    viewModel.ownedCalendarList.observeChange {
-                        that.notifyItemChanged(it)
-                    }
-                }
-            }
-        }
+        
 
         naviBinding.btnLogin.setOnClickListener{
             //로그인하기
@@ -118,16 +100,16 @@ class TestNaviDrawer : AppCompatActivity(), NavigationView.OnNavigationItemSelec
             //binding.tvInfo.visibility = View.GONE
         }
     }
-    fun onClick(view: View) {
-        val expandView: View = naviBinding.ndTeamcalendarRv
-        if(expandView.visibility == View.VISIBLE) {
-            ToggleAnimation.toggleArrow(view, true)
-            ToggleAnimation.collapse(expandView)
-        } else {
-            ToggleAnimation.toggleArrow(view, false)
-            ToggleAnimation.expand(expandView)
-        }
-    }
+//    fun onClick(view: View) {
+//        val expandView: View = naviBinding.ndTeamcalendarRv
+//        if(expandView.visibility == View.VISIBLE) {
+//            ToggleAnimation.toggleArrow(view, true)
+//            ToggleAnimation.collapse(expandView)
+//        } else {
+//            ToggleAnimation.toggleArrow(view, false)
+//            ToggleAnimation.expand(expandView)
+//        }
+//    }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_open_drawer, menu)

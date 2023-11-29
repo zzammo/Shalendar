@@ -16,4 +16,8 @@ class UserAccount {
 
     @JvmField
     var groupId: MutableList<String> = mutableListOf() //속한 GroupdId 리스트
+
+    @JvmField
+    var pfImage: String? = null //프로필 이미지
+
 }

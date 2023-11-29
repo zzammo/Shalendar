@@ -10,7 +10,8 @@ data class GroupDto (
     var groupId: String = "", // 개인 일정일 경우 "", 그룹 일정일 경우 그룹 id
     var memberCnt: Int = 0,
     var latestUpdateMills: Long = 0L,
-    var userId: MutableList<String> = mutableListOf()
+    var userId: MutableList<String> = mutableListOf(),
+    var pfImage: String = ""
 ) {
     constructor(Group: Group) : this() {
         this.groupName = Group.groupName
@@ -18,5 +19,6 @@ data class GroupDto (
         this.memberCnt = Group.memberCnt
         this.userId = Group.userId
         this.latestUpdateMills = Group.latestUpdateTime.atZone(ZoneId.systemDefault()).toEpochSecond() * 1000
+        this.pfImage = Group.pfImage
     }
 }
