@@ -106,9 +106,6 @@
             android:name=".view.test.TestActivity"
             android:exported="false" />
         <activity
-            android:name=".view.maptest.MapActivity"
-            android:exported="false" />
-        <activity
             android:name=".util.KakaoInvite"
             android:exported="false"
             tools:ignore="Instantiatable">
