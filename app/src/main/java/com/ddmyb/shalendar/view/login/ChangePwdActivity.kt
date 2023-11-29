@@ -28,9 +28,10 @@ class ChangePwdActivity : AppCompatActivity() {
 
         binding.btnRegister.setOnClickListener(View.OnClickListener {
             //회원가입 처리 시작
-            val curPwd = binding.etCurpwd.getText().toString()
-            val newPwd = binding.etNewpwd.getText().toString()
-            val newPwdChk = binding.etNewpwdchk.getText().toString()
+            val curPwd = binding.etCurpwd.text.toString()
+            val newPwd = binding.etNewpwd.text.toString()
+            val newPwdChk = binding.etNewpwdchk.text.toString()
+
             if (newPwd != newPwdChk) {
                 Toast.makeText(this@ChangePwdActivity, "비밀번호가 일치하지 않습니다", Toast.LENGTH_SHORT).show()
             } else {

@@ -1,5 +1,6 @@
 package com.ddmyb.shalendar.view.setting
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -12,6 +13,7 @@ import com.ddmyb.shalendar.domain.setting.repository.SettingDao
 import com.ddmyb.shalendar.domain.setting.repository.SettingRoom
 import com.ddmyb.shalendar.domain.users.UserRepository
 import com.ddmyb.shalendar.view.external_calendar.GetCalendarList
+import com.ddmyb.shalendar.view.login.ChangePwdActivity
 import com.ddmyb.shalendar.view.login.LoginActivity
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.CoroutineScope
@@ -19,7 +21,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class SettingFragment : Fragment(R.layout.fragment_setting) {
-
     private lateinit var binding: FragmentSettingBinding
     private val userRepository = UserRepository.getInstance()
     private val auth = FirebaseAuth.getInstance()
@@ -29,6 +30,7 @@ class SettingFragment : Fragment(R.layout.fragment_setting) {
         super.onCreate(savedInstanceState)
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentSettingBinding.bind(view)
@@ -44,11 +46,18 @@ class SettingFragment : Fragment(R.layout.fragment_setting) {
             setting = db.getAll()[0]
             Log.d("oz","getting setting.Calendars ${setting.calendars}")
         }
-
-        binding.profileNameTextView.text = auth.currentUser!!.displayName
+        CoroutineScope(Dispatchers.Main).launch {
+            val name = userRepository?.readUserNickName()
+            binding.profileNameTextView.text = "Name: ${name}"
+        }
         binding.profileEmailTextView.text = auth.currentUser!!.email
 
         getSetting()
+
+        binding.changeInfoLayout.setOnClickListener{
+            val intent = Intent(requireContext(), ChangePwdActivity::class.java)
+            startActivity(intent)
+        }
 
         binding.logoutButton.setOnClickListener{
             userRepository?.logout()
