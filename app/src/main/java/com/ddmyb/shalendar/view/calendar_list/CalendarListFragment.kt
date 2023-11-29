@@ -25,6 +25,7 @@ import kotlinx.coroutines.launch
 
 
 class CalendarListFragment : Fragment() {
+    private lateinit var groupNameTv: TextView
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
@@ -37,9 +38,11 @@ class CalendarListFragment : Fragment() {
             FragmentCalendarListBinding.inflate(inflater)
         val origin = mutableListOf<Calendar>(Calendar("개인 캘린더", mutableListOf<String>(),1,0,null))
 
+        groupNameTv = requireActivity().findViewById<TextView>(R.id.tv_fragment_title)
+
         binding.calendarlistRv.setHasFixedSize(true)
         binding.calendarlistRv.adapter = CalendarAdapter(origin){
-            requireActivity().findViewById<TextView>(R.id.tv_fragment_title).text = it
+            groupNameTv.text = it
         }
         binding.calendarlistRv.layoutManager = LinearLayoutManager(activity)
 
@@ -63,7 +66,7 @@ class CalendarListFragment : Fragment() {
             progressDialog.dismiss()
 
             binding.calendarlistRv.adapter = CalendarAdapter(origin){
-                requireActivity().findViewById<TextView>(R.id.tv_fragment_title).text = it
+                groupNameTv.text = it
             }
         }
         val searchViewTextListener: SearchView.OnQueryTextListener =
@@ -100,12 +103,11 @@ class CalendarListFragment : Fragment() {
         registerForContextMenu(rv)
         //rv.adapter.setItem
         rv.adapter = CalendarAdapter(searchresult) {
-            requireActivity().findViewById<TextView>(R.id.tv_fragment_title).text = it
+            groupNameTv.text = it
         }
     }
 
     override fun onResume() {
         super.onResume()
     }
-
 }
