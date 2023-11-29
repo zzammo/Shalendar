@@ -36,12 +36,14 @@ class AlarmReceiver: BroadcastReceiver() {
         val memo = intent.extras!!.getString("memo")
 
 
-        manager.createNotificationChannel(
-            NotificationChannel(
-                CHANNEL_ID,
-                CHANNEL_NAME,
-                NotificationManager.IMPORTANCE_HIGH)
-        )
+        val channel = NotificationChannel(
+            CHANNEL_ID,
+            CHANNEL_NAME,
+            NotificationManager.IMPORTANCE_HIGH)
+        channel.enableVibration(false)
+        channel.setSound(null, null)
+
+        manager.createNotificationChannel(channel)
 
         builder = NotificationCompat.Builder(context, CHANNEL_ID)
 
