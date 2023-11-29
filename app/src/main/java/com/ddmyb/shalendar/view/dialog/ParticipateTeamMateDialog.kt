@@ -1,4 +1,5 @@
 package com.ddmyb.shalendar.view.dialog
+import android.content.DialogInterface
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -17,6 +18,7 @@ import kotlinx.coroutines.launch
 
 class ParticipateTeamMateDialog : DialogFragment() {
     private lateinit var binding: DialogNewCalendarBinding
+    private var dialogListener: DialogListener? = null
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -37,6 +39,14 @@ class ParticipateTeamMateDialog : DialogFragment() {
         return binding.root
     }
 
+    fun setDialogListener(listener: DialogListener){
+        this.dialogListener = listener
+    }
+
+    override fun onDismiss(dialog: DialogInterface) {
+        super.onDismiss(dialog)
+        dialogListener?.onDialogClosed("Dialog is closed")
+    }
     override fun onStart() {
         super.onStart()
         dialog?.window?.setLayout(
