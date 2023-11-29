@@ -51,7 +51,7 @@ class SchedulePresenter {
 
     private val view: ScheduleActivity
 
-    public lateinit var schedule: Schedule
+    private var schedule: Schedule = Schedule()
     private val userRepository = UserRepository.getInstance()
     private val scheduleRepository = ScheduleRepository.getInstance()
 
