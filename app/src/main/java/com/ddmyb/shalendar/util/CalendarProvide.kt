@@ -8,15 +8,25 @@ data class CalendarProvide(
     val location: String?,
     val start: Long,
     val end: Long,
+    val allDay: Int,
     val description: String?,
     val color: Int
 ) {
     fun toScheduleDto(): ScheduleDto {
-        return ScheduleDto(
-            title = title?:"",
-            startMills = start,
-            endMills = end,
-            memo = description?:""
-        )
+        return if (allDay == 1) {
+            ScheduleDto(
+                title = title?:"",
+                startMills = 0L,
+                endMills = 0L,
+                memo = description?:""
+            )
+        } else {
+            ScheduleDto(
+                title = title?:"",
+                startMills = start,
+                endMills = end,
+                memo = description?:""
+            )
+        }
     }
 }

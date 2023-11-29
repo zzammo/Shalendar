@@ -22,6 +22,7 @@ object CalendarProvider {
         CalendarContract.Events.EVENT_LOCATION,
         CalendarContract.Events.DTSTART,
         CalendarContract.Events.DTEND,
+        CalendarContract.Events.ALL_DAY,
         CalendarContract.Events.DESCRIPTION,
         CalendarContract.Events.DISPLAY_COLOR
     )
@@ -36,8 +37,11 @@ object CalendarProvider {
     private const val EVENTS_LOCATION_INDEX: Int = 2
     private const val EVENTS_START_INDEX: Int = 3
     private const val EVENTS_END_INDEX: Int = 4
-    private const val EVENTS_DESCRIPTION_INDEX: Int = 5
-    private const val EVENTS_COLOR_INDEX: Int = 6
+    private const val EVENTS_ALL_DAY_INDEX: Int = 5
+    private const val EVENTS_DESCRIPTION_INDEX: Int = 6
+    private const val EVENTS_COLOR_INDEX: Int = 7
+
+    private val logger = Logger("CalendarProvider", false)
 
     fun getCalendars(contentResolver: ContentResolver, idList: List<Int>, afterEach: (CalendarProvide) -> Unit) {
         CoroutineScope(Dispatchers.IO).launch {
@@ -58,7 +62,7 @@ object CalendarProvider {
             null,
         )
 
-        Log.d("CalendarProviderTestActivity", "$cur")
+        logger.logD("$cur")
         CoroutineScope(Dispatchers.IO).launch {
             val idMap = mutableMapOf<Int, String>()
 
@@ -67,7 +71,7 @@ object CalendarProvider {
                 val name = cur.getString(CALENDAR_NAME_INDEX)
                 val displayName = cur.getString(CALENDAR_DISPLAY_NAME_INDEX)
 
-                Log.d("CalendarProviderTestActivity", "$id, $name, $displayName")
+                logger.logD("$id, $name, $displayName")
 
                 if (name == "Samsung Calendar") {
                     idMap[id] = displayName
@@ -101,19 +105,20 @@ object CalendarProvider {
             null,
         )
 
-        Log.d("CalendarProviderTestActivity", "$cur")
+        logger.logD("$cur")
         while (cur?.moveToNext() == true) {
             val id = cur.getInt(EVENTS_ID_INDEX)
             val title = cur.getString(EVENTS_TITLE_INDEX)
             val location = cur.getString(EVENTS_LOCATION_INDEX)
             val start = cur.getLong(EVENTS_START_INDEX)
             val end = cur.getLong(EVENTS_END_INDEX)
+            val allDay = cur.getInt(EVENTS_ALL_DAY_INDEX)
             val description = cur.getString(EVENTS_DESCRIPTION_INDEX)
             val color = cur.getInt(EVENTS_COLOR_INDEX)
 
-            val data = CalendarProvide(id.toString(), title, location, start, end, description, color)
+            val data = CalendarProvide(id.toString(), title, location, start, end, allDay, description, color)
 
-            Log.d("CalendarProviderTestActivity", "$data")
+            logger.logD("$data")
 
             if (id == targetId) {
                 withContext(Dispatchers.Main) {
