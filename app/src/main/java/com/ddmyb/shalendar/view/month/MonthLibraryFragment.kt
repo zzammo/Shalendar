@@ -12,11 +12,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.ddmyb.shalendar.R
 import com.ddmyb.shalendar.databinding.FragmentMonthLibraryBinding
-import com.ddmyb.shalendar.domain.FBTest
 import com.ddmyb.shalendar.domain.schedules.repository.ScheduleDto
 import com.ddmyb.shalendar.domain.schedules.repository.ScheduleRepository
-import com.ddmyb.shalendar.domain.setting.Setting
-import com.ddmyb.shalendar.domain.setting.repository.SettingRepository
+import com.ddmyb.shalendar.domain.setting.repository.SettingRoom
 import com.ddmyb.shalendar.util.Logger
 import com.ddmyb.shalendar.util.MutableLiveListData
 import com.ddmyb.shalendar.view.home.CalendarFragment
@@ -29,9 +27,6 @@ import com.kizitonwose.calendar.core.daysOfWeek
 import com.kizitonwose.calendar.view.MonthDayBinder
 import com.kizitonwose.calendar.view.MonthHeaderFooterBinder
 import com.kizitonwose.calendar.view.ViewContainer
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.YearMonth
@@ -158,6 +153,8 @@ class MonthLibraryFragment(
     }
 
     private fun refreshSchedule() {
+        logger.logD("refreshSchedule - occur")
+
         if (groupId == null)
             presenter.loadSchedule(afterEnd = {
                 binding.calendarView.notifyCalendarChanged()
@@ -168,7 +165,7 @@ class MonthLibraryFragment(
             })
 
         val settings =
-            SettingRepository.getInstance(
+            SettingRoom.getInstance(
                 this@MonthLibraryFragment.requireContext()
             ).settingDao().getAll()
 
@@ -177,7 +174,7 @@ class MonthLibraryFragment(
                 presenter.loadExternalSchedule(
                     requireActivity().contentResolver,
                     id.toInt(),
-                    {
+                    afterEnd = {
                         binding.calendarView.notifyCalendarChanged()
                     }
                 )

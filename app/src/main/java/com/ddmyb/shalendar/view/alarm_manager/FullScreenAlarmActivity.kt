@@ -4,20 +4,19 @@ import android.annotation.SuppressLint
 import android.app.KeyguardManager
 import android.app.NotificationManager
 import android.content.Context
+import android.media.AudioAttributes
 import android.media.MediaPlayer
 import android.os.Build
 import android.os.Bundle
-import android.os.Environment
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.util.Log
 import android.view.WindowManager
-import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
 import com.ddmyb.shalendar.R
 import com.ddmyb.shalendar.databinding.ActivityFullScreenAlarmBinding
 import com.ddmyb.shalendar.domain.setting.Setting
-import com.ddmyb.shalendar.domain.setting.repository.SettingRepository
+import com.ddmyb.shalendar.domain.setting.repository.SettingRoom
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
@@ -34,7 +33,7 @@ class FullScreenAlarmActivity : AppCompatActivity() {
     private lateinit var binding: ActivityFullScreenAlarmBinding
     private lateinit var vibrator: Vibrator
     private lateinit var mediaPlayer: MediaPlayer
-    private lateinit var settingRepository: SettingRepository
+    private lateinit var settingRoom: SettingRoom
     private lateinit var setting: Setting
 
     @SuppressLint("ClickableViewAccessibility")
@@ -44,9 +43,9 @@ class FullScreenAlarmActivity : AppCompatActivity() {
         binding = ActivityFullScreenAlarmBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        settingRepository = SettingRepository.getInstance(applicationContext)
+        settingRoom = SettingRoom.getInstance(applicationContext)
 
-        setting = settingRepository.settingDao().getAll()[0]
+        setting = settingRoom.settingDao().getAll()[0]
 
         Log.d("setting vibration", setting.vibration.toString())
 
@@ -126,7 +125,8 @@ class FullScreenAlarmActivity : AppCompatActivity() {
             getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) { // minSdk=27, VERSION_CODES.M=23. 늘 if문 충족
-            vibrator.vibrate(VibrationEffect.createWaveform(longArrayOf(2000, 1000), intArrayOf(255, 0), 0))
+            val attributes = AudioAttributes.Builder().setContentType(AudioAttributes.CONTENT_TYPE_MUSIC).setUsage(AudioAttributes.USAGE_ALARM).build()
+            vibrator.vibrate(VibrationEffect.createWaveform(longArrayOf(2000, 1000), intArrayOf(255, 0), 0), attributes)
         } else {
             vibrator.vibrate(longArrayOf(1000, 2000), 0)
         }
