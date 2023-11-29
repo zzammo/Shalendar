@@ -49,6 +49,9 @@
             android:name=".view.test.CalendarProviderTestActivity"
             android:exported="false" />
         <activity
+            android:name=".util.KaKaoToShalendar"
+            android:exported="false" />
+        <activity
             android:name=".view.month.MonthLibraryActivity"
             android:exported="false" />
         <activity
