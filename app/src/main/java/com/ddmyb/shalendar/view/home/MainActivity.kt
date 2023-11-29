@@ -152,7 +152,9 @@ class MainActivity : AppCompatActivity(), DialogListener {
                 val inviteBtn : TextView = dialog.findViewById<TextView>(R.id.invite_teammate)
                 val participateBtn : TextView = dialog.findViewById<TextView>(R.id.participate_group)
                 inviteBtn.setOnClickListener {
-                    CustomNewCalendarDialog().show(this@MainActivity.supportFragmentManager, "")
+                    val customDialog = CustomNewCalendarDialog()
+                    customDialog.setDialogListener(this)
+                    customDialog.show(this@MainActivity.supportFragmentManager, "")
                     dialog.dismiss()
                 }
                 participateBtn.setOnClickListener{
@@ -167,6 +169,7 @@ class MainActivity : AppCompatActivity(), DialogListener {
                 Log.d("oz","MainActivity not 그룹관리 Dialog")
                 dialog.setContentView(R.layout.dialog_invite_code)
                 val inviteDialog = InviteDialog(myViewModel.groupId!!)
+                inviteDialog.setDialogListener(null)
                 inviteDialog.show(supportFragmentManager, "invite_dialog_tag")
             }
         }

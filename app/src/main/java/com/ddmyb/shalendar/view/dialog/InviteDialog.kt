@@ -4,9 +4,11 @@ import android.app.Dialog
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.content.DialogInterface
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.util.Log
 import android.view.Window
 import android.view.WindowManager
 import android.widget.Toast
@@ -19,6 +21,7 @@ class InviteDialog(private val code:String) : DialogFragment(){
     val binding: DialogInviteCodeBinding by lazy {
         DialogInviteCodeBinding.inflate(layoutInflater)
     }
+    private var dialogListener: DialogListener? = null
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         //val kakao = KakaoInvite(requireContext())
@@ -47,6 +50,23 @@ class InviteDialog(private val code:String) : DialogFragment(){
         }
 
         return dialog
+    }
+
+    fun setDialogListener(listener: DialogListener?){
+        this.dialogListener = listener
+        if(listener==null){
+            Log.d("oz",listener.toString())
+        }
+        else{
+            Log.d("oz","notnull")
+        }
+    }
+
+    override fun onDismiss(dialog: DialogInterface) {
+        super.onDismiss(dialog)
+        if(dialogListener!=null) {
+            dialogListener?.onDialogClosed("Dialog is closed")
+        }
     }
 
     override fun onStart() {
