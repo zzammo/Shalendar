@@ -158,6 +158,8 @@ class MonthLibraryFragment(
     }
 
     private fun refreshSchedule() {
+        logger.logD("refreshSchedule - occur")
+
         if (groupId == null)
             presenter.loadSchedule(afterEnd = {
                 binding.calendarView.notifyCalendarChanged()
@@ -177,7 +179,7 @@ class MonthLibraryFragment(
                 presenter.loadExternalSchedule(
                     requireActivity().contentResolver,
                     id.toInt(),
-                    {
+                    afterEnd = {
                         binding.calendarView.notifyCalendarChanged()
                     }
                 )
