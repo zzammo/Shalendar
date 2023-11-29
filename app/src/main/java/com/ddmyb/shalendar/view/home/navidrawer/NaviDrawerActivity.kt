@@ -26,6 +26,7 @@ import com.ddmyb.shalendar.domain.FBTest
 import com.ddmyb.shalendar.domain.groups.repository.GroupRepository
 import com.ddmyb.shalendar.domain.schedules.repository.ScheduleDto
 import com.ddmyb.shalendar.domain.schedules.repository.ScheduleRepository
+import com.ddmyb.shalendar.domain.users.UserRepository
 import com.ddmyb.shalendar.view.home.navidrawer.adapter.OwnedCalendarAdapter
 import com.ddmyb.shalendar.view.login.ChangePwdActivity
 import com.google.firebase.auth.FirebaseAuth
@@ -52,6 +53,8 @@ class NaviDrawerActivity :AppCompatActivity() {
 
     private lateinit var selectedImageUri: Uri
     private lateinit var imagePicker: ActivityResultLauncher<Intent>
+
+    private val userRepository = UserRepository.getInstance()
 
     private val binding by lazy {
         NaviDrawerBinding.inflate(layoutInflater)
@@ -82,17 +85,7 @@ class NaviDrawerActivity :AppCompatActivity() {
             }
         }
 
-        imagePicker = this.registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                val data: Intent? = result.data
-                selectedImageUri = data?.data!!
 
-                // 이미지 업로드 및 프로필 업데이트 작업 수행
-                if (selectedImageUri != null) {
-                    //dialog_image.setImageURI(selectedImageUri)
-                }
-            }
-        }
 
         binding.btnCheckSc.setOnClickListener {
             val mSc = ScheduleDto()
@@ -107,6 +100,18 @@ class NaviDrawerActivity :AppCompatActivity() {
 
             //manageSchedule().crateGroupSchedule(mSc,"-Ni8tG4kZmQCO1W0JBzk")
 //            manageSchedule().inviteGroup("-Ni8tG4kZmQCO1W0JBzk")
+        }
+
+        imagePicker = this.registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                val data: Intent? = result.data
+                selectedImageUri = data?.data!!
+
+                // 이미지 업로드 및 프로필 업데이트 작업 수행
+                if (selectedImageUri != null) {
+                    userRepository!!.uploadImage(selectedImageUri)
+                }
+            }
         }
         binding.btnCheckImage.setOnClickListener {
 

@@ -62,7 +62,7 @@
             android:layout_height="40dp"
             android:layout_gravity="center"
             android:background="@color/bg_white"
-            android:text="나는 바보랍니다"
+            android:text="이미지체크"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/iv_image"
             app:layout_constraintStart_toStartOf="parent"

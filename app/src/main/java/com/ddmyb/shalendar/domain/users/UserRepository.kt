@@ -1,10 +1,16 @@
 package com.ddmyb.shalendar.domain.users
 
 import android.content.Context
+import android.net.Uri
 import android.util.Log
 import android.widget.Toast
+import com.bumptech.glide.Glide
+import com.ddmyb.shalendar.domain.schedules.repository.ScheduleDto
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.storage.FirebaseStorage
+import kotlinx.coroutines.tasks.await
 
 class UserRepository {
 
@@ -13,6 +19,7 @@ class UserRepository {
     private val USER_REF = "UserAccount"
 
     private val firebaseAuth = FirebaseAuth.getInstance()
+    private val userRef = FirebaseDatabase.getInstance().getReference(USER_REF)
 
     companion object {
         private var instance: UserRepository? = null
@@ -59,6 +66,67 @@ class UserRepository {
                 }
             }
     }
+
+    fun uploadImage(imageUri: Uri?) {
+        val user = firebaseAuth!!.currentUser
+        val storRef = FirebaseStorage.getInstance().reference
+        Log.d("maengedol", "성공1")
+        if (user != null && imageUri != null) {
+            Log.d("maengedol", "성공2")
+            val imageRef = storRef.child("pfImage/${user.email}.jpg")
+
+            val uploadTask = imageRef.putFile(imageUri)
+            uploadTask.continueWithTask { task ->
+                if (!task.isSuccessful) {
+                    task.exception?.let  {
+                        throw it
+                    }
+                }
+                imageRef.downloadUrl
+            }.addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val downloadUri: Uri? = task.result
+                    val profileUpdates = UserProfileChangeRequest.Builder()
+                        .setPhotoUri(downloadUri)
+                        .build()
+
+                    user.updateProfile(profileUpdates)
+                        .addOnCompleteListener { updateTask ->
+                            if (updateTask.isSuccessful) {
+                                userRef.child(user.uid).child("pfImageUrl").setValue(downloadUri)
+                                Log.d("maengedol", "성공3")
+                            } else {
+                                // 프로필 업데이트 실패.
+                                Log.d("maengedol", "실패1")
+                            }
+                        }
+                } else {
+                    // 이미지 업로드 실패.
+                    Log.d("maengedol", "실패2")
+                }
+            }
+        }
+    }
+
+    suspend fun readUserNickName(): String {
+        return  userRef.child(firebaseAuth.currentUser!!.uid).child("nickName").get().await().getValue(String::class.java)!!
+    }
+    fun downloadImage() {
+        val storageRef = FirebaseStorage.getInstance().reference
+        val user = firebaseAuth!!.currentUser
+        val imagesRef = storageRef.child("pfImage/${user!!.email}.jpg")
+
+        imagesRef.downloadUrl
+            .addOnSuccessListener { uri ->
+                // 다운로드 URL을 통해 이미지를 표시
+            }
+            .addOnFailureListener { exception ->
+                // 다운로드 실패 시
+                Log.e("FirebaseExample", "이미지 다운로드 실패", exception)
+            }
+    }
+
+
 
 }
 //    fun parseLatLngFromString(str: String): LatLng? {
