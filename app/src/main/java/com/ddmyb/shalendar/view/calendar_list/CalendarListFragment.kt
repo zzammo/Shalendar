@@ -1,5 +1,6 @@
 package com.ddmyb.shalendar.view.calendar_list
 
+import android.annotation.SuppressLint
 import android.app.ProgressDialog
 import android.content.Context
 import android.net.ConnectivityManager
@@ -26,6 +27,7 @@ import kotlinx.coroutines.launch
 
 class CalendarListFragment : Fragment() {
     private lateinit var groupNameTv: TextView
+    private lateinit var binding: FragmentCalendarListBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
@@ -34,8 +36,7 @@ class CalendarListFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val binding: FragmentCalendarListBinding =
-            FragmentCalendarListBinding.inflate(inflater)
+        binding = FragmentCalendarListBinding.inflate(inflater)
         val origin = mutableListOf<Calendar>(Calendar("개인 캘린더", mutableListOf<String>(),1,0,null))
 
         groupNameTv = requireActivity().findViewById<TextView>(R.id.tv_fragment_title)
@@ -107,6 +108,34 @@ class CalendarListFragment : Fragment() {
         }
     }
 
+    @SuppressLint("NotifyDataSetChanged")
+    public fun getGroup(){
+        val origin = mutableListOf<Calendar>(Calendar("개인 캘린더", mutableListOf<String>(),1,0,null))
+        val progressDialog = ProgressDialog(requireContext())
+        progressDialog.setMessage("로딩 중...")
+        progressDialog.setCancelable(false)
+        progressDialog.show()
+
+        val connectivityManager = requireContext().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val networkInfo = connectivityManager.activeNetworkInfo
+
+        if (networkInfo == null || !networkInfo.isConnected) {
+            progressDialog.dismiss()
+        }
+
+        CoroutineScope(Dispatchers.Main).launch{
+            val groupList = GroupRepository().readUsersGroup()
+            for (i in groupList){
+                origin.add(Calendar(i.groupName, i.userId,i.memberCnt,i.latestUpdateMills,i.groupId))
+            }
+            progressDialog.dismiss()
+
+            binding.calendarlistRv.adapter = CalendarAdapter(origin){
+                groupNameTv.text = it
+            }
+            binding.calendarlistRv.adapter!!.notifyDataSetChanged()
+        }
+    }
     override fun onResume() {
         super.onResume()
     }

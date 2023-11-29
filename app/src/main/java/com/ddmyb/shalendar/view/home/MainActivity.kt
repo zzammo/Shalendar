@@ -38,6 +38,7 @@ import com.ddmyb.shalendar.view.alarm_manager.AlarmManagerFragment
 import com.ddmyb.shalendar.util.HttpResult
 import com.ddmyb.shalendar.view.calendar_list.presenter.MyViewModel
 import com.ddmyb.shalendar.view.dialog.CustomNewCalendarDialog
+import com.ddmyb.shalendar.view.dialog.DialogListener
 import com.ddmyb.shalendar.view.dialog.InviteDialog
 import com.ddmyb.shalendar.view.dialog.ParticipateTeamMateDialog
 import com.ddmyb.shalendar.view.holiday.HolidayApi
@@ -49,10 +50,11 @@ import com.ddmyb.shalendar.view.schedules.utils.Permission
 import com.ddmyb.shalendar.view.weather.WeatherTest
 
 @RequiresApi(Build.VERSION_CODES.O)
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), DialogListener {
     private lateinit var binding: ActivityMainBinding
     private val userRepository = UserRepository.getInstance()
     private lateinit var myViewModel: MyViewModel
+    private lateinit var calendarListFragment: CalendarListFragment
     private val permissions = arrayOf(
         android.Manifest.permission.ACCESS_FINE_LOCATION,
         android.Manifest.permission.ACCESS_COARSE_LOCATION,
@@ -105,8 +107,9 @@ class MainActivity : AppCompatActivity() {
 
 
                 R.id.item_fragment2 -> {
+                    calendarListFragment = CalendarListFragment()
                     supportFragmentManager.beginTransaction()
-                        .replace(R.id.main_frame, CalendarListFragment()).commit()
+                        .replace(R.id.main_frame, calendarListFragment).commit()
                     binding.tvFragmentTitle.text = "그룹 관리"
                     binding.ivGroupAdd.visibility = View.VISIBLE
                     true
@@ -153,7 +156,9 @@ class MainActivity : AppCompatActivity() {
                     dialog.dismiss()
                 }
                 participateBtn.setOnClickListener{
-                    ParticipateTeamMateDialog().show(this@MainActivity.supportFragmentManager, "")
+                    val participateDialog = ParticipateTeamMateDialog()
+                    participateDialog.setDialogListener(this)
+                    participateDialog.show(this@MainActivity.supportFragmentManager, "")
                     dialog.dismiss()
                 }
                 dialog.show()
@@ -228,5 +233,9 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS, Uri.parse("package:" + packageName))
             startActivity(intent)
         }
+    }
+
+    override fun onDialogClosed(message: String?) {
+        calendarListFragment.getGroup()
     }
 }
