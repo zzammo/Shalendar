@@ -40,8 +40,8 @@ class AlarmReceiver: BroadcastReceiver() {
             CHANNEL_ID,
             CHANNEL_NAME,
             NotificationManager.IMPORTANCE_HIGH)
-        channel.enableVibration(false)
-        channel.setSound(null, null)
+//        channel.enableVibration(false)
+//        channel.setSound(null, null)
 
         manager.createNotificationChannel(channel)
 

@@ -32,6 +32,10 @@ import com.ddmyb.shalendar.view.schedules.utils.TimeInfo
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.maps.model.LatLng
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -47,7 +51,7 @@ class SchedulePresenter {
 
     private val view: ScheduleActivity
 
-    private val schedule: Schedule
+    public lateinit var schedule: Schedule
     private val userRepository = UserRepository.getInstance()
     private val scheduleRepository = ScheduleRepository.getInstance()
 
@@ -59,7 +63,8 @@ class SchedulePresenter {
                 activity: Activity){
         this.view = view
         this.fusedLocationService = FusedLocationService(activity)
-        this.schedule = if (newScheduleDto.scheduleId == ""){
+
+        if (newScheduleDto.scheduleId == ""){
             val s = Schedule()
             s.userId = userRepository!!.getUserId()
             s.startLocalDatetime = Instant.ofEpochMilli(newScheduleDto.mills).atZone(ZoneId.systemDefault()).toLocalDateTime()
@@ -69,19 +74,25 @@ class SchedulePresenter {
             view.showEndTimeText(TimeInfo(s.endLocalDatetime.hour, s.endLocalDatetime.minute))
             view.showStartDateText(s.startLocalDatetime.year, DateInfo(s.startLocalDatetime.monthValue, s.startLocalDatetime.dayOfMonth, s.startLocalDatetime.dayOfWeek.value), true)
             view.showEndDateText(s.endLocalDatetime.year, DateInfo(s.endLocalDatetime.monthValue, s.endLocalDatetime.dayOfMonth, s.endLocalDatetime.dayOfWeek.value), true)
-            s
+            this.schedule = s
         } else{
-
-// repository find schedule
-//            val s = scheduleRepository.readScheduleByScheduleId(newScheduleDto.scheduleId)
-//            view.showStartTimeText(TimeInfo( s.startLocalDatetime.hour, s.startLocalDatetime.minute))
-//            view.showEndTimeText(TimeInfo(s.endLocalDatetime.hour, s.endLocalDatetime.minute))
-//            view.showStartDateText(s.startLocalDatetime.year, DateInfo(s.startLocalDatetime.monthValue, s.startLocalDatetime.dayOfMonth, s.startLocalDatetime.dayOfWeek.value), true)
-//            view.showEndDateText(s.endLocalDatetime.year, DateInfo(s.endLocalDatetime.monthValue, s.endLocalDatetime.dayOfMonth, s.endLocalDatetime.dayOfWeek.value), true)
-//            view.setColor(s.colorId)
-            view.changeEditMode()
-            Schedule()
+            CoroutineScope(Dispatchers.IO).launch {
+                val s = Schedule(scheduleRepository!!.readOneSchedule(newScheduleDto.scheduleId))
+                withContext(Dispatchers.Main) {
+                    setSchedule(s)
+                    view.showStartTimeText(TimeInfo( s.startLocalDatetime.hour, s.startLocalDatetime.minute))
+                    view.showEndTimeText(TimeInfo(s.endLocalDatetime.hour, s.endLocalDatetime.minute))
+                    view.showStartDateText(s.startLocalDatetime.year, DateInfo(s.startLocalDatetime.monthValue, s.startLocalDatetime.dayOfMonth, s.startLocalDatetime.dayOfWeek.value), true)
+                    view.showEndDateText(s.endLocalDatetime.year, DateInfo(s.endLocalDatetime.monthValue, s.endLocalDatetime.dayOfMonth, s.endLocalDatetime.dayOfWeek.value), true)
+                    view.setColor(s.color)
+                    view.changeEditMode()
+                }
+            }
         }
+    }
+
+    private fun setSchedule(schedule: Schedule){
+        this.schedule = schedule
     }
 
     fun getSchedule(): Schedule {
@@ -162,7 +173,7 @@ class SchedulePresenter {
     }
 
     fun deleteSchedule(){
-        if (schedule.scheduleId == ""){
+        if (schedule.scheduleId != ""){
             scheduleRepository!!.deleteSchedule(ScheduleDto(schedule))
         }
     }
@@ -181,9 +192,7 @@ class SchedulePresenter {
             schedule.endLocalDatetime.withSecond(59)
         }
 
-        if (schedule.scheduleId != ""){
-            scheduleRepository!!.deleteSchedule(ScheduleDto(schedule))
-        }
+        deleteSchedule()
 
         when(this.iterationType){
             IterationType.NO_REPEAT ->{
