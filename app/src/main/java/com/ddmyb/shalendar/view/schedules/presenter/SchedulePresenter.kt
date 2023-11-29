@@ -61,7 +61,6 @@ class SchedulePresenter {
         this.fusedLocationService = FusedLocationService(activity)
         this.schedule = if (newScheduleDto.scheduleId == ""){
             val s = Schedule()
-            s.scheduleId = UUID.randomUUID().toString()
             s.userId = userRepository!!.getUserId()
             s.startLocalDatetime = Instant.ofEpochMilli(newScheduleDto.mills).atZone(ZoneId.systemDefault()).toLocalDateTime()
             s.endLocalDatetime = s.startLocalDatetime.plusHours(1)
@@ -72,7 +71,15 @@ class SchedulePresenter {
             view.showEndDateText(s.endLocalDatetime.year, DateInfo(s.endLocalDatetime.monthValue, s.endLocalDatetime.dayOfMonth, s.endLocalDatetime.dayOfWeek.value), true)
             s
         } else{
-            // repository find schedule
+
+// repository find schedule
+//            val s = scheduleRepository.readScheduleByScheduleId(newScheduleDto.scheduleId)
+//            view.showStartTimeText(TimeInfo( s.startLocalDatetime.hour, s.startLocalDatetime.minute))
+//            view.showEndTimeText(TimeInfo(s.endLocalDatetime.hour, s.endLocalDatetime.minute))
+//            view.showStartDateText(s.startLocalDatetime.year, DateInfo(s.startLocalDatetime.monthValue, s.startLocalDatetime.dayOfMonth, s.startLocalDatetime.dayOfWeek.value), true)
+//            view.showEndDateText(s.endLocalDatetime.year, DateInfo(s.endLocalDatetime.monthValue, s.endLocalDatetime.dayOfMonth, s.endLocalDatetime.dayOfWeek.value), true)
+//            view.setColor(s.colorId)
+            view.changeEditMode()
             Schedule()
         }
     }
@@ -150,8 +157,14 @@ class SchedulePresenter {
         }
     }
 
-    fun saveColorId(colorId: Int){
+    fun setColorId(colorId: Int){
         schedule.color = colorId
+    }
+
+    fun deleteSchedule(){
+        if (schedule.scheduleId == ""){
+            scheduleRepository!!.deleteSchedule(ScheduleDto(schedule))
+        }
     }
 
     fun saveSchedule(context: Context) {
@@ -166,6 +179,10 @@ class SchedulePresenter {
             schedule.endLocalDatetime.withHour(23)
             schedule.endLocalDatetime.withMinute(59)
             schedule.endLocalDatetime.withSecond(59)
+        }
+
+        if (schedule.scheduleId != ""){
+            scheduleRepository!!.deleteSchedule(ScheduleDto(schedule))
         }
 
         when(this.iterationType){
@@ -218,6 +235,7 @@ class SchedulePresenter {
         context: Context
     ) {
         val s = schedule.copy()
+        s.scheduleId = UUID.randomUUID().toString()
         s.startLocalDatetime = newStartDatetime
         s.endLocalDatetime = newEndDatetime
         s.dptLocalDateTime = newDptDatetime
