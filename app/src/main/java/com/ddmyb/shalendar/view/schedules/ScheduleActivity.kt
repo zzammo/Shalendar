@@ -148,7 +148,7 @@ class ScheduleActivity(
 
     fun changeGroupMode(){
         binding.imColorCircleSchedule.backgroundTintList = ContextCompat.getColorStateList(applicationContext, R.color.google_blue)
-        binding.imColorCircleSchedule.isClickable = false
+        binding.llColorCircleSchedule.isClickable = false
         binding.llDepartureAlarm.visibility = View.GONE
     }
 
