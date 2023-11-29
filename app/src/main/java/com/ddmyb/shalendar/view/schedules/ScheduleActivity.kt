@@ -150,6 +150,7 @@ class ScheduleActivity(
         binding.imColorCircleSchedule.backgroundTintList = ContextCompat.getColorStateList(applicationContext, R.color.google_blue)
         binding.imColorCircleSchedule.isClickable = false
         binding.llDepartureAlarm.visibility = View.GONE
+        presenter.setColorId(R.color.google_blue)
     }
 
     fun isCheckedAllDaySwitch():Boolean{
