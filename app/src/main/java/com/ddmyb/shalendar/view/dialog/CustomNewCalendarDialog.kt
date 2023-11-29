@@ -3,6 +3,7 @@ package com.ddmyb.shalendar.view.dialog
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Color
@@ -30,9 +31,10 @@ import java.io.ByteArrayOutputStream
 
 /*import com.google.firebase.storage.FirebaseStorage*/
 
-class CustomNewCalendarDialog : DialogFragment() {
+class CustomNewCalendarDialog : DialogFragment(),DialogListener {
     private lateinit var binding: DialogNewCalendarBinding
     private var selectedImageUri: Uri? = null
+    private var dialogListener: DialogListener? = null
     companion object {
         const val CAMERA_REQUEST_CODE = 1
         const val ALBUM_REQUEST_CODE = 2
@@ -74,6 +76,8 @@ class CustomNewCalendarDialog : DialogFragment() {
             else{
                 val code = GroupRepository().createGroup(calendarName)
                 val inviteDialog = InviteDialog(code)
+                inviteDialog.setDialogListener(this)
+                Log.d("oz","customNewCalendar null")
                 inviteDialog.show(requireFragmentManager(),"")
                 dismiss()
             }
@@ -103,6 +107,15 @@ class CustomNewCalendarDialog : DialogFragment() {
         startActivityForResult(intent, ALBUM_REQUEST_CODE)
     }
 
+    fun setDialogListener(listener: DialogListener?){
+        this.dialogListener = listener
+    }
+    override fun onDialogClosed(message: String?) {
+        Log.d("oz","CustomNewCalendarDialog close!!")
+        if(dialogListener!=null) {
+            dialogListener?.onDialogClosed("Dialog is closed")
+        }
+    }
     /*@Deprecated("Deprecated in Java")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
