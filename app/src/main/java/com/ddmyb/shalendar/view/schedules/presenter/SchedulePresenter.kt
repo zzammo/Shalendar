@@ -75,6 +75,7 @@ class SchedulePresenter {
             view.showStartDateText(s.startLocalDatetime.year, DateInfo(s.startLocalDatetime.monthValue, s.startLocalDatetime.dayOfMonth, s.startLocalDatetime.dayOfWeek.value), true)
             view.showEndDateText(s.endLocalDatetime.year, DateInfo(s.endLocalDatetime.monthValue, s.endLocalDatetime.dayOfMonth, s.endLocalDatetime.dayOfWeek.value), true)
             this.schedule = s
+            setGroupMode()
         } else{
             CoroutineScope(Dispatchers.IO).launch {
                 val s = Schedule(scheduleRepository!!.readOneSchedule(newScheduleDto.scheduleId))
@@ -91,8 +92,15 @@ class SchedulePresenter {
         }
     }
 
+    private fun setGroupMode(){
+        if(this.schedule.groupId != ""){
+            view.changeGroupMode()
+        }
+    }
+
     private fun setSchedule(schedule: Schedule){
         this.schedule = schedule
+        setGroupMode()
     }
 
     fun getSchedule(): Schedule {

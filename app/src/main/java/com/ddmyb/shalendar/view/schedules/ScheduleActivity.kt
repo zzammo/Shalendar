@@ -146,6 +146,12 @@ class ScheduleActivity(
         binding.imColorCircleSchedule.backgroundTintList = ContextCompat.getColorStateList(applicationContext, colorId)
     }
 
+    fun changeGroupMode(){
+        binding.imColorCircleSchedule.backgroundTintList = ContextCompat.getColorStateList(applicationContext, R.color.google_blue)
+        binding.imColorCircleSchedule.isClickable = false
+        binding.llDepartureAlarm.visibility = View.GONE
+    }
+
     fun isCheckedAllDaySwitch():Boolean{
         return binding.alldaySwitch.isChecked
     }
