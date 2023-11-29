@@ -114,6 +114,9 @@
             android:name=".view.login.SignUpActivity"
             android:exported="false" />
         <activity
+            android:name=".view.login.ChangePwdActivity"
+            android:exported="false"/>
+        <activity
             android:name=".view.external_calendar.GetCalendarList"
             android:exported="false"/>
         <activity
