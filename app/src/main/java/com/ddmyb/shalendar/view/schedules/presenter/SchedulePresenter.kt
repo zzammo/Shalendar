@@ -10,6 +10,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
+import com.ddmyb.shalendar.R
 import com.ddmyb.shalendar.background_service.alarm.AlarmService
 import com.ddmyb.shalendar.domain.Alarms.Alarm
 import com.ddmyb.shalendar.domain.users.UserRepository
@@ -95,6 +96,7 @@ class SchedulePresenter {
     private fun setGroupMode(){
         if(this.schedule.groupId != ""){
             view.changeGroupMode()
+            schedule.color = R.color.google_blue
         }
     }
 

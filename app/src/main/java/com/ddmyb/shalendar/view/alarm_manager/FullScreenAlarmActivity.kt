@@ -16,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.ddmyb.shalendar.R
 import com.ddmyb.shalendar.databinding.ActivityFullScreenAlarmBinding
 import com.ddmyb.shalendar.domain.setting.Setting
+import com.ddmyb.shalendar.domain.setting.repository.SettingRepository
 import com.ddmyb.shalendar.domain.setting.repository.SettingRoom
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
@@ -43,20 +44,15 @@ class FullScreenAlarmActivity : AppCompatActivity() {
         binding = ActivityFullScreenAlarmBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        settingRoom = SettingRoom.getInstance(applicationContext)
-
-        setting = settingRoom.settingDao().getAll()[0]
+        setting = SettingRepository.readSetting(this)
 
         Log.d("setting vibration", setting.vibration.toString())
 
-        vbCoroutine.start()
-        mpCoroutine.start()
-
-//        if (setting.vibration) {
-//            vbCoroutine.start()
-//        }else {
-//            mpCoroutine.start()
-//        }
+        if (setting.vibration) {
+            vbCoroutine.start()
+        }else {
+            mpCoroutine.start()
+        }
 
         turnScreenOnAndKeyguardOff()
 
@@ -64,21 +60,15 @@ class FullScreenAlarmActivity : AppCompatActivity() {
             val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             manager.cancelAll()
 
-            vbCoroutine.cancel()
-            vibrator.cancel()
 
-            mpCoroutine.cancel()
-            if (mediaPlayer.isPlaying)
-                mediaPlayer.stop()
-
-//            if (setting.vibration){
-//                vbCoroutine.cancel()
-//                vibrator.cancel()
-//            }else {
-//                mpCoroutine.cancel()
-//                if (mediaPlayer.isPlaying)
-//                    mediaPlayer.stop()
-//            }
+            if (setting.vibration){
+                vbCoroutine.cancel()
+                vibrator.cancel()
+            }else {
+                mpCoroutine.cancel()
+                if (mediaPlayer.isPlaying)
+                    mediaPlayer.stop()
+            }
             finish()
         }
     }
@@ -135,21 +125,14 @@ class FullScreenAlarmActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
 
-        vbCoroutine.cancel()
-        vibrator.cancel()
-        mpCoroutine.cancel()
-        if (mediaPlayer.isPlaying)
-            mediaPlayer.stop()
-        mediaPlayer.release()
-
-//        if (setting.vibration) {
-//            vbCoroutine.cancel()
-//            vibrator.cancel()
-//        } else {
-//            mpCoroutine.cancel()
-//            if (mediaPlayer.isPlaying)
-//                mediaPlayer.stop()
-//            mediaPlayer.release()
-//        }
+        if (setting.vibration) {
+            vbCoroutine.cancel()
+            vibrator.cancel()
+        } else {
+            mpCoroutine.cancel()
+            if (mediaPlayer.isPlaying)
+                mediaPlayer.stop()
+            mediaPlayer.release()
+        }
     }
 }
