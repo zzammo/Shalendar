@@ -92,7 +92,6 @@ class ScheduleRepository {
         for (scheduleId in scheduleIdList) {
             scheduleList.add(scheduleRef.child(scheduleId).get().await().getValue(ScheduleDto::class.java)!!)
         }
-
         return scheduleList
     }
     suspend fun readOneSchedule(scheduleId : String): ScheduleDto {
