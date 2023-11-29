@@ -73,6 +73,7 @@ class ScheduleActivity(
 
         val newScheduleDto = intent.getSerializableExtra("NewSchedule") as? NewScheduleDto
             ?: NewScheduleDto(scheduleId = "", mills = LocalDateTime.now().atZone(ZoneId.systemDefault()).toEpochSecond() * 1000)
+
         Log.d("startDateTimeDto", newScheduleDto.toString())
         presenter = SchedulePresenter(this, newScheduleDto, this)
 
@@ -135,7 +136,7 @@ class ScheduleActivity(
         for ((i, v) in imArray.withIndex()) {
             v.setOnClickListener {
                 binding.imColorCircleSchedule.backgroundTintList = ContextCompat.getColorStateList(applicationContext, colorIdList[i])
-                presenter.saveColorId(colorIdList[i])
+                presenter.setColorId(colorIdList[i])
                 isVisibleLLPalette = false
                 binding.llPalette.visibility = View.GONE
             }
@@ -612,23 +613,15 @@ class ScheduleActivity(
         })
 
         binding.cancelBtn.setOnClickListener(View.OnClickListener {
+            presenter.deleteSchedule()
             setResult(RESULT_CANCELED)
             finish()
         })
     }
 
-    private var pressCnt: Long = 0
-    override fun onBackPressed() {
-        val tempTime = System.currentTimeMillis()
-        val interval: Long = tempTime - pressCnt
-
-        if (interval in 0..1000) {
-            setResult(RESULT_CANCELED)
-            finish()
-        } else {
-            pressCnt = tempTime
-            Toast.makeText(baseContext, "한번 더 누르면 메인 화면", Toast.LENGTH_SHORT).show()
-        }
+    fun changeEditMode(){
+        binding.saveBtn.text = "변경"
+        binding.cancelBtn.text = "삭제"
     }
 
     fun showUpdatedMarker(

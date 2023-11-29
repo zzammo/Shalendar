@@ -18,6 +18,7 @@ import android.provider.Settings
 import android.util.Log
 import android.view.View
 import android.view.Window
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -26,14 +27,18 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.ViewModelProvider
 import com.ddmyb.shalendar.view.login.LoginActivity
 import com.ddmyb.shalendar.R
 import com.ddmyb.shalendar.databinding.ActivityMainBinding
+import com.ddmyb.shalendar.domain.groups.repository.GroupRepository
 import com.ddmyb.shalendar.domain.users.UserRepository
 import com.ddmyb.shalendar.view.calendar_list.CalendarListFragment
 import com.ddmyb.shalendar.view.alarm_manager.AlarmManagerFragment
 import com.ddmyb.shalendar.util.HttpResult
+import com.ddmyb.shalendar.view.calendar_list.presenter.MyViewModel
 import com.ddmyb.shalendar.view.dialog.CustomNewCalendarDialog
+import com.ddmyb.shalendar.view.dialog.InviteDialog
 import com.ddmyb.shalendar.view.dialog.ParticipateTeamMateDialog
 import com.ddmyb.shalendar.view.holiday.HolidayApi
 import com.ddmyb.shalendar.view.holiday.data.HolidayDTO
@@ -45,9 +50,9 @@ import com.ddmyb.shalendar.view.weather.WeatherTest
 
 @RequiresApi(Build.VERSION_CODES.O)
 class MainActivity : AppCompatActivity() {
-
     private lateinit var binding: ActivityMainBinding
     private val userRepository = UserRepository.getInstance()
+    private lateinit var myViewModel: MyViewModel
     private val permissions = arrayOf(
         android.Manifest.permission.ACCESS_FINE_LOCATION,
         android.Manifest.permission.ACCESS_COARSE_LOCATION,
@@ -59,6 +64,9 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this@MainActivity, R.layout.activity_main)
+
+        // ViewModelProvider를 통해 ViewModel 인스턴스를 얻음
+        myViewModel = ViewModelProvider(this)[MyViewModel::class.java]
 
         if (!userRepository!!.checkLogin()){
             Log.d("isLogin?","gogo")
@@ -136,18 +144,26 @@ class MainActivity : AppCompatActivity() {
             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
             dialog.setContentView(R.layout.dialog_invite_or_participate)
             dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-            val inviteBtn : TextView = dialog.findViewById<TextView>(R.id.invite_teammate)
-            val participateBtn : TextView = dialog.findViewById<TextView>(R.id.participate_group)
-            inviteBtn.setOnClickListener {
-                CustomNewCalendarDialog().show(this@MainActivity.supportFragmentManager, "")
-                dialog.dismiss()
+            if(binding.tvFragmentTitle.text.equals("그룹 관리")){
+                Log.d("oz","MainActivity 그룹관리 Dialog")
+                val inviteBtn : TextView = dialog.findViewById<TextView>(R.id.invite_teammate)
+                val participateBtn : TextView = dialog.findViewById<TextView>(R.id.participate_group)
+                inviteBtn.setOnClickListener {
+                    CustomNewCalendarDialog().show(this@MainActivity.supportFragmentManager, "")
+                    dialog.dismiss()
+                }
+                participateBtn.setOnClickListener{
+                    ParticipateTeamMateDialog().show(this@MainActivity.supportFragmentManager, "")
+                    dialog.dismiss()
+                }
+                dialog.show()
             }
-            participateBtn.setOnClickListener{
-                ParticipateTeamMateDialog().show(this@MainActivity.supportFragmentManager, "")
-                dialog.dismiss()
+            else{
+                Log.d("oz","MainActivity not 그룹관리 Dialog")
+                dialog.setContentView(R.layout.dialog_invite_code)
+                val inviteDialog = InviteDialog(myViewModel.groupId!!)
+                inviteDialog.show(supportFragmentManager, "invite_dialog_tag")
             }
-            dialog.show()
-
         }
 
         HolidayApi.getHolidays(

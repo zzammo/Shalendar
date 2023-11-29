@@ -10,7 +10,9 @@ import android.os.Build
 import android.os.PowerManager
 import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.core.app.NotificationChannelCompat
 import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import com.ddmyb.shalendar.R
 import com.ddmyb.shalendar.view.alarm_manager.FullScreenAlarmActivity
 
@@ -29,12 +31,19 @@ class AlarmReceiver: BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
         manager = context!!.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-        manager.createNotificationChannel(
-            NotificationChannel(
-                CHANNEL_ID,
-                CHANNEL_NAME,
-                NotificationManager.IMPORTANCE_HIGH)
-        )
+        val code = intent?.extras!!.getLong("code")
+        val title = intent.extras!!.getString("title")
+        val memo = intent.extras!!.getString("memo")
+
+
+        val channel = NotificationChannel(
+            CHANNEL_ID,
+            CHANNEL_NAME,
+            NotificationManager.IMPORTANCE_HIGH)
+//        channel.enableVibration(false)
+//        channel.setSound(null, null)
+
+        manager.createNotificationChannel(channel)
 
         builder = NotificationCompat.Builder(context, CHANNEL_ID)
 
@@ -42,10 +51,6 @@ class AlarmReceiver: BroadcastReceiver() {
             action = "fullscreen_activity"
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
-
-        val code = intent?.extras!!.getLong("code")
-        val title = intent.extras!!.getString("title")
-        val memo = intent.extras!!.getString("memo")
 
         Log.d(this.toString(), "code: $code title: $title")
 
@@ -64,7 +69,7 @@ class AlarmReceiver: BroadcastReceiver() {
             .setContentText(memo)
             .setSmallIcon(R.mipmap.ic_launcher)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
-            .setDefaults(NotificationCompat.DEFAULT_VIBRATE or NotificationCompat.DEFAULT_LIGHTS)
+            .setDefaults(NotificationCompat.VISIBILITY_PUBLIC)
             .setCategory(NotificationCompat.CATEGORY_ALARM)
             .setAutoCancel(false)
             .setContentIntent(fullscreenPendingIntent)
