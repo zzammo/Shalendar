@@ -149,6 +149,10 @@ class MonthLibraryPresenter(
                 repository.let {
                     loadedList.addAll(it.readGroupSchedule(groupId))
                 }
+                for (schedule in loadedList) {
+                    if (schedule.userId != UserRepository.getInstance()!!.getUserId())
+                        schedule.title = "다른 사람 일정"
+                }
 
                 val cal = Calendar.getInstance()
                 for (schedule in loadedList) {
@@ -234,7 +238,6 @@ class MonthLibraryPresenter(
                     },
                     {
                         afterEnd()
-                        logger.logD("loadExternalSchedule - es 12.03:\n${externalScheduleList[LocalDate.of(2023, 12, 3)]}")
                     }
                 )
             } catch (e: Exception) {
@@ -317,9 +320,6 @@ class MonthLibraryPresenter(
     }
 
     private fun addToExternalScheduleList(year: Int, month: Int, day: Int, loadedList: ScheduleDto) {
-
-        logger.logD("addToExternalScheduleList - data:\n$year $month $day $loadedList")
-
         if (externalScheduleList[LocalDate.of(year, month, day)] == null)
             externalScheduleList[LocalDate.of(year, month, day)] = MutableLiveListData()
 

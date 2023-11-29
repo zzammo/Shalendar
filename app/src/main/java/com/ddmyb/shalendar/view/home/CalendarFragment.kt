@@ -22,6 +22,7 @@ import androidx.viewpager2.widget.ViewPager2
 import com.ddmyb.shalendar.R
 import com.ddmyb.shalendar.databinding.FragmentCalendarBinding
 import com.ddmyb.shalendar.domain.schedules.repository.ScheduleDto
+import com.ddmyb.shalendar.domain.users.UserRepository
 import com.ddmyb.shalendar.util.CalendarProvider
 import com.ddmyb.shalendar.util.NewScheduleDto
 import com.ddmyb.shalendar.view.calendar_list.presenter.MyViewModel
@@ -55,6 +56,11 @@ class CalendarFragment(private val groupId: String? = null): Fragment() {
                 selectedDateCalendar.set(year, month-1, 1)
                 val cal = Calendar.getInstance()
                 cal.set(year, month-1, day)
+                for (schedule in scheduleList) {
+                    if (schedule.userId != UserRepository.getInstance()!!.getUserId() &&
+                        schedule.groupId == "")
+                        scheduleList.remove(schedule)
+                }
                 openSlidingUpPanel(cal, ArrayList(scheduleList))
             }
         }

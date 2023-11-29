@@ -14,6 +14,7 @@ import com.ddmyb.shalendar.R
 import com.ddmyb.shalendar.databinding.FragmentMonthLibraryBinding
 import com.ddmyb.shalendar.domain.schedules.repository.ScheduleDto
 import com.ddmyb.shalendar.domain.schedules.repository.ScheduleRepository
+import com.ddmyb.shalendar.domain.setting.repository.SettingRepository
 import com.ddmyb.shalendar.domain.setting.repository.SettingRoom
 import com.ddmyb.shalendar.util.Logger
 import com.ddmyb.shalendar.util.MutableLiveListData
@@ -46,13 +47,13 @@ class MonthLibraryFragment(
             override fun doubleClick(year: Int, month: Int, day: Int, scheduleList: MutableList<ScheduleDto>) {
 
             }
-        },
-    private val lunarIndicate: Boolean = true
+        }
 ): Fragment(R.layout.fragment_month_library) {
 
     private lateinit var binding: FragmentMonthLibraryBinding
     private val logger = Logger("MonthCalendarPageFragment", true)
     private lateinit var dayOfWeekList: List<DayOfWeek>
+    private var lunarIndicate = true
 
     private val presenter = MonthLibraryPresenter(
         ScheduleRepository()
@@ -64,6 +65,8 @@ class MonthLibraryFragment(
         super.onViewCreated(view, savedInstanceState)
 
         binding = FragmentMonthLibraryBinding.bind(view)
+
+        lunarIndicate = SettingRepository.readSetting(requireContext()).lunar
 
         binding.calendarView.dayBinder = object :
             MonthDayBinder<DayViewContainer> {

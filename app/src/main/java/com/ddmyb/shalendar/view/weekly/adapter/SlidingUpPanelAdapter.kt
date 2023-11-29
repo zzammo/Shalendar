@@ -81,6 +81,7 @@ class SlidingUpPanelAdapter(
         holder.itemView.setOnClickListener {
             if (schedule.userId == UserRepository.getInstance()!!.getUserId()) {
                 val intent = Intent(context, ScheduleActivity::class.java)
+                Log.d("SlidingUpPanelAdapter", "itemView click - $schedule")
                 intent.putExtra("NewSchedule", NewScheduleDto(schedule.scheduleId, 0L, schedule.groupId))
                 context.startActivity(intent)
             }

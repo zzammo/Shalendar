@@ -20,10 +20,8 @@ class MonthCalendarDateScheduleViewHolder(
             drawable.setColor(ContextCompat.getColor(binding.root.context, R.color.google_blue))
         else if (schedule.userId == UserRepository().getUserId())
             drawable.setColor(ContextCompat.getColor(binding.root.context, schedule.color))
-        else {
+        else
             drawable.setColor(ContextCompat.getColor(binding.root.context, R.color.line_gray))
-            schedule.title = ""
-        }
 
         binding.schedule = schedule
 
