@@ -48,11 +48,16 @@ class FullScreenAlarmActivity : AppCompatActivity() {
 
         setting = settingRepository.settingDao().getAll()[0]
 
-        if (setting.vibration) {
-            vbCoroutine.start()
-        }else {
-            mpCoroutine.start()
-        }
+        Log.d("setting vibration", setting.vibration.toString())
+
+        vbCoroutine.start()
+        mpCoroutine.start()
+
+//        if (setting.vibration) {
+//            vbCoroutine.start()
+//        }else {
+//            mpCoroutine.start()
+//        }
 
         turnScreenOnAndKeyguardOff()
 
@@ -60,14 +65,21 @@ class FullScreenAlarmActivity : AppCompatActivity() {
             val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             manager.cancelAll()
 
-            if (setting.vibration){
-                vbCoroutine.cancel()
-                vibrator.cancel()
-            }else {
-                mpCoroutine.cancel()
-                if (mediaPlayer.isPlaying)
-                    mediaPlayer.stop()
-            }
+            vbCoroutine.cancel()
+            vibrator.cancel()
+
+            mpCoroutine.cancel()
+            if (mediaPlayer.isPlaying)
+                mediaPlayer.stop()
+
+//            if (setting.vibration){
+//                vbCoroutine.cancel()
+//                vibrator.cancel()
+//            }else {
+//                mpCoroutine.cancel()
+//                if (mediaPlayer.isPlaying)
+//                    mediaPlayer.stop()
+//            }
             finish()
         }
     }
@@ -123,14 +135,21 @@ class FullScreenAlarmActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
 
-        if (setting.vibration) {
-            vbCoroutine.cancel()
-            vibrator.cancel()
-        } else {
-            mpCoroutine.cancel()
-            if (mediaPlayer.isPlaying)
-                mediaPlayer.stop()
-            mediaPlayer.release()
-        }
+        vbCoroutine.cancel()
+        vibrator.cancel()
+        mpCoroutine.cancel()
+        if (mediaPlayer.isPlaying)
+            mediaPlayer.stop()
+        mediaPlayer.release()
+
+//        if (setting.vibration) {
+//            vbCoroutine.cancel()
+//            vibrator.cancel()
+//        } else {
+//            mpCoroutine.cancel()
+//            if (mediaPlayer.isPlaying)
+//                mediaPlayer.stop()
+//            mediaPlayer.release()
+//        }
     }
 }
