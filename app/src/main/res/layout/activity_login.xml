@@ -8,20 +8,7 @@
     tools:context=".view.login.LoginActivity">
 
 
-    <Button
-        android:id="@+id/btn_login"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="88dp"
-        android:layout_marginTop="32dp"
-        android:text="로그인"
-        android:textColor="@color/text_black"
-        android:backgroundTint="@color/light_green"
-        android:textSize="30dp"
-        android:paddingHorizontal="20dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/et_pwd" />
+
 
     <TextView
         android:id="@+id/textView3"
@@ -38,7 +25,7 @@
         app:layout_constraintVertical_bias="0.359" />
 
     <EditText
-        android:id="@+id/et_pwd"
+        android:id="@+id/et_pwd2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="30dp"
@@ -48,11 +35,11 @@
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0"
-        app:layout_constraintStart_toStartOf="@+id/et_email"
-        app:layout_constraintTop_toBottomOf="@+id/et_email" />
+        app:layout_constraintStart_toStartOf="@+id/etEmail2"
+        app:layout_constraintTop_toBottomOf="@+id/etEmail2" />
 
     <EditText
-        android:id="@+id/et_email"
+        android:id="@+id/etEmail2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:ems="10"
@@ -67,7 +54,7 @@
         app:layout_constraintVertical_bias="0.45" />
 
     <TextView
-        android:id="@+id/btn_register"
+        android:id="@+id/btn_register2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:backgroundTint="@color/white"
@@ -94,5 +81,20 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.2" />
+
+    <Button
+        android:id="@+id/btn_login"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="88dp"
+        android:layout_marginTop="32dp"
+        android:text="로그인"
+        android:textColor="@color/text_black"
+        android:backgroundTint="@color/light_green"
+        android:textSize="30dp"
+        android:paddingHorizontal="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/et_pwd2" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

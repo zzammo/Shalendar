@@ -54,6 +54,7 @@ class ScheduleRepository {
         groupRef.child(groupId).child("scheduleId").child(scheduleId).setValue(scheduleId)
         return
     }
+
     suspend fun readUserSchedule(): List<ScheduleDto> {
         val uID = firebaseAuth.currentUser!!.uid
 
@@ -68,6 +69,9 @@ class ScheduleRepository {
         }
 
         return scheduleList
+    }
+    suspend fun readOneSchedule(scheduleId : String): ScheduleDto {
+        return scheduleRef.child(scheduleId).get().await().getValue(ScheduleDto::class.java)!!
     }
     suspend fun readGroupSchedule(groupId: String): MutableList<ScheduleDto> {
 
