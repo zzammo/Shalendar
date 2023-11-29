@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import com.ddmyb.shalendar.databinding.DialogNewCalendarBinding
 import com.ddmyb.shalendar.domain.FBTest
@@ -19,18 +20,29 @@ import kotlinx.coroutines.launch
 class ParticipateTeamMateDialog : DialogFragment() {
     private lateinit var binding: DialogNewCalendarBinding
     private var dialogListener: DialogListener? = null
+    private lateinit var groupRepository: GroupRepository
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         binding = DialogNewCalendarBinding.inflate(inflater, container, false)
+        groupRepository = GroupRepository()
         binding.dncNameEt.hint = "참여 코드를 입력해주세요"
         binding.dncOkBtn.setOnClickListener {
             val participateCode = binding.dncNameEt.text.toString()
-            CoroutineScope(Dispatchers.IO).launch {
-                GroupRepository().inviteGroup(participateCode)
-                dismiss()
+
+
+            groupRepository.checkGroup(participateCode){
+                if(it){
+                    CoroutineScope(Dispatchers.IO).launch {
+                        groupRepository.inviteGroup(participateCode)
+                        dismiss()
+                    }
+                }
+                else{
+                    Toast.makeText(requireContext(), "참여코드가 올바르지 않습니다.", Toast.LENGTH_SHORT).show()
+                }
             }
         }
         binding.dncCancelBtn.setOnClickListener {
