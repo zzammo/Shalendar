@@ -64,9 +64,9 @@ class SettingFragment : Fragment(R.layout.fragment_setting) {
         binding.setVibrateSwitch.setOnCheckedChangeListener { _, isChecked ->
             setting.vibration = isChecked
         }
-        binding.setAutoAlarmSwitch.setOnCheckedChangeListener { _, isChecked ->
-            setting.alarm = isChecked
-        }
+//        binding.setAutoAlarmSwitch.setOnCheckedChangeListener { _, isChecked ->
+//            setting.alarm = isChecked
+//        }
         binding.setLunarSwitch.setOnCheckedChangeListener{ _, isChecked ->
             setting.lunar = isChecked
         }
@@ -90,9 +90,9 @@ class SettingFragment : Fragment(R.layout.fragment_setting) {
         if(setting.vibration){
             binding.setVibrateSwitch.isChecked = true
         }
-        if(setting.alarm){
-            binding.setAutoAlarmSwitch.isChecked = true
-        }
+//        if(setting.alarm){
+//            binding.setAutoAlarmSwitch.isChecked = true
+//        }
         if(setting.lunar){
             binding.setLunarSwitch.isChecked = true
         }
