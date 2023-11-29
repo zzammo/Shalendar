@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.KeyguardManager
 import android.app.NotificationManager
 import android.content.Context
+import android.media.AudioAttributes
 import android.media.MediaPlayer
 import android.os.Build
 import android.os.Bundle
@@ -48,11 +49,16 @@ class FullScreenAlarmActivity : AppCompatActivity() {
 
         setting = settingRepository.settingDao().getAll()[0]
 
-        if (setting.vibration) {
-            vbCoroutine.start()
-        }else {
-            mpCoroutine.start()
-        }
+        Log.d("setting vibration", setting.vibration.toString())
+
+        vbCoroutine.start()
+        mpCoroutine.start()
+
+//        if (setting.vibration) {
+//            vbCoroutine.start()
+//        }else {
+//            mpCoroutine.start()
+//        }
 
         turnScreenOnAndKeyguardOff()
 
@@ -60,14 +66,21 @@ class FullScreenAlarmActivity : AppCompatActivity() {
             val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             manager.cancelAll()
 
-            if (setting.vibration){
-                vbCoroutine.cancel()
-                vibrator.cancel()
-            }else {
-                mpCoroutine.cancel()
-                if (mediaPlayer.isPlaying)
-                    mediaPlayer.stop()
-            }
+            vbCoroutine.cancel()
+            vibrator.cancel()
+
+            mpCoroutine.cancel()
+            if (mediaPlayer.isPlaying)
+                mediaPlayer.stop()
+
+//            if (setting.vibration){
+//                vbCoroutine.cancel()
+//                vibrator.cancel()
+//            }else {
+//                mpCoroutine.cancel()
+//                if (mediaPlayer.isPlaying)
+//                    mediaPlayer.stop()
+//            }
             finish()
         }
     }
@@ -114,7 +127,8 @@ class FullScreenAlarmActivity : AppCompatActivity() {
             getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) { // minSdk=27, VERSION_CODES.M=23. 늘 if문 충족
-            vibrator.vibrate(VibrationEffect.createWaveform(longArrayOf(2000, 1000), intArrayOf(255, 0), 0))
+            val attributes = AudioAttributes.Builder().setContentType(AudioAttributes.CONTENT_TYPE_MUSIC).setUsage(AudioAttributes.USAGE_ALARM).build()
+            vibrator.vibrate(VibrationEffect.createWaveform(longArrayOf(2000, 1000), intArrayOf(255, 0), 0), attributes)
         } else {
             vibrator.vibrate(longArrayOf(1000, 2000), 0)
         }
@@ -123,14 +137,21 @@ class FullScreenAlarmActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
 
-        if (setting.vibration) {
-            vbCoroutine.cancel()
-            vibrator.cancel()
-        } else {
-            mpCoroutine.cancel()
-            if (mediaPlayer.isPlaying)
-                mediaPlayer.stop()
-            mediaPlayer.release()
-        }
+        vbCoroutine.cancel()
+        vibrator.cancel()
+        mpCoroutine.cancel()
+        if (mediaPlayer.isPlaying)
+            mediaPlayer.stop()
+        mediaPlayer.release()
+
+//        if (setting.vibration) {
+//            vbCoroutine.cancel()
+//            vibrator.cancel()
+//        } else {
+//            mpCoroutine.cancel()
+//            if (mediaPlayer.isPlaying)
+//                mediaPlayer.stop()
+//            mediaPlayer.release()
+//        }
     }
 }

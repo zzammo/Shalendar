@@ -206,55 +206,6 @@ class WeeklyCalendarPageFragment(private val now: Long, private val groupId: Str
     }
 
     fun displaySchedules(weeklyDates: WeeklyDates) {
-        // 테스트용 코드
-//        val cal1 = Calendar.getInstance()
-//        cal1.set(Calendar.MONTH, 11)
-//        cal1.set(Calendar.DATE,5)
-//        cal1.set(Calendar.HOUR_OF_DAY, 10)
-//        cal1.set(Calendar.MINUTE, 30)
-//        val cal2 = Calendar.getInstance()
-//        cal2.set(Calendar.MONTH, 11)
-//        cal2.set(Calendar.DATE,5)
-//        cal2.set(Calendar.HOUR_OF_DAY, 14)
-//        cal2.set(Calendar.MINUTE, 10)
-//
-//        val cal3 = Calendar.getInstance()
-//        cal3.set(Calendar.HOUR_OF_DAY, 11)
-//        cal3.set(Calendar.MINUTE, 30)
-//        val cal4 = Calendar.getInstance()
-//        cal4.set(Calendar.HOUR_OF_DAY, 15)
-//        cal4.set(Calendar.MINUTE, 10)
-//
-//        val scheduleDto1 = ScheduleDto()
-//        scheduleDto1.title="test";scheduleDto1.startMills=cal1.timeInMillis;scheduleDto1.endMills=cal2.timeInMillis
-//        val scheduleDto2 = ScheduleDto()
-//        scheduleDto2.title="text";scheduleDto2.startMills=cal3.timeInMillis;scheduleDto2.endMills=cal4.timeInMillis
-//        displaySchedule(scheduleDto1, scheduleDto1.startMills, false)
-//        displaySchedule(scheduleDto2, scheduleDto2.startMills, false)
-
-        //db 구현 이후 할 일: 반복문 돌면서 일주일 간 각 날짜마다 띄워야할 schedule을 db에서 들고와서 띄우기 (now 변수 활용)
-        //기간 쿼리 가능하면 그걸로 들고오자..
-
-//        GlobalScope.launch {
-//            var scheduleList = listOf<ScheduleDto>()
-//            val isGroupCalendar = false
-//            if (!isGroupCalendar) {
-//                scheduleList = dbRepository.readUserSchedule(dbRepository.getCurrentUserUid()!!)
-//            }
-//            else {
-//                val groupId = ""
-//                scheduleList = dbRepository.readGroupSchedule(groupId)
-//            }
-//
-//            Log.d(TAG, "get schedule: $scheduleList")
-//
-//            withContext(Dispatchers.Main) {
-//                clearScheduleViews()
-//                for (s in scheduleList) {
-//                    displaySchedule(s, s.startMills, isGroupCalendar)
-//                }
-//            }
-//        }
 
         val getUserScheduleJob = CoroutineScope(Dispatchers.IO).launch(start = CoroutineStart.LAZY) {
             var scheduleList = listOf<ScheduleDto>()
@@ -322,13 +273,14 @@ class WeeklyCalendarPageFragment(private val now: Long, private val groupId: Str
 
         layoutInflater.inflate(R.layout.custom_view_weekly_schedule, null) { scheduleView: View, _, _ ->
             Log.d(TAG, "custom view created")
-
             scheduleView.id = ViewCompat.generateViewId()
             scheduleView.alpha = 1/3f
+            val tv_scheduleName = scheduleView.findViewById<TextView>(R.id.schedule_name)
             val drawable = ContextCompat.getDrawable(context, R.drawable.weekly_schedule_background) as GradientDrawable
             if (groupId == null) {
                 Log.d(TAG, "Personal Schedule")
                 drawable.setColor(ContextCompat.getColor(context, schedule.color))
+                tv_scheduleName.text = schedule.title
             }
             else {
                 Log.d(TAG, "Group Schedule")
@@ -336,21 +288,22 @@ class WeeklyCalendarPageFragment(private val now: Long, private val groupId: Str
                     Log.d(TAG, "Group public schedule")
                     drawable.setColor(ContextCompat.getColor(context, R.color.google_blue))
                     schedule.color = R.color.google_blue
+                    tv_scheduleName.text = schedule.title
                 }
                 else if (schedule.userId != userRepository.getUserId()){
                     Log.d(TAG, "Group others schedule")
                     drawable.setColor(ContextCompat.getColor(context,R.color.line_gray))
                     schedule.color = R.color.line_gray
+                    schedule.title = "다른 팀원의 일정"
                 }
                 else{
                     Log.d(TAG, "Group my schedule")
                     drawable.setColor(ContextCompat.getColor(context,schedule.color))
+                    tv_scheduleName.text = schedule.title
                 }
             }
             scheduleView.background = drawable
             viewToScheduleMap.put(scheduleView.id, schedule)
-
-//            scheduleView.findViewById<TextView>(R.id.schedule_name).text = schedule.name
 
             scheduleContainers[dayOfWeek].addView(scheduleView)
 
