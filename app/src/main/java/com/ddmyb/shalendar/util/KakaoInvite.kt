@@ -22,8 +22,7 @@ class KakaoInvite(private val context: Context) {
                     "자세히 보기",
                     Link(
                         androidExecutionParams = mapOf(
-                            "productIdx" to "123", // productIdx를 적절한 값으로 변경 필요
-                            "pay_mode" to "benefit"
+                            "code" to desc
                         )
                     )
                 )
