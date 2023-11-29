@@ -203,8 +203,8 @@ class MonthLibraryFragment(
 
             dayTextView.text = day.toString()
 
-            val lunarDate = presenter.toLunar(data.date)
-            val lunarText = "${lunarDate.monthValue}/${lunarDate.dayOfMonth}"
+            val lunar = presenter.toLunar(data.date)
+            val lunarText = "${lunar.substring(4, 6)}/${lunar.substring(6, 8)}"
             lunarTextView.text = lunarText
             if (!lunarIndicate)
                 lunarTextView.visibility = View.GONE

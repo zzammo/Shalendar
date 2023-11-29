@@ -296,7 +296,7 @@ class MonthLibraryPresenter(
         return "$yyyy$mm$dd"
     }
 
-    fun toLunar(date: LocalDate): LocalDate {
+    fun toLunar(date: LocalDate): String {
         val year = date.year
         val month = date.monthValue
         val day = date.dayOfMonth
@@ -304,11 +304,11 @@ class MonthLibraryPresenter(
         val yyyymmdd = dateToYYYYMMDD(year, month, day)
         val lunar = LunarCalendar.SolarToLunar(yyyymmdd)
 
-        val lunarYear = lunar.substring(0, 4).toInt()
-        val lunarMonth = lunar.substring(4, 6).toInt()
-        val lunarDay = lunar.substring(6, 8).toInt()
+//        val lunarYear = lunar.substring(0, 4).toInt()
+//        val lunarMonth = lunar.substring(4, 6).toInt()
+//        val lunarDay = lunar.substring(6, 8).toInt()
 
-        return LocalDate.of(lunarYear, lunarMonth, lunarDay)
+        return lunar
     }
 
 
