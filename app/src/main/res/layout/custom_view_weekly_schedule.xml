@@ -15,9 +15,15 @@
         android:id="@+id/schedule_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="15sp"
+        android:textSize="10sp"
+        android:textColor="@color/black"
         android:gravity="center_vertical"
-        tools:text="일정"
+        tools:text="일정이름이요"
+        android:layout_marginTop="5dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginEnd="5dp"
+        android:maxLines="2"
+        android:ellipsize="end"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
 

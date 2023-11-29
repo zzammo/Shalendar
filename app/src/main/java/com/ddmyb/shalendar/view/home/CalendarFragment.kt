@@ -16,6 +16,7 @@ import com.ddmyb.shalendar.databinding.FragmentCalendarBinding
 import com.ddmyb.shalendar.domain.schedules.repository.ScheduleDto
 import com.ddmyb.shalendar.util.CalendarProvider
 import com.ddmyb.shalendar.util.NewScheduleDto
+import com.ddmyb.shalendar.view.lunar.LunarCalendar
 import com.ddmyb.shalendar.view.month.MonthCalendarFragment
 import com.ddmyb.shalendar.view.month.MonthLibraryDayClickListener
 import com.ddmyb.shalendar.view.month.MonthLibraryFragment
@@ -110,6 +111,9 @@ class CalendarFragment(private val groupId: String? = null): Fragment() {
 
     fun openSlidingUpPanel(cal:Calendar, scheduleList: ArrayList<ScheduleDto>) {
         binding.tvToday.text = getDateString(cal)
+        val simpleLunarString = LunarCalendar.SolarToLunar(getSimpleDateString(cal))
+        Log.d("WeGlonD", simpleLunarString)
+        binding.tvLunar.text = "음력 ${simpleLunarString.substring(4,6).toInt()}월 ${simpleLunarString.substring(6).toInt()}일"
         val slidingUpPanelAdapter = SlidingUpPanelAdapter(scheduleList, cal, requireContext())
         binding.planRecyclerView.adapter = slidingUpPanelAdapter
         slidingUpPanelAdapter.notifyDataSetChanged()
@@ -138,5 +142,9 @@ class CalendarFragment(private val groupId: String? = null): Fragment() {
             Calendar.SATURDAY -> return str + "토요일"
             else -> return str
         }
+    }
+
+    private fun getSimpleDateString(cal: Calendar): String {
+        return "${cal.get(Calendar.YEAR)}${String.format("%02d", cal.get(Calendar.MONTH)+1)}${String.format("%02d", cal.get(Calendar.DATE))}"
     }
 }
