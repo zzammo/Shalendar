@@ -84,7 +84,11 @@ class MonthLibraryPresenter(
 
                     val loadedList = mutableListOf<ScheduleDto>()
                     repository.let {
-                        loadedList.addAll(it.readUserSchedule())
+                        loadedList.addAll(it.readUserAllSchedule())
+                    }
+                    for (schedule in loadedList) {
+                        if (schedule.groupId != "")
+                            schedule.color = R.color.google_blue
                     }
 
                     val cal = Calendar.getInstance()
