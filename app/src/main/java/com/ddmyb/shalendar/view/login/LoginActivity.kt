@@ -25,7 +25,10 @@ class LoginActivity : AppCompatActivity() {
                 binding.etEmail.text.toString(),
                 binding.etPwd.text.toString(),
                 applicationContext
-            )
+            ){
+                this.finish()
+            }
+
         }
 
         binding.btnRegister.setOnClickListener { //회원가입 화면으로 이동

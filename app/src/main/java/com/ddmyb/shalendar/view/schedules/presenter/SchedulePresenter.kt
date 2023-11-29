@@ -10,6 +10,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
+import com.ddmyb.shalendar.R
 import com.ddmyb.shalendar.background_service.alarm.AlarmService
 import com.ddmyb.shalendar.domain.Alarms.Alarm
 import com.ddmyb.shalendar.domain.users.UserRepository
@@ -75,6 +76,7 @@ class SchedulePresenter {
             view.showStartDateText(s.startLocalDatetime.year, DateInfo(s.startLocalDatetime.monthValue, s.startLocalDatetime.dayOfMonth, s.startLocalDatetime.dayOfWeek.value), true)
             view.showEndDateText(s.endLocalDatetime.year, DateInfo(s.endLocalDatetime.monthValue, s.endLocalDatetime.dayOfMonth, s.endLocalDatetime.dayOfWeek.value), true)
             this.schedule = s
+            setGroupMode()
         } else{
             CoroutineScope(Dispatchers.IO).launch {
                 val s = Schedule(scheduleRepository!!.readOneSchedule(newScheduleDto.scheduleId))
@@ -91,8 +93,16 @@ class SchedulePresenter {
         }
     }
 
+    private fun setGroupMode(){
+        if(this.schedule.groupId != ""){
+            view.changeGroupMode()
+            schedule.color = R.color.google_blue
+        }
+    }
+
     private fun setSchedule(schedule: Schedule){
         this.schedule = schedule
+        setGroupMode()
     }
 
     fun getSchedule(): Schedule {

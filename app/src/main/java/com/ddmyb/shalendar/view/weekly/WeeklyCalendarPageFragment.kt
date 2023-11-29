@@ -210,7 +210,7 @@ class WeeklyCalendarPageFragment(private val now: Long, private val groupId: Str
         val getUserScheduleJob = CoroutineScope(Dispatchers.IO).launch(start = CoroutineStart.LAZY) {
             var scheduleList = listOf<ScheduleDto>()
             if (groupId == null) {
-                scheduleList = scheduleRepository.readUserSchedule()
+                scheduleList = scheduleRepository.readUserAllSchedule()
             }
             else {
                 scheduleList = scheduleRepository.readGroupSchedule(groupId)
@@ -279,8 +279,11 @@ class WeeklyCalendarPageFragment(private val now: Long, private val groupId: Str
             val drawable = ContextCompat.getDrawable(context, R.drawable.weekly_schedule_background) as GradientDrawable
             if (groupId == null) {
                 Log.d(TAG, "Personal Schedule")
+                if (schedule.groupId != "")
+                    schedule.color = R.color.google_blue
                 drawable.setColor(ContextCompat.getColor(context, schedule.color))
                 tv_scheduleName.text = schedule.title
+
             }
             else {
                 Log.d(TAG, "Group Schedule")
