@@ -7,7 +7,7 @@ import androidx.databinding.DataBindingUtil
 import com.ddmyb.shalendar.R
 import com.ddmyb.shalendar.databinding.ActivitySettingSaveTestBinding
 import com.ddmyb.shalendar.domain.setting.Setting
-import com.ddmyb.shalendar.domain.setting.repository.SettingRepository
+import com.ddmyb.shalendar.domain.setting.repository.SettingRoom
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -17,7 +17,7 @@ class SettingSaveTestActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivitySettingSaveTestBinding
 
-    private lateinit var db: SettingRepository
+    private lateinit var db: SettingRoom
     private lateinit var setting: Setting
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -25,7 +25,7 @@ class SettingSaveTestActivity : AppCompatActivity() {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_setting_save_test)
 
         CoroutineScope(Dispatchers.IO).launch {
-            db = SettingRepository.getInstance(applicationContext)
+            db = SettingRoom.getInstance(applicationContext)
 
             if (db.settingDao().getAll().isEmpty()) {
                 setting = Setting()
