@@ -152,6 +152,8 @@ class MonthLibraryPresenter(
                 for (schedule in loadedList) {
                     if (schedule.userId != UserRepository.getInstance()!!.getUserId())
                         schedule.title = "다른 사람 일정"
+                    else if(schedule.groupId != groupId)
+                        schedule.title = "${schedule.groupId}-${schedule.title}"
                 }
 
                 val cal = Calendar.getInstance()

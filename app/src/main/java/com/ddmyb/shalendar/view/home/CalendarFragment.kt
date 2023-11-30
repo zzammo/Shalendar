@@ -46,20 +46,22 @@ class CalendarFragment(private val groupId: String? = null): Fragment() {
     private var fragmentNum = 0
     private val monthLibraryDayClickListener =
         object : MonthLibraryDayClickListener {
-            override fun click(year: Int, month: Int, day: Int, scheduleList: MutableList<ScheduleDto>) {
+            override fun click(year: Int, month: Int, day: Int, groupId: String?, scheduleList: MutableList<ScheduleDto>) {
                 Log.d("CalendarFragment", "clicked $year/$month/$day")
                 selectedDateCalendar.set(year, month-1, day)
             }
 
-            override fun doubleClick(year: Int, month: Int, day: Int, scheduleList: MutableList<ScheduleDto>) {
+            override fun doubleClick(year: Int, month: Int, day: Int, groupId: String?, scheduleList: MutableList<ScheduleDto>) {
                 Log.d("CalendarFragment", "double clicked $year/$month/$day")
                 selectedDateCalendar.set(year, month-1, 1)
                 val cal = Calendar.getInstance()
                 cal.set(year, month-1, day)
                 val showScheduleList = mutableListOf<ScheduleDto>()
                 for (schedule in scheduleList) {
-                    if (schedule.userId != UserRepository.getInstance()!!.getUserId() &&
-                        schedule.groupId == "") continue
+                    if ((schedule.userId != UserRepository.getInstance()!!.getUserId() &&
+                                schedule.groupId == "") ||
+                        schedule.groupId != (groupId ?: "")
+                    ) continue
                     showScheduleList.add(schedule)
                 }
                 openSlidingUpPanel(cal, ArrayList(showScheduleList))

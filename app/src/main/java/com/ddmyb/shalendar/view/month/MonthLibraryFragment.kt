@@ -40,11 +40,11 @@ class MonthLibraryFragment(
     private val groupId: String? = null,
     private val clickListener: MonthLibraryDayClickListener =
         object: MonthLibraryDayClickListener{
-            override fun click(year: Int, month: Int, day: Int, scheduleList: MutableList<ScheduleDto>) {
+            override fun click(year: Int, month: Int, day: Int, groupId: String?, scheduleList: MutableList<ScheduleDto>) {
 
             }
 
-            override fun doubleClick(year: Int, month: Int, day: Int, scheduleList: MutableList<ScheduleDto>) {
+            override fun doubleClick(year: Int, month: Int, day: Int, groupId: String?, scheduleList: MutableList<ScheduleDto>) {
 
             }
         }
@@ -224,6 +224,7 @@ class MonthLibraryFragment(
                         year,
                         month,
                         day,
+                        this@MonthLibraryFragment.groupId,
                         (scheduleListView.adapter!! as
                             MonthCalendarDateScheduleRVAdapter).scheduleList.list
                     )
@@ -236,6 +237,7 @@ class MonthLibraryFragment(
                         year,
                         month,
                         day,
+                        this@MonthLibraryFragment.groupId,
                         (scheduleListView.adapter!! as
                                 MonthCalendarDateScheduleRVAdapter).scheduleList.list
                     )
