@@ -36,6 +36,31 @@ class GroupRepository {
         }
     }
 
+//    suspend fun readUsersGroup(): MutableList<GroupDto> {
+//        val uID = firebaseAuth.currentUser!!.uid
+//        val groupIdList: MutableList<String> = mutableListOf()
+//        for (curgroupIds in userRef.child(uID).child("groupId").get().await().children) {
+//            groupIdList.add(curgroupIds.key.toString())
+//        }
+//
+//        val groupList: MutableList<GroupDto> = mutableListOf()
+//        for (groupId in groupIdList) {
+//            var curGroup: GroupDto = GroupDto()
+//            curGroup.groupId = groupId
+//            curGroup.groupName = groupRef.child(groupId).child("groupName").get().await().getValue(String::class.java).toString()
+//            curGroup.memberCnt = groupRef.child(groupId).child("memberCnt").get().await().getValue(Int::class.java)!!.toInt()
+//            curGroup.latestUpdateMills= groupRef.child(groupId).child("latestUpdateMills").get().await().getValue(Long::class.java)!!.toLong()
+//
+//            for (curUserId1 in groupRef.child(groupId).child("userId").get().await().children) {
+//                var curUserId = curUserId1.key.toString()
+//                curGroup.userId.add(userRef.child(curUserId).child("nickName").get().await().getValue(String::class.java).toString())
+//            }
+//            groupList.add(curGroup)
+//        }
+//        return groupList
+//    }
+
+
     suspend fun readUsersGroup(): MutableList<GroupDto> {
         val uID = firebaseAuth.currentUser!!.uid
         val groupIdList: MutableList<String> = mutableListOf()
@@ -46,12 +71,13 @@ class GroupRepository {
         val groupList: MutableList<GroupDto> = mutableListOf()
         for (groupId in groupIdList) {
             var curGroup: GroupDto = GroupDto()
+            val tmp = groupRef.child(groupId).get().await()
             curGroup.groupId = groupId
-            curGroup.groupName = groupRef.child(groupId).child("groupName").get().await().getValue(String::class.java).toString()
-            curGroup.memberCnt = groupRef.child(groupId).child("memberCnt").get().await().getValue(Int::class.java)!!.toInt()
-            curGroup.latestUpdateMills= groupRef.child(groupId).child("latestUpdateMills").get().await().getValue(Long::class.java)!!.toLong()
+            curGroup.groupName = tmp.child("groupName").getValue(String::class.java).toString()
+            curGroup.memberCnt = tmp.child("memberCnt").getValue(Int::class.java)!!.toInt()
+            curGroup.latestUpdateMills= tmp.child("latestUpdateMills").getValue(Long::class.java)!!.toLong()
 
-            for (curUserId1 in groupRef.child(groupId).child("userId").get().await().children) {
+            for (curUserId1 in tmp.child("userId").children) {
                 var curUserId = curUserId1.key.toString()
                 curGroup.userId.add(userRef.child(curUserId).child("nickName").get().await().getValue(String::class.java).toString())
             }

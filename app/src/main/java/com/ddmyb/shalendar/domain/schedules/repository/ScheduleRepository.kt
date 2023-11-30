@@ -1,7 +1,12 @@
 package com.ddmyb.shalendar.domain.schedules.repository
 
+import android.util.Log
+import com.ddmyb.shalendar.domain.schedules.Schedule
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.tasks.await
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -73,26 +78,63 @@ class ScheduleRepository {
         return scheduleList
     }
 
-    suspend fun readUserAllSchedule(): List<ScheduleDto> {
-        val uID = firebaseAuth.currentUser!!.uid
+//    suspend fun readUserAllSchedule(): List<ScheduleDto> {
+//        val uID = firebaseAuth.currentUser!!.uid
+//
+//        val scheduleIdList = mutableListOf<String>()
+//        for (curscheduleId in userRef.child(uID).child("scheduleId").get().await().children) {
+//            scheduleIdList.add(curscheduleId.key.toString())
+//        }
+//
+//        val GroupIdList = mutableListOf<String>()
+//        for (curgroupId in userRef.child(uID).child("groupId").get().await().children) {
+//            val curGroupId = curgroupId.key.toString()
+//            for (curscheduleId in groupRef.child(curGroupId).child("scheduleId").get().await().children) {
+//                scheduleIdList.add(curscheduleId.key.toString())
+//            }
+//        }
+//        val scheduleList = mutableListOf<ScheduleDto>()
+//        for (scheduleId in scheduleIdList) {
+//            scheduleList.add(scheduleRef.child(scheduleId).get().await().getValue(ScheduleDto::class.java)!!)
+//        }
+//        return scheduleList
+//    }
 
-        val scheduleIdList = mutableListOf<String>()
-        for (curscheduleId in userRef.child(uID).child("scheduleId").get().await().children) {
-            scheduleIdList.add(curscheduleId.key.toString())
+    suspend fun readUserAllSchedule(): List<ScheduleDto> = coroutineScope {
+        Log.d("readUserAllSchedule", "start")
+        val uID = firebaseAuth.currentUser!!.uid
+        val scheduleList = mutableListOf<ScheduleDto>()
+
+        val userScheduleDeferred = async (start = CoroutineStart.LAZY){
+            userRef.child(uID).child("scheduleId").get().await().children.mapNotNull { it.key }
         }
 
-        val GroupIdList = mutableListOf<String>()
-        for (curgroupId in userRef.child(uID).child("groupId").get().await().children) {
-            val curGroupId = curgroupId.key.toString()
-            for (curscheduleId in groupRef.child(curGroupId).child("scheduleId").get().await().children) {
-                scheduleIdList.add(curscheduleId.key.toString())
+        val groupScheduleDeferred = async (start = CoroutineStart.LAZY){
+            userRef.child(uID).child("groupId").get().await().children.flatMap { curgroupId ->
+                val curGroupId = curgroupId.key.toString()
+                groupRef.child(curGroupId).child("scheduleId").get().await().children.mapNotNull { it.key }
             }
         }
-        val scheduleList = mutableListOf<ScheduleDto>()
-        for (scheduleId in scheduleIdList) {
-            scheduleList.add(scheduleRef.child(scheduleId).get().await().getValue(ScheduleDto::class.java)!!)
+        userScheduleDeferred.start()
+        groupScheduleDeferred.start()
+
+        val allSchedules = (userScheduleDeferred.await() + groupScheduleDeferred.await()).distinct()
+        Log.d("allSchedules", allSchedules.toString())
+
+        val scheduleDtoDeferredList = allSchedules.map { scheduleId ->
+            async (start = CoroutineStart.LAZY){
+                scheduleRef.child(scheduleId).get().await().getValue(ScheduleDto::class.java)
+            }
         }
-        return scheduleList
+
+        scheduleDtoDeferredList.forEach { deferred ->
+            deferred.start()
+            val scheduleDto = deferred.await()
+            if (scheduleDto != null) {
+                scheduleList.add(scheduleDto)
+            }
+        }
+        scheduleList
     }
     suspend fun readOneSchedule(scheduleId : String): ScheduleDto {
         return scheduleRef.child(scheduleId).get().await().getValue(ScheduleDto::class.java)!!
