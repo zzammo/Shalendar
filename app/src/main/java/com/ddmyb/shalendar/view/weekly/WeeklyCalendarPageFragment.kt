@@ -287,23 +287,24 @@ class WeeklyCalendarPageFragment(private val now: Long, private val groupId: Str
             }
             else {
                 Log.d(TAG, "Group Schedule")
-                if (schedule.groupId != "") {
+                if (schedule.groupId == groupId) {
                     Log.d(TAG, "Group public schedule")
-                    drawable.setColor(ContextCompat.getColor(context, R.color.google_blue))
-                    schedule.color = R.color.google_blue
                     tv_scheduleName.text = schedule.title
+                }
+                else if(schedule.groupId != "") {
+                    Log.d(TAG, "Another Group schedule")
+                    tv_scheduleName.text = "${schedule.groupId} - ${schedule.title}"
                 }
                 else if (schedule.userId != userRepository.getUserId()){
                     Log.d(TAG, "Group others schedule")
-                    drawable.setColor(ContextCompat.getColor(context,R.color.line_gray))
                     schedule.color = R.color.line_gray
                     schedule.title = "다른 팀원의 일정"
                 }
                 else{
                     Log.d(TAG, "Group my schedule")
-                    drawable.setColor(ContextCompat.getColor(context,schedule.color))
                     tv_scheduleName.text = schedule.title
                 }
+                drawable.setColor(ContextCompat.getColor(context,schedule.color))
             }
             scheduleView.background = drawable
             viewToScheduleMap.put(scheduleView.id, schedule)
@@ -354,6 +355,16 @@ class WeeklyCalendarPageFragment(private val now: Long, private val groupId: Str
 
             if ((blankStartCal.timeInMillis <= schedule.endMills && schedule.startMills < blankEndCal.timeInMillis)
                 || (blankStartCal.timeInMillis <= schedule.startMills && schedule.endMills <= blankEndCal.timeInMillis)) {
+//                if (groupId != null && schedule.groupId != "" && schedule.groupId != groupId) continue
+//                if (groupId != null && schedule.groupId == "" && schedule.userId != userRepository.getUserId()) continue
+
+                if (groupId != null) {
+                    if (schedule.groupId != ""){
+                        if (schedule.groupId != groupId) continue
+                    } else {
+                        if (schedule.userId != userRepository.getUserId()) continue
+                    }
+                }
                 listOfSchedule.add(schedule)
             }
         }
