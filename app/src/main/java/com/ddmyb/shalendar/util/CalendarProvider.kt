@@ -104,7 +104,6 @@ object CalendarProvider {
             selection, selectionArgs,
             null,
         )
-
         logger.logD("$cur")
         while (cur?.moveToNext() == true) {
             val id = cur.getInt(EVENTS_ID_INDEX)
@@ -119,7 +118,6 @@ object CalendarProvider {
             val data = CalendarProvide(id.toString(), title, location, start, end, allDay, description, color)
 
             logger.logD("$data")
-
             if (id == targetId) {
                 withContext(Dispatchers.Main) {
                     afterEach(data)

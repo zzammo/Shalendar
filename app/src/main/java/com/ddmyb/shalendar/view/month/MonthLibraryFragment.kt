@@ -2,6 +2,7 @@ package com.ddmyb.shalendar.view.month
 
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -40,11 +41,11 @@ class MonthLibraryFragment(
     private val groupId: String? = null,
     private val clickListener: MonthLibraryDayClickListener =
         object: MonthLibraryDayClickListener{
-            override fun click(year: Int, month: Int, day: Int, scheduleList: MutableList<ScheduleDto>) {
+            override fun click(year: Int, month: Int, day: Int, groupId: String?, scheduleList: MutableList<ScheduleDto>) {
 
             }
 
-            override fun doubleClick(year: Int, month: Int, day: Int, scheduleList: MutableList<ScheduleDto>) {
+            override fun doubleClick(year: Int, month: Int, day: Int, groupId: String?, scheduleList: MutableList<ScheduleDto>) {
 
             }
         }
@@ -224,6 +225,7 @@ class MonthLibraryFragment(
                         year,
                         month,
                         day,
+                        this@MonthLibraryFragment.groupId,
                         (scheduleListView.adapter!! as
                             MonthCalendarDateScheduleRVAdapter).scheduleList.list
                     )
@@ -236,6 +238,7 @@ class MonthLibraryFragment(
                         year,
                         month,
                         day,
+                        this@MonthLibraryFragment.groupId,
                         (scheduleListView.adapter!! as
                                 MonthCalendarDateScheduleRVAdapter).scheduleList.list
                     )

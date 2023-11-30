@@ -1,6 +1,7 @@
 package com.ddmyb.shalendar.domain.schedules.repository
 
 import android.util.Log
+import com.ddmyb.shalendar.R
 import com.ddmyb.shalendar.domain.schedules.Schedule
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
@@ -93,6 +94,7 @@ class ScheduleRepository {
 
     suspend fun readGroupSchedule(groupId: String): MutableList<ScheduleDto>{
         init()
+        val uID = firebaseAuth.currentUser!!.uid
 
         return (groupSnapshot.child(groupId).child("userId").children.flatMap { userId ->
             userSnapshot.child(userId.key!!).child("scheduleId").children.map { scheduleId ->
@@ -100,6 +102,17 @@ class ScheduleRepository {
             }
         } + groupSnapshot.child(groupId).child("scheduleId").children.map { scheduleId ->
             scheduleSnapshot.child(scheduleId.key!!).getValue(ScheduleDto::class.java)!!
+        } + userSnapshot.child(uID).child("groupId").children.flatMap { id ->
+            if (groupId != id.key!!) {
+                groupSnapshot.child(id.key!!).child("scheduleId").children.map { scheduleId ->
+                    val scheduleDto = scheduleSnapshot.child(scheduleId.key!!).getValue(ScheduleDto::class.java)!!
+                    scheduleDto.groupId =  groupSnapshot.child(id.key!!).child("groupName").getValue(String::class.java)!!
+                    scheduleDto.color = R.color.olive_green
+                    scheduleDto
+                }
+            }else{
+                listOf()
+            }
         }).toMutableList()
     }
 

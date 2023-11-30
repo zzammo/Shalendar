@@ -3,6 +3,7 @@ package com.ddmyb.shalendar.view.home
 //import com.ddmyb.shalendar.view.dialog.TestDialog
 
 import android.app.AlarmManager
+import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -237,6 +238,24 @@ class MainActivity : AppCompatActivity(), DialogListener {
             startActivity(intent)
         }
     }
+
+    override fun onBackPressed() {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("종료 확인")
+        builder.setMessage("앱을 종료하시겠습니까?")
+
+        builder.setPositiveButton("확인") { _, _ ->
+            super.onBackPressed() // 앱 종료
+        }
+
+        builder.setNegativeButton("취소") { dialog, _ ->
+            dialog.dismiss() // 다이얼로그 닫기
+        }
+
+        val dialog = builder.create()
+        dialog.show()
+    }
+
 
     override fun onDialogClosed(message: String?) {
         calendarListFragment.getGroup()

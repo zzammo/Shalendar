@@ -1,5 +1,6 @@
 package com.ddmyb.shalendar.view.external_calendar
 
+import android.annotation.SuppressLint
 import android.app.ProgressDialog
 import android.os.Bundle
 import android.util.Log
@@ -20,10 +21,11 @@ class GetCalendarList : AppCompatActivity() {
     private lateinit var calendarList: MutableList<Pair<String, Boolean>>
     private var selectedList: MutableList<Int> = mutableListOf()
     private var beforeSetting: MutableList<String> = mutableListOf()
-    private var idMap = mutableMapOf<Int, String>()
+    private var accountCalendar = mutableMapOf<Int, String>()
     private lateinit var adapter: GetCalendarListAdapter
     private lateinit var db:SettingDao
     private lateinit var setting:Setting
+    @SuppressLint("NotifyDataSetChanged")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityGetAnotherCalendarBinding.inflate(layoutInflater)
@@ -50,15 +52,25 @@ class GetCalendarList : AppCompatActivity() {
         binding.anotherCalendarRv.layoutManager = LinearLayoutManager(this)
 
         CalendarProvider.getCalendarList(this.contentResolver) { calendarMap ->
-            idMap = calendarMap.toMutableMap()
+            accountCalendar = calendarMap.toMutableMap()
+
+            for( i in accountCalendar){
+                Log.d("oz GetCalendar", "${i.key} : ${i.value} idMap")
+            }
+
+            for ( i in calendarList){
+                Log.d("oz GetCalendar", "${i.first} ${i.second} calendarList")
+            }
             calendarList.clear()
             if(setting.calendars!=""){
-                beforeSetting = setting.calendars.split('.').mapNotNull { idMap[it.toInt()] }.toMutableList()
+                beforeSetting = setting.calendars.split('.').mapNotNull { accountCalendar[it.toInt()] }.toMutableList()
             }
 
             for(i in beforeSetting){
-                Log.d("oz",i+"??????")
+                val keyWithValues = accountCalendar.entries.find { it.value == i }?.key
+                Log.d("oz GetCalendar","before setting ${i} ${keyWithValues}")
             }
+
             for (name in calendarMap.values) {
                 calendarList.add(Pair(name, beforeSetting.contains(name)))
             }
@@ -69,7 +81,7 @@ class GetCalendarList : AppCompatActivity() {
             selectedList = adapter.getSelectedPositions()
             val updatedSelectedList = selectedList.map { index ->
                 val value = calendarList[index].first
-                val keyWithValue = idMap.entries.find { it.value == value }?.key
+                val keyWithValue = accountCalendar.entries.find { it.value == value }?.key
                 keyWithValue ?: index // keyWithValue가 null이면 기존 index 유지
             }
             selectedList.clear()

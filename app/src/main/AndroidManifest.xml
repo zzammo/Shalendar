@@ -95,7 +95,9 @@
         <activity
             android:name=".view.search_place.ProgrammaticAutocompleteGeocodingActivity"
             android:exported="false"
-            android:label="@string/title_activity_place" />
+            android:label="@string/title_activity_place"
+            android:screenOrientation="portrait"
+            />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
@@ -106,29 +108,37 @@
 
         <activity
             android:name=".view.schedules.ScheduleActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".view.test.TimeTableTestActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".view.login.SignUpActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".view.login.ChangePwdActivity"
-            android:exported="false"/>
+            android:exported="false"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".view.external_calendar.GetCalendarList"
-            android:exported="false"/>
+            android:exported="false"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".view.login.LoginActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".view.test.TestActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".util.KakaoInvite"
             android:exported="false"
-            tools:ignore="Instantiatable">
+            tools:ignore="Instantiatable"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -147,7 +157,8 @@
         </activity>
         <activity
             android:name=".view.home.MainActivity"
-            android:exported="true">
+            android:exported="true"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
