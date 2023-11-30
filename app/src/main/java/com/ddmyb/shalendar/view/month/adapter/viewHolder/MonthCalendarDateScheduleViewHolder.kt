@@ -16,12 +16,10 @@ class MonthCalendarDateScheduleViewHolder(
 
         val drawable = ContextCompat.getDrawable(binding.root.context, R.drawable.weekly_holiday) as GradientDrawable
 //        drawable.mutate()
-        if (schedule.groupId != "")
-            drawable.setColor(ContextCompat.getColor(binding.root.context, R.color.google_blue))
-        else if (schedule.userId == UserRepository().getUserId())
-            drawable.setColor(ContextCompat.getColor(binding.root.context, schedule.color))
-        else
+        if (schedule.groupId == "" && schedule.userId != UserRepository.getInstance()!!.getUserId())
             drawable.setColor(ContextCompat.getColor(binding.root.context, R.color.line_gray))
+        else
+            drawable.setColor(ContextCompat.getColor(binding.root.context, schedule.color))
 
         binding.schedule = schedule
 
