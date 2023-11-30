@@ -299,6 +299,7 @@ class WeeklyCalendarPageFragment(private val now: Long, private val groupId: Str
                     Log.d(TAG, "Group others schedule")
                     schedule.color = R.color.line_gray
                     schedule.title = "다른 팀원의 일정"
+                    tv_scheduleName.text = schedule.title
                 }
                 else{
                     Log.d(TAG, "Group my schedule")
