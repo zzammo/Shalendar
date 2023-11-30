@@ -1,12 +1,16 @@
 package com.ddmyb.shalendar.domain.groups.repository
 
 import com.ddmyb.shalendar.domain.groups.Group
+import com.ddmyb.shalendar.domain.schedules.repository.ScheduleDto
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.Query
 import com.google.firebase.database.ValueEventListener
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.tasks.await
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -61,29 +65,49 @@ class GroupRepository {
 //    }
 
 
-    suspend fun readUsersGroup(): MutableList<GroupDto> {
+    suspend fun readUsersGroup(): MutableList<GroupDto> = coroutineScope{
         val uID = firebaseAuth.currentUser!!.uid
         val groupIdList: MutableList<String> = mutableListOf()
-        for (curgroupIds in userRef.child(uID).child("groupId").get().await().children) {
-            groupIdList.add(curgroupIds.key.toString())
+
+        userRef.child(uID).child("groupId").get().await().children.map {
+            groupIdList.add(it.key!!)
         }
 
         val groupList: MutableList<GroupDto> = mutableListOf()
-        for (groupId in groupIdList) {
-            var curGroup: GroupDto = GroupDto()
-            val tmp = groupRef.child(groupId).get().await()
-            curGroup.groupId = groupId
-            curGroup.groupName = tmp.child("groupName").getValue(String::class.java).toString()
-            curGroup.memberCnt = tmp.child("memberCnt").getValue(Int::class.java)!!.toInt()
-            curGroup.latestUpdateMills= tmp.child("latestUpdateMills").getValue(Long::class.java)!!.toLong()
 
-            for (curUserId1 in tmp.child("userId").children) {
-                var curUserId = curUserId1.key.toString()
-                curGroup.userId.add(userRef.child(curUserId).child("nickName").get().await().getValue(String::class.java).toString())
+        val tmpDeferredList = groupIdList.map {
+            async(start = CoroutineStart.LAZY) {
+                groupRef.child(it).get().await()
             }
-            groupList.add(curGroup)
         }
-        return groupList
+
+        tmpDeferredList.forEach {
+            it.start()
+            val tmp = it.await()
+            if (tmp != null){
+                var curGroup = GroupDto()
+                curGroup.groupId = tmp.child("groupId").getValue(String::class.java)!!
+                curGroup.groupName = tmp.child("groupName").getValue(String::class.java).toString()
+                curGroup.memberCnt = tmp.child("memberCnt").getValue(Int::class.java)!!.toInt()
+                curGroup.latestUpdateMills= tmp.child("latestUpdateMills").getValue(Long::class.java)!!.toLong()
+
+                val nickNameDeferredList = tmp.child("userId").children.map {
+                    async(start = CoroutineStart.LAZY) {
+                        userRef.child(it.key!!).child("nickName").get().await().getValue(String::class.java)
+                    }
+                }
+                nickNameDeferredList.forEach {nickNameDeferred ->
+                    nickNameDeferred.start()
+                    val nickName = nickNameDeferred.await()
+                    if (nickName != null) {
+                        curGroup.userId.add(nickName)
+                    }
+                }
+
+                groupList.add(curGroup)
+            }
+        }
+        groupList
     }
 
     fun checkGroup(groupId: String, callback: (Boolean) -> Unit) {
