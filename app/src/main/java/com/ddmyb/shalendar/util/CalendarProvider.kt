@@ -41,7 +41,7 @@ object CalendarProvider {
     private const val EVENTS_DESCRIPTION_INDEX: Int = 6
     private const val EVENTS_COLOR_INDEX: Int = 7
 
-    private val logger = Logger("CalendarProvider", false)
+    private val logger = Logger("CalendarProvider", true)
 
     fun getCalendars(contentResolver: ContentResolver, idList: List<Int>, afterEach: (CalendarProvide) -> Unit) {
         CoroutineScope(Dispatchers.IO).launch {

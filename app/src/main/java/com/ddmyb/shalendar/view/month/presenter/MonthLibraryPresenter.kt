@@ -213,7 +213,8 @@ class MonthLibraryPresenter(
 
                 externalScheduleList.clear()
 
-                CalendarProvider.getEvents(contentResolver, calendarId,
+                CalendarProvider.
+                getEvents(contentResolver, calendarId,
                     {
                         val schedule = it.toScheduleDto()
 

@@ -3,6 +3,7 @@ package com.ddmyb.shalendar.domain.schedules.repository
 import android.util.Log
 import com.ddmyb.shalendar.domain.schedules.Schedule
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.async
@@ -20,6 +21,17 @@ class ScheduleRepository {
     private val scheduleRef = FirebaseDatabase.getInstance().getReference(SCHEDULE_REF)
     private val groupRef = FirebaseDatabase.getInstance().getReference(GROUP_REF)
     private val userRef = FirebaseDatabase.getInstance().getReference(USER_REF)
+
+    private lateinit var groupSnapshot: DataSnapshot
+    private lateinit var userSnapshot: DataSnapshot
+    private lateinit var scheduleSnapshot: DataSnapshot
+
+    private suspend fun init() {
+        val snapshot = FirebaseDatabase.getInstance().reference.get().await()
+        groupSnapshot = snapshot.child(GROUP_REF)
+        userSnapshot = snapshot.child(USER_REF)
+        scheduleSnapshot = snapshot.child(SCHEDULE_REF)
+    }
 
     companion object {
         private var instance: ScheduleRepository? = null
@@ -62,119 +74,35 @@ class ScheduleRepository {
         return
     }
 
-    suspend fun readUserSchedule(): List<ScheduleDto> {
+    suspend fun readUserAllSchedule(): List<ScheduleDto>{
         val uID = firebaseAuth.currentUser!!.uid
+        init()
+        val allScheduleId = (userSnapshot.child(uID).child("scheduleId").children.mapNotNull { it.key } +
+                userSnapshot.child(uID).child("groupId").children.flatMap { groupId ->
+                    groupSnapshot.child(groupId.key!!).child("scheduleId").children.mapNotNull { it.key }
+                }).distinct()
 
-        val scheduleIdList = mutableListOf<String>()
-        for (curscheduleId in userRef.child(uID).child("scheduleId").get().await().children) {
-            val scheduleId = curscheduleId.key
-            scheduleIdList.add(scheduleId!!)
+        return allScheduleId.map {
+            scheduleSnapshot.child(it).getValue(ScheduleDto::class.java)!!
         }
-        val scheduleList = mutableListOf<ScheduleDto>()
-        for (scheduleId in scheduleIdList) {
-            scheduleList.add(scheduleRef.child(scheduleId).get().await().getValue(ScheduleDto::class.java)!!)
-        }
-
-        return scheduleList
     }
 
-//    suspend fun readUserAllSchedule(): List<ScheduleDto> {
-//        val uID = firebaseAuth.currentUser!!.uid
-//
-//        val scheduleIdList = mutableListOf<String>()
-//        for (curscheduleId in userRef.child(uID).child("scheduleId").get().await().children) {
-//            scheduleIdList.add(curscheduleId.key.toString())
-//        }
-//
-//        val GroupIdList = mutableListOf<String>()
-//        for (curgroupId in userRef.child(uID).child("groupId").get().await().children) {
-//            val curGroupId = curgroupId.key.toString()
-//            for (curscheduleId in groupRef.child(curGroupId).child("scheduleId").get().await().children) {
-//                scheduleIdList.add(curscheduleId.key.toString())
-//            }
-//        }
-//        val scheduleList = mutableListOf<ScheduleDto>()
-//        for (scheduleId in scheduleIdList) {
-//            scheduleList.add(scheduleRef.child(scheduleId).get().await().getValue(ScheduleDto::class.java)!!)
-//        }
-//        return scheduleList
-//    }
-
-    suspend fun readUserAllSchedule(): List<ScheduleDto> = coroutineScope {
-        Log.d("readUserAllSchedule", "start")
-        val uID = firebaseAuth.currentUser!!.uid
-        val scheduleList = mutableListOf<ScheduleDto>()
-
-        val userScheduleDeferred = async (start = CoroutineStart.LAZY){
-            userRef.child(uID).child("scheduleId").get().await().children.mapNotNull { it.key }
-        }
-
-        val groupScheduleDeferred = async (start = CoroutineStart.LAZY){
-            userRef.child(uID).child("groupId").get().await().children.flatMap { curgroupId ->
-                val curGroupId = curgroupId.key.toString()
-                groupRef.child(curGroupId).child("scheduleId").get().await().children.mapNotNull { it.key }
-            }
-        }
-        userScheduleDeferred.start()
-        groupScheduleDeferred.start()
-
-        val allSchedules = (userScheduleDeferred.await() + groupScheduleDeferred.await()).distinct()
-        Log.d("allSchedules", allSchedules.toString())
-
-        val scheduleDtoDeferredList = allSchedules.map { scheduleId ->
-            async (start = CoroutineStart.LAZY){
-                scheduleRef.child(scheduleId).get().await().getValue(ScheduleDto::class.java)
-            }
-        }
-
-        scheduleDtoDeferredList.forEach { deferred ->
-            deferred.start()
-            val scheduleDto = deferred.await()
-            if (scheduleDto != null) {
-                scheduleList.add(scheduleDto)
-            }
-        }
-        scheduleList
-    }
     suspend fun readOneSchedule(scheduleId : String): ScheduleDto {
         return scheduleRef.child(scheduleId).get().await().getValue(ScheduleDto::class.java)!!
     }
-    suspend fun readGroupSchedule(groupId: String): MutableList<ScheduleDto> {
 
-        val userIdList: MutableList<String> = mutableListOf()
-        for (curUserIds in groupRef.child(groupId).child("userId").get().await().children) {
-            userIdList.add(curUserIds.key.toString())
-        }
+    suspend fun readGroupSchedule(groupId: String): MutableList<ScheduleDto>{
+        init()
 
-        val scheduleIdList: MutableList<String> = mutableListOf()
-        for (userId in userIdList) {
-            for (curScheduleIds in userRef.child(userId).child("scheduleId").get().await().children) {
-                scheduleIdList.add(curScheduleIds.key.toString())
+        return (groupSnapshot.child(groupId).child("userId").children.flatMap { userId ->
+            userSnapshot.child(userId.key!!).child("scheduleId").children.map { scheduleId ->
+                scheduleSnapshot.child(scheduleId.key!!).getValue(ScheduleDto::class.java)!!
             }
-        }
-
-        val scheduleList: MutableList<ScheduleDto> = mutableListOf()
-        for (scheduleId in scheduleIdList) {
-            scheduleList.add(scheduleRef.child(scheduleId).get().await().getValue(ScheduleDto::class.java)!!)
-        }
-
-        //아래는 그룹 스케줄
-        for (scheduleId in groupRef.child(groupId).child("scheduleId").get().await().children) {
-            scheduleList.add(scheduleRef.child(scheduleId.key!!).get().await().getValue(ScheduleDto::class.java)!!)
-        }
-
-        return scheduleList
+        } + groupSnapshot.child(groupId).child("scheduleId").children.map { scheduleId ->
+            scheduleSnapshot.child(scheduleId.key!!).getValue(ScheduleDto::class.java)!!
+        }).toMutableList()
     }
-    //해당 그룹에 속한 user들의 ID반환
-//    suspend fun readGroupUser(groupId: String): MutableList<String> {
-//        val userIds: MutableList<String> = mutableListOf()
-//
-//        for (curUserIds in groupRef.child(groupId).child("userId").get().await().children) {
-//            val curUserId = curUserIds.key
-//            userIds.add(curUserId!!)
-//        }
-//        return userIds
-//    }
+
     fun updateSchedule(curSc: ScheduleDto) {
         scheduleRef.child(curSc.scheduleId).setValue(curSc)
         if (curSc.groupId == "") {

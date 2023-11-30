@@ -1,5 +1,6 @@
 package com.ddmyb.shalendar.domain.groups.repository
 
+import android.util.Log
 import com.ddmyb.shalendar.domain.groups.Group
 import com.ddmyb.shalendar.domain.schedules.repository.ScheduleDto
 import com.google.firebase.auth.FirebaseAuth
@@ -27,6 +28,18 @@ class GroupRepository {
     private val groupRef = FirebaseDatabase.getInstance().getReference(GROUP_REF)
     private val userRef = FirebaseDatabase.getInstance().getReference(USER_REF)
 
+    private lateinit var groupSnapshot: DataSnapshot
+    private lateinit var userSnapshot: DataSnapshot
+    private lateinit var scheduleSnapshot: DataSnapshot
+
+
+    private suspend fun init() {
+        val snapshot = FirebaseDatabase.getInstance().reference.get().await()
+        groupSnapshot = snapshot.child(GROUP_REF)
+        userSnapshot = snapshot.child(USER_REF)
+        scheduleSnapshot = snapshot.child(SCHEDULE_REF)
+    }
+
     companion object {
         private var instance: GroupRepository? = null
         @Synchronized
@@ -40,76 +53,31 @@ class GroupRepository {
         }
     }
 
-//    suspend fun readUsersGroup(): MutableList<GroupDto> {
-//        val uID = firebaseAuth.currentUser!!.uid
-//        val groupIdList: MutableList<String> = mutableListOf()
-//        for (curgroupIds in userRef.child(uID).child("groupId").get().await().children) {
-//            groupIdList.add(curgroupIds.key.toString())
-//        }
-//
-//        val groupList: MutableList<GroupDto> = mutableListOf()
-//        for (groupId in groupIdList) {
-//            var curGroup: GroupDto = GroupDto()
-//            curGroup.groupId = groupId
-//            curGroup.groupName = groupRef.child(groupId).child("groupName").get().await().getValue(String::class.java).toString()
-//            curGroup.memberCnt = groupRef.child(groupId).child("memberCnt").get().await().getValue(Int::class.java)!!.toInt()
-//            curGroup.latestUpdateMills= groupRef.child(groupId).child("latestUpdateMills").get().await().getValue(Long::class.java)!!.toLong()
-//
-//            for (curUserId1 in groupRef.child(groupId).child("userId").get().await().children) {
-//                var curUserId = curUserId1.key.toString()
-//                curGroup.userId.add(userRef.child(curUserId).child("nickName").get().await().getValue(String::class.java).toString())
-//            }
-//            groupList.add(curGroup)
-//        }
-//        return groupList
-//    }
 
+    suspend fun readUsersGroup(): MutableList<GroupDto> {
+        init()
 
-    suspend fun readUsersGroup(): MutableList<GroupDto> = coroutineScope{
         val uID = firebaseAuth.currentUser!!.uid
-        val groupIdList: MutableList<String> = mutableListOf()
-
-        userRef.child(uID).child("groupId").get().await().children.map {
-            groupIdList.add(it.key!!)
+        val groupIdList = userSnapshot.child(uID).child("groupId").children.map {
+            it.key!!
         }
 
-        val groupList: MutableList<GroupDto> = mutableListOf()
-
-        val tmpDeferredList = groupIdList.map {
-            async(start = CoroutineStart.LAZY) {
-                groupRef.child(it).get().await()
+        val groupList = mutableListOf<GroupDto>()
+        groupIdList.map {
+            val groupDto = GroupDto()
+            val tmp = groupSnapshot.child(it)
+            groupDto.groupId = tmp.child("groupId").getValue(String::class.java)!!
+            groupDto.groupName = tmp.child("groupName").getValue(String::class.java).toString()
+            groupDto.memberCnt = tmp.child("memberCnt").getValue(Int::class.java)!!.toInt()
+            groupDto.latestUpdateMills= tmp.child("latestUpdateMills").getValue(Long::class.java)!!.toLong()
+            userSnapshot.child("userId").children.map { userId ->
+                groupDto.userId.add(userSnapshot.child(userId.key!!).child("nickName").getValue(String::class.java)!!)
             }
+            groupList.add(groupDto)
         }
 
-        tmpDeferredList.forEach {
-            it.start()
-            val tmp = it.await()
-            if (tmp != null){
-                var curGroup = GroupDto()
-                curGroup.groupId = tmp.child("groupId").getValue(String::class.java)!!
-                curGroup.groupName = tmp.child("groupName").getValue(String::class.java).toString()
-                curGroup.memberCnt = tmp.child("memberCnt").getValue(Int::class.java)!!.toInt()
-                curGroup.latestUpdateMills= tmp.child("latestUpdateMills").getValue(Long::class.java)!!.toLong()
-
-                val nickNameDeferredList = tmp.child("userId").children.map {
-                    async(start = CoroutineStart.LAZY) {
-                        userRef.child(it.key!!).child("nickName").get().await().getValue(String::class.java)
-                    }
-                }
-                nickNameDeferredList.forEach {nickNameDeferred ->
-                    nickNameDeferred.start()
-                    val nickName = nickNameDeferred.await()
-                    if (nickName != null) {
-                        curGroup.userId.add(nickName)
-                    }
-                }
-
-                groupList.add(curGroup)
-            }
-        }
-        groupList
+        return groupList
     }
-
     fun checkGroup(groupId: String, callback: (Boolean) -> Unit) {
         val query: Query = groupRef.child(groupId)
 

@@ -56,12 +56,13 @@ class CalendarFragment(private val groupId: String? = null): Fragment() {
                 selectedDateCalendar.set(year, month-1, 1)
                 val cal = Calendar.getInstance()
                 cal.set(year, month-1, day)
+                val showScheduleList = mutableListOf<ScheduleDto>()
                 for (schedule in scheduleList) {
                     if (schedule.userId != UserRepository.getInstance()!!.getUserId() &&
-                        schedule.groupId == "")
-                        scheduleList.remove(schedule)
+                        schedule.groupId == "") continue
+                    showScheduleList.add(schedule)
                 }
-                openSlidingUpPanel(cal, ArrayList(scheduleList))
+                openSlidingUpPanel(cal, ArrayList(showScheduleList))
             }
         }
     private val fragments = arrayListOf(
