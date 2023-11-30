@@ -40,26 +40,11 @@ class InviteDialog(private val code:String) : DialogFragment(){
             dismiss()
         }
 
-
-        binding.dicSendBtn.setOnClickListener{
-            val clipboard: ClipboardManager = requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-            val clip = ClipData.newPlainText("label", code) // Replace "YourTextHere" with the text you want to copy
-            clipboard.setPrimaryClip(clip)
-            Toast.makeText(requireContext(), "클립보드에 복사되었습니다.", Toast.LENGTH_SHORT).show()
-            dismiss()
-        }
-
         return dialog
     }
 
     fun setDialogListener(listener: DialogListener?){
         this.dialogListener = listener
-        if(listener==null){
-            Log.d("oz",listener.toString())
-        }
-        else{
-            Log.d("oz","notnull")
-        }
     }
 
     override fun onDismiss(dialog: DialogInterface) {

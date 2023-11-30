@@ -1,6 +1,7 @@
 package com.ddmyb.shalendar.view.month.presenter
 
 import android.content.ContentResolver
+import android.util.Log
 import com.ddmyb.shalendar.R
 import com.ddmyb.shalendar.domain.DBRepository
 import com.ddmyb.shalendar.domain.schedules.repository.ScheduleDto
@@ -212,14 +213,12 @@ class MonthLibraryPresenter(
                 val cal = Calendar.getInstance()
 
                 logger.logD("loadExternalSchedule - calendarId: $calendarId")
-
                 externalScheduleList.clear()
 
                 CalendarProvider.
                 getEvents(contentResolver, calendarId,
                     {
                         val schedule = it.toScheduleDto()
-
                         schedule.userId = UserRepository.getInstance()!!.getUserId()
 
                         val startM = it.start
