@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 
 import com.ddmyb.shalendar.databinding.ActivityLoginBinding
 import com.ddmyb.shalendar.domain.users.UserRepository
+import kotlin.system.exitProcess
 
 
 class LoginActivity : AppCompatActivity() {
@@ -35,5 +36,11 @@ class LoginActivity : AppCompatActivity() {
             val intent = Intent(this@LoginActivity, SignUpActivity::class.java)
             startActivity(intent)
         }
+    }
+
+    override fun onBackPressed() {
+        finishAffinity()
+        System.runFinalization()
+        exitProcess(0)
     }
 }
