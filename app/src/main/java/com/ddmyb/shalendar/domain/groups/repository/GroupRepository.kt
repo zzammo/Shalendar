@@ -71,7 +71,7 @@ class GroupRepository {
             groupDto.groupName = tmp.child("groupName").getValue(String::class.java)!!
             groupDto.memberCnt = tmp.child("memberCnt").getValue(Int::class.java)!!
             groupDto.latestUpdateMills= tmp.child("latestUpdateMills").getValue(Long::class.java)!!
-            userSnapshot.child("userId").children.map { userId ->
+            tmp.child("userId").children.map { userId ->
                 groupDto.userId.add(userSnapshot.child(userId.key!!).child("nickName").getValue(String::class.java)!!)
             }
             Log.d("mapped_groupDto", groupDto.toString())
