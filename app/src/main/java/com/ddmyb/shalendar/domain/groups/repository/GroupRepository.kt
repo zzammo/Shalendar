@@ -59,6 +59,7 @@ class GroupRepository {
 
         val uID = firebaseAuth.currentUser!!.uid
         val groupIdList = userSnapshot.child(uID).child("groupId").children.map {
+            Log.d("groupId", it.key!!)
             it.key!!
         }
 
@@ -67,12 +68,13 @@ class GroupRepository {
             val groupDto = GroupDto()
             val tmp = groupSnapshot.child(it)
             groupDto.groupId = tmp.child("groupId").getValue(String::class.java)!!
-            groupDto.groupName = tmp.child("groupName").getValue(String::class.java).toString()
-            groupDto.memberCnt = tmp.child("memberCnt").getValue(Int::class.java)!!.toInt()
-            groupDto.latestUpdateMills= tmp.child("latestUpdateMills").getValue(Long::class.java)!!.toLong()
+            groupDto.groupName = tmp.child("groupName").getValue(String::class.java)!!
+            groupDto.memberCnt = tmp.child("memberCnt").getValue(Int::class.java)!!
+            groupDto.latestUpdateMills= tmp.child("latestUpdateMills").getValue(Long::class.java)!!
             userSnapshot.child("userId").children.map { userId ->
                 groupDto.userId.add(userSnapshot.child(userId.key!!).child("nickName").getValue(String::class.java)!!)
             }
+            Log.d("mapped_groupDto", groupDto.toString())
             groupList.add(groupDto)
         }
 

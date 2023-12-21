@@ -31,9 +31,13 @@ class SignUpActivity : AppCompatActivity() {
             //회원가입 처리 시작
             val strEmail = binding.etEmail.getText().toString()
             val strPwd = binding.etPwd.getText().toString()
+            val strNick = binding.etNickname.getText().toString()
             val strPwdChk = binding.etPwdchk.getText().toString()
             if(strPwd!=strPwdChk){
                 Toast.makeText(this@SignUpActivity, "비밀번호가 일치하지 않습니다", Toast.LENGTH_SHORT).show()
+            }
+            else if(strNick==null){
+                Toast.makeText(this@SignUpActivity, "닉네임을 입력해주세요", Toast.LENGTH_SHORT).show()
             }
             else {
                 Toast.makeText(this@SignUpActivity, "회원가입 진행 중", Toast.LENGTH_SHORT).show()
@@ -46,6 +50,7 @@ class SignUpActivity : AppCompatActivity() {
                             userId = firebaseUser!!.uid
                             emailId = firebaseUser.email
                             password = strPwd
+                            nickName = strNick
                         }
                         userRef!!.child(firebaseUser!!.uid).setValue(account)
                         Toast.makeText(this@SignUpActivity, "회원가입에 성공하셨습니다", Toast.LENGTH_LONG).show()
